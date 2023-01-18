@@ -6,8 +6,8 @@ from .mana import Mana, maybe_mana
 from . import helpers
 
 
-with open("carddata.yaml") as handle:
-    CARDS = yaml.safe_load(handle)
+with open("assets/card-data.yaml") as handle:
+    CARD_DATA = yaml.safe_load(handle)
 
 
 CardBase = collections.namedtuple("CardBase", "name counter")
@@ -25,10 +25,10 @@ class Card(CardBase):
     def __str__(self):
         return helpers.highlight(helpers.compress(self.name), "green")
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return tuple.__hash__(self)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, str):
             return other == self.name
         else:
@@ -36,15 +36,15 @@ class Card(CardBase):
 
     @property
     def cost(self) -> Optional[Mana]:
-        return maybe_mana(CARDS[self.name].get("cost"))
+        return maybe_mana(CARD_DATA[self.name].get("cost"))
 
     @property
-    def enters_tapped(self):
-        return CARDS[self.name].get("enters_tapped", False)
+    def enters_tapped(self) -> bool:
+        return CARD_DATA[self.name].get("enters_tapped", False)
 
     @property
-    def taps_for(self):
-        return Mana(CARDS[self.name].get("taps_for"))
+    def taps_for(self) -> Mana:
+        return Mana(CARD_DATA[self.name].get("taps_for"))
 
 
 class CardsNotOrdered(tuple):
