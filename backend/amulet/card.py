@@ -3,8 +3,7 @@ A single card is stored as a string. We use a class for a collection of cards.
 """
 
 
-import collections
-from typing import Optional
+from typing import NamedTuple, Optional
 import yaml
 
 from .mana import Mana, maybe_mana
@@ -15,7 +14,14 @@ with open("assets/card-data.yaml") as handle:
     CARD_DATA = yaml.safe_load(handle)
 
 
-CardBase = collections.namedtuple("CardBase", "name")
+class CardBase(NamedTuple):
+    name: str
+
+    def __hash__(self) -> int:
+        return tuple.__hash__(self)
+
+    def __eq__(self, other: Card) -> bool:
+        return other.name == self.name
 
 
 class Card(CardBase):
@@ -28,15 +34,6 @@ class Card(CardBase):
 
     def __str__(self):
         return helpers.highlight(helpers.squish(self.name), "green")
-
-    def __hash__(self) -> int:
-        return tuple.__hash__(self)
-
-    def __eq__(self, other) -> bool:
-        if isinstance(other, str):
-            return other == self.name
-        else:
-            return other.name == self.name
 
     @property
     def is_land(self) -> bool:
@@ -57,33 +54,3 @@ class Card(CardBase):
     @property
     def taps_for(self) -> Mana:
         return Mana(CARD_DATA[self.name].get("taps_for"))
-
-
-class Cards(tuple):
-    def __new__(self, names):
-        cards = [Card(x) for x in names]
-        return tuple.__new__(self, cards)
-
-    def __str__(self):
-        blurbs = []
-        for card in sorted(set(self)):
-            n = self.count(card)
-            if n > 1:
-                blurbs.append(f"{n}*{card}")
-            else:
-                blurbs.append(str(card))
-        return " ".join(blurbs)
-
-    def __add__(self, c: Card) -> "Cards":
-        return Cards(list(self) + [c])
-
-    def __sub__(self, c: Card) -> "Cards":
-        ret = list(self)
-        ret.remove(Card(c))
-        return Cards(ret)
-
-    def __contains__(self, c: Card):
-        return tuple.__contains__(self, c)
-
-    def count(self, c: Card) -> int:
-        return self.count(c)

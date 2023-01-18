@@ -6,24 +6,21 @@ GameState.next_turn, we iterate through all possible sequences of plays until
 we find a winning line.
 """
 
-import dataclasses
 from typing import Set
 
 from .mana import Mana
-from .card import Card, Cards
+from .card import Card
 
 
 from typing import NamedTuple
 
 
-@dataclasses.dataclass(frozen=True)
 class GameStateBase(NamedTuple):
-    battlefield: Cards = Cards([])
-    hand: Cards = Cards([])
+    battlefield: tuple[Card] = ()
+    hand: tuple[Card] = ()
     is_done: bool = False
     land_plays_remaining: int = 0
-    library: Cards = Cards([])
-    library_index: int = 0
+    library: tuple[Card] = ()
     mana_dept: Mana = Mana()
     mana_pool: Mana = Mana()
     notes: str = ""
@@ -35,14 +32,14 @@ class GameStateBase(NamedTuple):
         # the deck list, since it's immutable
         fields = []
         for key, val in sorted(self._asdict().items()):
-            if key in ("notes", "deck_list"):
+            if key == "notes":
                 continue
             fields.append(val)
         return tuple.__hash__(tuple(fields))
 
     def __eq__(self, other: "GameStateBase") -> bool:
         for key, val in sorted(self._asdict().items()):
-            if key in ("notes", "deck_list"):
+            if key == "notes":
                 continue
             if other[key] != val:
                 return False
@@ -50,12 +47,6 @@ class GameStateBase(NamedTuple):
 
 
 class GameState(GameStateBase):
-    def __new__(cls, **kwargs):
-        for key in ["battlefield", "hand", "library"]:
-            if key in kwargs:
-                kwargs[key] = Cards(kwargs[key])
-        return super().__new__(cls, **kwargs)
-
     def _copy_with_updates(self, **kwargs) -> "GameState":
         new_kwargs = self._asdict()
         new_kwargs.update(kwargs)
