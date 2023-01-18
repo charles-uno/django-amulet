@@ -20,9 +20,6 @@ class CardBase(NamedTuple):
     def __hash__(self) -> int:
         return tuple.__hash__(self)
 
-    def __eq__(self, other: Card) -> bool:
-        return other.name == self.name
-
 
 class Card(CardBase):
     @property

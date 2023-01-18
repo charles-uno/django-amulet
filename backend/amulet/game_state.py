@@ -9,18 +9,18 @@ we find a winning line.
 from typing import Set
 
 from .mana import Mana
-from .card import Card
+from .card import Card, Cards
 
 
 from typing import NamedTuple
 
 
 class GameStateBase(NamedTuple):
-    battlefield: tuple[Card] = ()
-    hand: tuple[Card] = ()
+    battlefield: Cards = Cards()
+    hand: Cards = Cards()
     is_done: bool = False
     land_plays_remaining: int = 0
-    library: tuple[Card] = ()
+    library: Cards = Cards()
     mana_dept: Mana = Mana()
     mana_pool: Mana = Mana()
     notes: str = ""
@@ -66,11 +66,14 @@ class GameState(GameStateBase):
     def get_notes(self):
         return self.notes.lstrip(", \n")
 
-    def draw(self, n):
+    def draw(self):
+        c = self.library[0]
+        library = self.library[1:]
+
         return self._copy_with_updates(
-            deck_index=self.deck_index + n,
-            hand=self.hand + self.top(n),
-            notes=self.notes + f", draw {self.top(n)}",
+            hand=self.hand + c,
+            library=self.library[1:],
+            notes=self.notes + f", draw {c}",
         )
 
     def pass_turn(self) -> Set["GameState"]:
@@ -83,7 +86,7 @@ class GameState(GameStateBase):
         if self.on_the_play and self.turn == 0:
             return {state.tap_out()}
         else:
-            return {state.draw(1).tap_out()}
+            return {state.draw().tap_out()}
 
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if (
