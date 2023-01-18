@@ -1,3 +1,8 @@
+"""
+A single card is stored as a string. We use a class for a collection of cards.
+"""
+
+
 import collections
 from typing import Optional
 import yaml
@@ -10,20 +15,24 @@ with open("assets/card-data.yaml") as handle:
     CARD_DATA = yaml.safe_load(handle)
 
 
-CardBase = collections.namedtuple("CardBase", "name counter")
+CardBase = collections.namedtuple("CardBase", "name")
 
 
 class Card(CardBase):
-    def __new__(cls, name: CardBase | str, counter: int = 0) -> CardBase:
+    def __new__(cls, name: CardBase | str) -> CardBase:
         if isinstance(name, CardBase):
             return name
-        return CardBase.__new__(cls, name, counter)
+        return CardBase.__new__(cls, name)
+
+    @property
+    def slug(self) -> str:
+        return helpers.slugify(self.name)
 
     def __repr__(self):
-        return f"Card({repr(self.name)}, {repr(self.counter)})"
+        return f"Card({repr(self.name)})"
 
     def __str__(self):
-        return helpers.highlight(helpers.compress(self.name), "green")
+        return helpers.highlight(helpers.squish(self.name), "green")
 
     def __hash__(self) -> int:
         return tuple.__hash__(self)
@@ -33,6 +42,14 @@ class Card(CardBase):
             return other == self.name
         else:
             return other.name == self.name
+
+    @property
+    def is_land(self) -> bool:
+        return "land" in CARD_DATA[self.name].get("type", "")
+
+    @property
+    def is_spell(self) -> bool:
+        return not self.is_land
 
     @property
     def cost(self) -> Optional[Mana]:
@@ -47,10 +64,10 @@ class Card(CardBase):
         return Mana(CARD_DATA[self.name].get("taps_for"))
 
 
-class CardsNotOrdered(tuple):
+class Cards(tuple):
     def __new__(self, names):
         cards = [Card(x) for x in names]
-        return tuple.__new__(self, sorted(cards))
+        return tuple.__new__(self, cards)
 
     def __str__(self):
         blurbs = []
@@ -62,21 +79,16 @@ class CardsNotOrdered(tuple):
                 blurbs.append(str(card))
         return " ".join(blurbs)
 
-    def __add__(self, other):
-        if isinstance(other, str):
-            other = Card(other)
-        if isinstance(other, Card):
-            other = [other]
-        return CardsNotOrdered(list(self) + list(other))
+    def __add__(self, c: str | Card) -> "Cards":
+        return Cards(list(self) + [Card(c)])
 
-    def __contains__(self, card):
-        return tuple.__contains__(self, Card(card))
+    def __sub__(self, c: str | Card) -> "Cards":
+        ret = list(self)
+        ret.remove(Card(c))
+        return Cards(ret)
 
+    def __contains__(self, c: str | Card):
+        return tuple.__contains__(self, Card(c))
 
-class CardsOrdered(tuple):
-    def __new__(self, names):
-        cards = [Card(x) for x in names]
-        return tuple.__new__(self, cards)
-
-    def __contains__(self, card):
-        return tuple.__contains__(self, Card(card))
+    def count(self, c: str | Card) -> int:
+        return self.count(Card(c))

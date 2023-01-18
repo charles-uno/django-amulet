@@ -12,7 +12,7 @@ ManaBase = collections.namedtuple("Mana", "green total")
 
 
 class Mana(ManaBase):
-    def __new__(cls, expr: str | Tuple[int, int]) -> ManaBase:
+    def __new__(cls, expr: str | Tuple[int, int] = "") -> ManaBase:
         if isinstance(expr, str):
             n_green = expr.upper().count("G")
             digits_value = sum([int(x) for x in expr if x.isdigit()])

@@ -12,7 +12,14 @@ def highlight(text: str, color: str = None) -> str:
     return text
 
 
-def compress(text: str) -> str:
+def slugify(text: str) -> str:
+    text = text.replace("'", "").lower()
+    for c in "-,.":
+        text = text.replace(c, "")
+    return text.replace(" ", "_")
+
+
+def squish(text: str) -> str:
     text = text.replace("'", "").title()
     for c in "- ,.":
         text = text.replace(c, "")
