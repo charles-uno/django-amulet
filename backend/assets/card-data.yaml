@@ -1,0 +1,65 @@
+Amulet of Vigor:
+  cost: "1"
+  type: artifact
+Ancient Stirrings:
+  type: sorcery
+  cost: G
+Arboreal Grazer:
+  cost: G
+  type: creature
+Azusa, Lost but Seeking:
+  cost: "2G"
+  type: creature
+Boros Garrison:
+  enters_tapped: true
+  taps_for: "WR"
+  type: land,bounce
+Crumbling Vestige:
+  type: land
+  taps_for: "1"
+  enters_tapped: true
+Cultivator Colossus:
+  type: creature
+  cost: "4GGG"
+  wins_when_cast: true
+Dryad of the Ilysian Grove:
+  type: creature
+  cost: "2G"
+Explore:
+  cost: "1G"
+  type: sorcery
+Forest:
+  type: basic,land,forest
+  taps_for: G
+  enters_tapped: false
+Primeval Titan:
+  cost: 4GG
+  type: creature
+  wins_when_cast: true
+Radiant Fountain:
+  display: Fountain
+  type: land
+  taps_for: "1"
+Selesnya Sanctuary:
+  type: land,bounce
+  taps_for: "GW"
+  enters_tapped: true
+Simic Growth Chamber:
+  type: land,bounce
+  taps_for: GU
+  enters_tapped: true
+Summoner's Pact:
+  type: instant
+  cost: "0"
+Valakut, the Molten Pinnacle:
+  type: land
+  taps_for: "R"
+  enters_tapped: true
+# Standing in for a blank
+Unyaro Bee Sting:
+  type: Sorcery
+  cost: "3G"
+Urza's Saga:
+  type: land
+  enters_tapped: false
+  taps_for: "1"

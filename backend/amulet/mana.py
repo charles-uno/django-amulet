@@ -4,7 +4,7 @@ ambiguity when we tap lands or pay costs.
 """
 
 import collections
-from typing import Tuple
+from typing import Optional, Tuple
 
 from . import helpers
 
@@ -25,7 +25,7 @@ class Mana(ManaBase):
             assert total >= 0
             return super().__new__(cls, green, total)
         else:
-            raise ValueError("unable to construct from %" % repr(expr))
+            raise ValueError("unable to construct from " + repr(expr))
 
     def name(self) -> str:
         if self.green == 0 or self.total > self.green:
@@ -61,3 +61,7 @@ class Mana(ManaBase):
 
     def __le__(self, other):
         return self.total <= other.total and self.green <= other.green
+
+
+def maybe_mana(m: Optional[str]) -> Optional[Mana]:
+    return None if m is None else Mana(m)

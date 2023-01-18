@@ -1,1 +1,8 @@
-# aws-practice-dockerless
+# Full Stack Amulet Model - Django
+
+
+
+## Requirements
+
+django
+pyyaml
