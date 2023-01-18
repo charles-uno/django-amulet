@@ -6,24 +6,17 @@ GameState.next_turn, we iterate through all possible sequences of plays until
 we find a winning line.
 """
 
-import collections
-import itertools
-import time
+import dataclasses
 from typing import Set
 
 from .mana import Mana
 from .card import Card, Cards
 
 
-MAX_STATES = 200
-MAX_SECONDS = 10
-N_STATES = 0
-START_TIME = None
-
-
 from typing import NamedTuple
 
 
+@dataclasses.dataclass(frozen=True)
 class GameStateBase(NamedTuple):
     battlefield: Cards = Cards([])
     hand: Cards = Cards([])

@@ -19,11 +19,6 @@ CardBase = collections.namedtuple("CardBase", "name")
 
 
 class Card(CardBase):
-    def __new__(cls, name: CardBase | str) -> CardBase:
-        if isinstance(name, CardBase):
-            return name
-        return CardBase.__new__(cls, name)
-
     @property
     def slug(self) -> str:
         return helpers.slugify(self.name)
@@ -79,16 +74,16 @@ class Cards(tuple):
                 blurbs.append(str(card))
         return " ".join(blurbs)
 
-    def __add__(self, c: str | Card) -> "Cards":
-        return Cards(list(self) + [Card(c)])
+    def __add__(self, c: Card) -> "Cards":
+        return Cards(list(self) + [c])
 
-    def __sub__(self, c: str | Card) -> "Cards":
+    def __sub__(self, c: Card) -> "Cards":
         ret = list(self)
         ret.remove(Card(c))
         return Cards(ret)
 
-    def __contains__(self, c: str | Card):
-        return tuple.__contains__(self, Card(c))
+    def __contains__(self, c: Card):
+        return tuple.__contains__(self, c)
 
-    def count(self, c: str | Card) -> int:
-        return self.count(Card(c))
+    def count(self, c: Card) -> int:
+        return self.count(c)

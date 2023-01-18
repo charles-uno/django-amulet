@@ -3,19 +3,13 @@
 from typing import NamedTuple
 
 
-class Point(NamedTuple):
-    x: int = 0
-    y: int = 1
-    z: int = 3
-
-    def copy_with_updates(self, **kwargs):
-        new_kwargs = self._asdict()
-        new_kwargs.update(kwargs)
-        return Point(**new_kwargs)
+class ManaBase(NamedTuple):
+    green: int = 0
+    total: int = 0
 
 
-p = Point()
-print(p)
+m = ManaBase(1, 1)
 
-q = p.copy_with_updates(z=5)
-print(q)
+n = ManaBase(2, 0)
+
+print(m < n)

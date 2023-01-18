@@ -12,6 +12,8 @@ def main():
     print(m)
     print(m - "3")
 
+    return
+
     c = amulet.Card("Amulet of Vigor")
     print(c)
 
