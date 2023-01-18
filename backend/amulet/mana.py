@@ -3,8 +3,7 @@ For simplicity, track only green mana and total mana. That means there's no
 ambiguity when we tap lands or pay costs.
 """
 
-import collections
-from typing import Optional, Tuple, NamedTuple
+from typing import Optional, NamedTuple
 
 from . import helpers
 
