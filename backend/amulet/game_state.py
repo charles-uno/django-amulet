@@ -37,11 +37,6 @@ class GameStateBase(NamedTuple):
     on_the_play: bool = False
     turn: int = 0
 
-    def copy_with_updates(self, **kwargs) -> "GameStateBase":
-        new_kwargs = self._asdict()
-        new_kwargs.update(kwargs)
-        return GameState(**new_kwargs)
-
     def __hash__(self) -> int:
         # Ignore notes when collapsing duplicates. Also no need to compare
         # the deck list, since it's immutable
@@ -62,7 +57,18 @@ class GameStateBase(NamedTuple):
 
 
 class GameState(GameStateBase):
-    def next_states(self, max_turns: int) -> Set["GameState"]:
+    def __new__(cls, **kwargs):
+        for key in ["battlefield", "hand", "library"]:
+            if key in kwargs:
+                kwargs[key] = Cards(kwargs[key])
+        return super().__new__(cls, **kwargs)
+
+    def _copy_with_updates(self, **kwargs) -> "GameState":
+        new_kwargs = self._asdict()
+        new_kwargs.update(kwargs)
+        return GameState(**new_kwargs)
+
+    def next_states(self, max_turns: int = 10) -> Set["GameState"]:
         if self.is_done:
             return {self}
         states = set()
@@ -77,14 +83,14 @@ class GameState(GameStateBase):
         return self.notes.lstrip(", \n")
 
     def draw(self, n):
-        return self.clone(
+        return self._copy_with_updates(
             deck_index=self.deck_index + n,
             hand=self.hand + self.top(n),
             notes=self.notes + f", draw {self.top(n)}",
         )
 
     def pass_turn(self) -> Set["GameState"]:
-        state = self.copy_with_updates(
+        state = self._copy_with_updates(
             land_plays_remaining=1,
             mana_pool=Mana(),
             turn=self.turn + 1,
@@ -103,16 +109,16 @@ class GameState(GameStateBase):
             or c.cost > self.mana_pool
         ):
             return set()
-        state = self.copy_with_updates(
+        state = self._copy_with_updates(
             hand=self.hand - c,
             notes=self.notes + f"\ncast {c}",
         ).pay_mana(c.cost)
-        return getattr(state, "cast_" + c.slug)()
+        return getattr(state, "_cast_" + c.slug)()
 
     def maybe_play_land(self, c: Card) -> Set["GameState"]:
         if c not in self.hand or not self.land_plays_remaining or not c.is_land:
             return set()
-        state = self.copy_with_updates(
+        state = self._copy_with_updates(
             notes=self.notes + f"\nplay {c}",
             land_plays_remaining=self.land_plays_remaining - 1,
         )
@@ -122,20 +128,20 @@ class GameState(GameStateBase):
             return state.play_land_untapped(c)
 
     def play_land_tapped(self, c: Card) -> Set["GameState"]:
-        state = self.copy_with_updates(
+        state = self._copy_with_updates(
             battlefield=self.battlefield + c,
             hand=self.hand - c,
         )
         for _ in range(self.battlefield.count("Amulet of Vigor")):
             state = state.tap(c)
-        return getattr(state, "play_" + c.slug)()
+        return getattr(state, "_play_" + c.slug)()
 
     def play_land_untapped(self, c: Card) -> Set["GameState"]:
-        state = self.copy_with_updates(
+        state = self._copy_with_updates(
             hand=self.hand - c,
             battlefield=self.battlefield + c,
         ).tap(c)
-        return getattr(state, "play_" + c.slug)()
+        return getattr(state, "_play_" + c.slug)()
 
     def tap(self, c: Card) -> "GameState":
         return self.add_mana(c.taps_for)
@@ -149,15 +155,15 @@ class GameState(GameStateBase):
     def pay_mana(self, m: Mana) -> "GameState":
         mana_pool = self.mana_pool - m
         note = f", {mana_pool} in pool"
-        return self.copy_with_updates(mana_pool=mana_pool, notes=self.notes + note)
+        return self._copy_with_updates(mana_pool=mana_pool, notes=self.notes + note)
 
     def add_mana(self, m):
         mana_pool = self.mana_pool + m
         note = f", {mana_pool} in pool"
-        return self.clone(mana_pool=mana_pool, notes=self.notes + note)
+        return self._copy_with_updates(mana_pool=mana_pool, notes=self.notes + note)
 
-    def cast_primeval_titan(self) -> Set["GameState"]:
-        return self.copy_with_updates(is_done=True)
+    def _cast_primeval_titan(self) -> Set["GameState"]:
+        return self._copy_with_updates(is_done=True)
 
-    def play_forest(self) -> Set["GameState"]:
+    def _play_forest(self) -> Set["GameState"]:
         return {self}

@@ -17,9 +17,13 @@ def main():
 
     library = ["Forest"] * 40 + ["Primeval Titan"] * 20
     random.shuffle(library)
-    game = amulet.GameState(library=library, on_the_play=True)
 
-    print(game)
+    state = amulet.GameState(
+        library=library, hand=library[:7], library_index=7, on_the_play=True
+    )
+    states = state.next_states()
+
+    print(states.pop().get_notes())
 
 
 if __name__ == "__main__":

@@ -1,63 +1,23 @@
+from typing import Sequence
+
+from backend.amulet.game_state import GameState
+
+
 class GameStateManager:
-    def __getattr__(self, attr):
-        def func(*args, **kwargs):
-            new_states = GameStates()
-            for state in self:
-                new_states |= getattr(state, attr)(*args, **kwargs)
-            return new_states
 
-        return func
+    states = None
 
-    def safe_getattr(self, attr):
-        if not all(hasattr(x, attr) for x in self):
-            return self
-        return getattr(self, attr)()
+    def __init__(self, library: Sequence[str]):
+        initial_state = GameState(
+            hand=library[:7], library_index=7, on_the_play=False, turn=0
+        )
+        # Only possible play from here is passing the turn
+        self.states = initial_state.pass_turn()
 
-    def report(self):
-        assert len(self) > 0
-        if len(self) == 1:
-            for state in self:
-                return state.report()
-        # If we have a ton of states but did not converge, let's take a
-        # look at the longest one I guess? The most actions to evaluate.
-        else:
-            longest_notes = ""
-            for state in self:
-                if len(state.get_notes()) > longest_notes:
-                    longest_notes = state.get_notes()
-            return longest_notes + f"\nFailed to converge after {N_STATES} states"
+    def next_turn(self):
 
-    @property
-    def performance(self):
-        for state in self:
-            return state.performance
+        next_states = set()
 
-    @property
-    def done(self):
-        for state in self:
-            return state.done
-
-    @property
-    def hand(self):
-        for state in self:
-            return state.hand
-
-    @property
-    def notes(self):
-        for state in self:
-            return state.notes
-
-    @property
-    def overflowed(self):
-        for state in self:
-            return state.overflowed
-
-    @property
-    def turn(self):
-        for state in self:
-            return state.turn
-
-    def next_turn(self, **kwargs):
         next_states = GameStates()
         for state in self:
             for _state in state.next_turn(**kwargs):
