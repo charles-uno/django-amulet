@@ -1,3 +1,5 @@
-40 Forest
-10 Dryad of the Ilysian Grove
+30 Forest
+10 Simic Growth Chamber
+5 Dryad of the Ilysian Grove
+5 Azusa, Lost but Seeking
 10 Primeval Titan

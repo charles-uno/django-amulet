@@ -88,8 +88,10 @@ class GameState(GameStateBase):
         return states
 
     def pass_turn(self) -> Set["GameState"]:
-        land_plays_remaining = 1 + self.battlefield.count(
-            Card("Dryad of the Ilysian Grove")
+        land_plays_remaining = (
+            1
+            + self.battlefield.count(Card("Dryad of the Ilysian Grove"))
+            + 2 * self.battlefield.count(Card("Azusa, Lost but Seeking"))
         )
         state = self.copy_with_updates(
             notes=self.notes + f"\nturn {self.turn+1}",
@@ -167,6 +169,13 @@ class GameState(GameStateBase):
         )
         return getattr(state, "cast_" + c.slug)()
 
+    def cast_azusa_lost_but_seeking(
+        self,
+    ) -> Set["GameState"]:
+        # TODO: don't allow duplicates
+
+        return {self}
+
     def cast_dryad_of_the_ilysian_grove(
         self,
     ) -> Set["GameState"]:
@@ -183,3 +192,16 @@ class GameState(GameStateBase):
 
     def play_forest(self) -> Set["GameState"]:
         return {self}
+
+    def play_simic_growth_chamber(self) -> Set["GameState"]:
+        states = set()
+        for c in set(self.battlefield):
+            if c.is_land:
+                states.add(
+                    self.copy_with_updates(
+                        hand=self.hand + c,
+                        battlefield=self.battlefield - c,
+                        notes=self.notes + f", bounce {c}",
+                    )
+                )
+        return states
