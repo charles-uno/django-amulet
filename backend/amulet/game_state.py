@@ -9,7 +9,8 @@ we find a winning line.
 from typing import Set
 
 from .mana import Mana
-from .card import Card, Cards
+from .card import Card
+from .cards import Cards
 
 
 from typing import NamedTuple
@@ -21,15 +22,13 @@ class GameStateBase(NamedTuple):
     is_done: bool = False
     land_plays_remaining: int = 0
     library: Cards = Cards()
-    mana_dept: Mana = Mana()
     mana_pool: Mana = Mana()
     notes: str = ""
     on_the_play: bool = False
     turn: int = 0
 
     def __hash__(self) -> int:
-        # Ignore notes when collapsing duplicates. Also no need to compare
-        # the deck list, since it's immutable
+        # Ignore notes when collapsing duplicates
         fields = []
         for key, val in sorted(self._asdict().items()):
             if key == "notes":
@@ -60,33 +59,39 @@ class GameState(GameStateBase):
             states |= self.pass_turn()
         for card in set(self.hand):
             states |= self.maybe_play_land(card)
-            states |= self.maybe_cast_spell(card)
         return states
 
     def get_notes(self):
-        return self.notes.lstrip(", \n")
-
-    def draw(self):
-        c = self.library[0]
-        library = self.library[1:]
-
-        return self._copy_with_updates(
-            hand=self.hand + c,
-            library=self.library[1:],
-            notes=self.notes + f", draw {c}",
-        )
+        return self.notes
 
     def pass_turn(self) -> Set["GameState"]:
-        state = self._copy_with_updates(
-            land_plays_remaining=1,
-            mana_pool=Mana(),
-            turn=self.turn + 1,
-            notes=self.notes + f"\nturn {self.turn}",
-        )
+        turn = self.turn + 1
+        note = f"\nturn {turn}"
         if self.on_the_play and self.turn == 0:
-            return {state.tap_out()}
+            library = self.library
+            hand = self.hand
         else:
-            return {state.draw().tap_out()}
+            c = self.library[0]
+            library = self.library[1:]
+            hand = self.hand + c
+            note += f", draw {c}"
+        # Always tap out mmediately
+        mana_pool = Mana()
+        for c in self.battlefield:
+            if c.taps_for:
+                mana_pool = mana_pool + c.taps_for
+        if mana_pool:
+            note += f", {mana_pool} in pool"
+        return {
+            self._copy_with_updates(
+                land_plays_remaining=1,
+                mana_pool=mana_pool,
+                turn=turn,
+                notes=self.notes + note,
+                hand=hand,
+                library=library,
+            )
+        }
 
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if (

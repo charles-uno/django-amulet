@@ -49,5 +49,5 @@ class Card(CardBase):
         return CARD_DATA[self.name].get("enters_tapped", False)
 
     @property
-    def taps_for(self) -> Mana:
-        return Mana(CARD_DATA[self.name].get("taps_for"))
+    def taps_for(self) -> Optional[Mana]:
+        return maybe_mana(CARD_DATA[self.name].get("taps_for"))
