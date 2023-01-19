@@ -35,14 +35,14 @@ class GameStateBase(NamedTuple):
     def __hash__(self) -> int:
         # Ignore notes when collapsing duplicates
         fields = []
-        for key, val in sorted(self.asdict().items()):
+        for key, val in sorted(self._asdict().items()):
             if key == "notes":
                 continue
             fields.append(val)
-        return tuple._hash__(tuple(fields))
+        return tuple.__hash__(tuple(fields))
 
     def __eq__(self, other: "GameStateBase") -> bool:
-        for key, val in sorted(self.asdict().items()):
+        for key, val in sorted(self._asdict().items()):
             if key == "notes":
                 continue
             if other[key] != val:
@@ -72,8 +72,10 @@ class GameState(GameStateBase):
 
     def pass_turn(self) -> Set["GameState"]:
         state = self.copy_with_updates(
-            notes=self.notes + f"turn {self.turn+1}",
+            notes=self.notes + f"\nturn {self.turn+1}",
             turn=self.turn + 1,
+            land_plays_remaining=1,
+            mana_pool=Mana(),
         )
         if self.turn > 0 or not self.on_the_play:
             state = state.draw_a_card()
@@ -116,6 +118,8 @@ class GameState(GameStateBase):
         state = self.copy_with_updates(
             hand=self.hand - c,
             battlefield=self.battlefield + c,
+            notes=self.notes + f"\nplay {c}",
+            land_plays_remaining=self.land_plays_remaining - 1,
         )
         if c.enters_tapped:
             return state.play_land_tapped(c)
@@ -156,8 +160,14 @@ class GameState(GameStateBase):
         )
         return getattr(state, "cast_" + c.slug)()
 
-    def cast_primeval_titan(self, **kwargs) -> Set["GameState"]:
-        c = Card("Primeval Titan")
-        return self.copy_with_updates(
-            is_done=True,
-        )
+    def cast_primeval_titan(
+        self,
+    ) -> Set["GameState"]:
+        return {
+            self.copy_with_updates(
+                is_done=True,
+            )
+        }
+
+    def play_forest(self) -> Set["GameState"]:
+        return {self}
