@@ -1,2 +1,3 @@
 40 Forest
-20 Primeval Titan
+10 Dryad of the Ilysian Grove
+10 Primeval Titan

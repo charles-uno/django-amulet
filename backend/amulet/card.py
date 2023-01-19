@@ -52,6 +52,4 @@ class Card(CardBase):
 
     @property
     def taps_for(self) -> Mana:
-        m = CARD_DATA[self.name].get("taps_for")
-        assert m is not None
-        return Mana(m)
+        return Mana(CARD_DATA[self.name].get("taps_for", ""))

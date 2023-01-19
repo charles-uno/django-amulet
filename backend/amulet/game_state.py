@@ -88,10 +88,13 @@ class GameState(GameStateBase):
         return states
 
     def pass_turn(self) -> Set["GameState"]:
+        land_plays_remaining = 1 + self.battlefield.count(
+            Card("Dryad of the Ilysian Grove")
+        )
         state = self.copy_with_updates(
             notes=self.notes + f"\nturn {self.turn+1}",
             turn=self.turn + 1,
-            land_plays_remaining=1,
+            land_plays_remaining=land_plays_remaining,
             mana_pool=Mana(),
         )
         if self.turn > 0 or not self.on_the_play:
@@ -163,6 +166,11 @@ class GameState(GameStateBase):
             notes=self.notes + f"\ncast {c}",
         )
         return getattr(state, "cast_" + c.slug)()
+
+    def cast_dryad_of_the_ilysian_grove(
+        self,
+    ) -> Set["GameState"]:
+        return {self}
 
     def cast_primeval_titan(
         self,
