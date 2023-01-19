@@ -1,13 +1,12 @@
 """
 A GameState is an immutable object that keeps track of a single point in time
 during a game. All operations (drawing a card, casting a spell, playing a land)
-are handled by creating new objects. By using the GameState.next_states and
-GameState.next_turn, we iterate through all possible sequences of plays until
-we find a winning line.
+are handled by creating new objects. By using the GameState.get_next_states, we
+iterate through all possible sequences of plays until we find a winning line.
 """
 
 import random
-from typing import List, Sequence, Set, NamedTuple
+from typing import List, Optional, Set, NamedTuple
 
 from .mana import Mana
 from .card import Card
@@ -56,12 +55,20 @@ class GameStateBase(NamedTuple):
 
 class GameState(GameStateBase):
     @classmethod
-    def get_initial_state_from_deck_list(cls, deck_list: List[Card]) -> "GameState":
+    def get_initial_state_from_deck_list(
+        cls, deck_list: List[Card], on_the_play: Optional[bool] = None
+    ) -> "GameState":
+        if on_the_play is None:
+            on_the_play = random.choice([True, False])
+        turn_order_note = "on the play" if on_the_play else "on the draw"
         random.shuffle(deck_list)
         hand = Cards(deck_list[:7])
         library = Cards(deck_list[7:])
         return GameState(
-            library=library, hand=hand, on_the_play=True, notes=f"draw {hand}"
+            library=library,
+            hand=hand,
+            on_the_play=True,
+            notes=f"{turn_order_note} with {hand}",
         )
 
     def copy_with_updates(self, **kwargs) -> "GameState":

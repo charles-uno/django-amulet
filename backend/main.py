@@ -4,8 +4,12 @@ from amulet.game_state_manager import GameStateManager
 
 
 def main():
+    deck_list = []
+    with open("assets/deck-list.txt") as handle:
+        for line in handle:
+            n, card_name = line.rstrip().split(None, 1)
+            deck_list += [card_name] * int(n)
 
-    deck_list = ["Forest"] * 40 + ["Primeval Titan"] * 20
     gsm = GameStateManager(deck_list)
 
 
