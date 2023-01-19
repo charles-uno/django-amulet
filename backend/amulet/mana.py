@@ -59,7 +59,3 @@ class Mana(ManaBase):
 
     def __repr__(self):
         return f"Mana(green={self.green}, total={self.total})"
-
-
-def maybe_mana(m: Optional[str]) -> Optional[Mana]:
-    return None if m is None else Mana(m)

@@ -6,14 +6,12 @@ GameState.next_turn, we iterate through all possible sequences of plays until
 we find a winning line.
 """
 
-from typing import Set
+import random
+from typing import List, Sequence, Set, NamedTuple
 
 from .mana import Mana
 from .card import Card
 from .cards import Cards
-
-
-from typing import NamedTuple
 
 
 # NOTE: we can probably improve performance quite a bit by copying less often.
@@ -42,18 +40,30 @@ class GameStateBase(NamedTuple):
         return tuple.__hash__(tuple(fields))
 
     def __eq__(self, other: "GameStateBase") -> bool:
-        for key, val in sorted(self._asdict().items()):
+        for key, val in self._asdict().items():
             if key == "notes":
                 continue
-            if other[key] != val:
+            if getattr(other, key) != val:
                 return False
         return True
 
     def get_notes(self):
         return self.notes
 
+    def get_turn(self):
+        return self.turn
+
 
 class GameState(GameStateBase):
+    @classmethod
+    def get_initial_state_from_deck_list(cls, deck_list: List[Card]) -> "GameState":
+        random.shuffle(deck_list)
+        hand = Cards(deck_list[:7])
+        library = Cards(deck_list[7:])
+        return GameState(
+            library=library, hand=hand, on_the_play=True, notes=f"draw {hand}"
+        )
+
     def copy_with_updates(self, **kwargs) -> "GameState":
         new_kwargs = self._asdict()
         new_kwargs.update(kwargs)
@@ -95,7 +105,8 @@ class GameState(GameStateBase):
         )
 
     def tap(self, c: Card) -> "GameState":
-        return self.add_mana(c.taps_for)
+        m = c.taps_for
+        return self.add_mana(m) if m else self
 
     def tap_out(self) -> "GameState":
         m = Mana()
@@ -136,27 +147,13 @@ class GameState(GameStateBase):
         return getattr(state, "play_" + c.slug)()
 
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
-        if (
-            c not in self.hand
-            or not c.is_spell
-            or c.cost is None
-            or c.cost > self.mana_pool
-        ):
-            return set()
-        state = self.copy_with_updates(
-            hand=self.hand - c,
-            notes=self.notes + f"\ncast {c}",
-        ).pay_mana(c.cost)
-        return getattr(state, "_cast_" + c.slug)()
-
-    def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
             return set()
         state = self.copy_with_updates(
             hand=self.hand - c,
             battlefield=self.battlefield + c,
             mana_pool=self.mana_pool - c.mana_cost,
-            notes=self.notes + f"cast {c}",
+            notes=self.notes + f"\ncast {c}",
         )
         return getattr(state, "cast_" + c.slug)()
 

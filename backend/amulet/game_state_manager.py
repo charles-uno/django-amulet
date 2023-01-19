@@ -1,26 +1,37 @@
 import random
-from typing import Sequence
+from typing import Sequence, Set
 
 from .card import Card
 from .cards import Cards
 from .game_state import GameState
+from . import helpers
 
 
 class GameStateManager:
-
-    states = None
-
     def __init__(self, deck_list: Sequence[str]):
-        deck_list = [Card(x) for x in deck_list]
-        random.shuffle(deck_list)
-        hand = Cards(deck_list[:7])
-        library = Cards(deck_list[7:])
 
-        state = GameState(
-            library=library, hand=hand, on_the_play=True, notes=f"draw {hand}"
-        )
-        state = state.get_next_states().pop()
-        state = state.get_next_states().pop()
-        state = state.get_next_states().pop()
-        state = state.get_next_states().pop()
-        print(state.get_notes())
+        states = {
+            GameState.get_initial_state_from_deck_list([Card(x) for x in deck_list])
+        }
+
+        for i in range(1, 10):
+            print("starting turn", i, "with", len(states), "states")
+            states = self.get_next_turn(states)
+
+        print(states.pop().get_notes())
+
+    def get_next_turn(self, old_states: Set[GameState]) -> Set[GameState]:
+        for s in old_states:
+            if s.is_done:
+                return {s}
+        old_turn = max(s.get_turn() for s in old_states)
+        new_states = set()
+        while old_states:
+            for s in old_states.pop().get_next_states():
+                if s.is_done:
+                    return {s}
+                elif s.get_turn() > old_turn:
+                    new_states.add(s)
+                else:
+                    old_states.add(s)
+        return new_states

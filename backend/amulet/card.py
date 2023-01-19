@@ -6,7 +6,7 @@ A single card is stored as a string. We use a class for a collection of cards.
 from typing import NamedTuple, Optional
 import yaml
 
-from .mana import Mana, maybe_mana
+from .mana import Mana
 from . import helpers
 
 
@@ -41,13 +41,17 @@ class Card(CardBase):
         return not self.is_land
 
     @property
-    def mana_cost(self) -> Optional[Mana]:
-        return maybe_mana(CARD_DATA[self.name].get("mana_cost"))
+    def mana_cost(self) -> Mana:
+        m = CARD_DATA[self.name].get("mana_cost")
+        assert m is not None
+        return Mana(m)
 
     @property
     def enters_tapped(self) -> bool:
         return CARD_DATA[self.name].get("enters_tapped", False)
 
     @property
-    def taps_for(self) -> Optional[Mana]:
-        return maybe_mana(CARD_DATA[self.name].get("taps_for"))
+    def taps_for(self) -> Mana:
+        m = CARD_DATA[self.name].get("taps_for")
+        assert m is not None
+        return Mana(m)

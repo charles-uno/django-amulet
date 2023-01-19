@@ -1,3 +1,6 @@
+from typing import Sequence
+
+
 def highlight(text: str, color: str = None) -> str:
     if color == "green":
         return "\033[32m" + text + "\033[0m"
@@ -24,3 +27,9 @@ def squish(text: str) -> str:
     for c in "- ,.":
         text = text.replace(c, "")
     return text
+
+
+def onlyx(seq: Sequence):
+    assert len(seq) == 1
+    for elt in seq:
+        return elt
