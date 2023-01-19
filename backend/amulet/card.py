@@ -41,8 +41,8 @@ class Card(CardBase):
         return not self.is_land
 
     @property
-    def cost(self) -> Optional[Mana]:
-        return maybe_mana(CARD_DATA[self.name].get("cost"))
+    def mana_cost(self) -> Optional[Mana]:
+        return maybe_mana(CARD_DATA[self.name].get("mana_cost"))
 
     @property
     def enters_tapped(self) -> bool:

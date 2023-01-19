@@ -40,5 +40,10 @@ def test_sub():
     assert Mana("2GG") - Mana("3") == Mana("G")
 
 
+def test_mul():
+    assert Mana("1G") * 3 == Mana("3GGG")
+    assert Mana("1G") * 0 == Mana("0")
+
+
 if __name__ == "__main__":
     pytest.main()

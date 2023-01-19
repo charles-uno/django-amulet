@@ -1,14 +1,14 @@
 Amulet of Vigor:
-  cost: "1"
+  mana_cost: "1"
   type: artifact
 Ancient Stirrings:
   type: sorcery
-  cost: G
+  mana_cost: G
 Arboreal Grazer:
-  cost: G
+  mana_cost: G
   type: creature
 Azusa, Lost but Seeking:
-  cost: "2G"
+  mana_cost: "2G"
   type: creature
 Boros Garrison:
   enters_tapped: true
@@ -20,20 +20,20 @@ Crumbling Vestige:
   enters_tapped: true
 Cultivator Colossus:
   type: creature
-  cost: "4GGG"
+  mana_cost: "4GGG"
   wins_when_cast: true
 Dryad of the Ilysian Grove:
   type: creature
-  cost: "2G"
+  mana_cost: "2G"
 Explore:
-  cost: "1G"
+  mana_cost: "1G"
   type: sorcery
 Forest:
   type: basic,land,forest
   taps_for: G
   enters_tapped: false
 Primeval Titan:
-  cost: 4GG
+  mana_cost: 4GG
   type: creature
   wins_when_cast: true
 Radiant Fountain:
@@ -50,7 +50,7 @@ Simic Growth Chamber:
   enters_tapped: true
 Summoner's Pact:
   type: instant
-  cost: "0"
+  mana_cost: "0"
 Valakut, the Molten Pinnacle:
   type: land
   taps_for: "R"
@@ -58,7 +58,7 @@ Valakut, the Molten Pinnacle:
 # Standing in for a blank
 Unyaro Bee Sting:
   type: Sorcery
-  cost: "3G"
+  mana_cost: "3G"
 Urza's Saga:
   type: land
   enters_tapped: false

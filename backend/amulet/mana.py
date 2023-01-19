@@ -51,6 +51,9 @@ class Mana(ManaBase):
         new_green = min(self.green - other.green, new_total)
         return super().__new__(Mana, new_green, new_total)
 
+    def __mul__(self, n: int) -> "Mana":
+        return super().__new__(Mana, self.green * n, self.total * n)
+
     def __str__(self):
         return helpers.highlight(self.name, "magenta")
 

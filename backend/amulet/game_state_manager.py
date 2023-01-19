@@ -19,8 +19,8 @@ class GameStateManager:
         state = GameState(
             library=library, hand=hand, on_the_play=True, notes=f"draw {hand}"
         )
-        state = state.next_states().pop()
-        state = state.next_states().pop()
-        state = state.next_states().pop()
-        state = state.next_states().pop()
+        state = state.get_next_states().pop()
+        state = state.get_next_states().pop()
+        state = state.get_next_states().pop()
+        state = state.get_next_states().pop()
         print(state.get_notes())
