@@ -45,19 +45,19 @@ class GameState(NamedTuple):
             library=library,
             hand=hand,
             on_the_play=True,
-        ).add_notes(initial_text + " with ", hand)
+        )._add_notes(initial_text + " with ", hand)
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
         if self.is_done or self.turn > max_turn:
             return {self}
         # Passing the turn is always an option
-        states = self.pass_turn(max_turn)
+        states = self._pass_turn(max_turn)
         for c in set(self.hand):
-            states |= self.maybe_play_land(c)
-            states |= self.maybe_cast_spell(c)
+            states |= self._maybe_play_land(c)
+            states |= self._maybe_cast_spell(c)
         return states
 
-    def pass_turn(self, max_turn: int) -> Set["GameState"]:
+    def _pass_turn(self, max_turn: int) -> Set["GameState"]:
         if self.turn < max_turn and self._should_be_abandoned_when_passing_turn():
             return set()
         # Passing the final turn means this state failed to converge
@@ -71,20 +71,20 @@ class GameState(NamedTuple):
             return set()
         notes = (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, "))
         state = (
-            self.copy_with_updates(
+            self._copy_with_updates(
                 notes=self.notes + notes,
                 turn=self.turn + 1,
                 land_plays_remaining=land_plays_remaining,
                 mana_debt=mana(""),
                 mana_pool=mana(""),
             )
-            .add_mana(mana_pool)
-            .pay_mana(mana_debt)
+            ._add_mana(mana_pool)
+            ._pay_mana(mana_debt)
         )
         if skip_draw:
-            return {state.handle_sagas()}
+            return {state._handle_sagas()}
         else:
-            return {state.draw_a_card().handle_sagas()}
+            return {state._draw_a_card()._handle_sagas()}
 
     def _should_be_abandoned_when_passing_turn(self):
         # Cast a Pact on turn 1
@@ -102,7 +102,7 @@ class GameState(NamedTuple):
         return False
 
     def _with_tombstone(self) -> "GameState":
-        return self.copy_with_updates(
+        return self._copy_with_updates(
             turn=self.turn + 1,
             notes=self.notes
             + (
@@ -111,7 +111,7 @@ class GameState(NamedTuple):
             ),
         )
 
-    def add_notes(self, *args: str | Card | Cards | Mana) -> "GameState":
+    def _add_notes(self, *args: str | Card | Cards | Mana) -> "GameState":
         notes: List[Note] = []
         for arg in args:
             if isinstance(arg, str):
@@ -123,7 +123,7 @@ class GameState(NamedTuple):
                 notes.append(Note(arg))
             else:
                 notes.extend(arg.notes)
-        return self.copy_with_updates(notes=self.notes + tuple(notes))
+        return self._copy_with_updates(notes=self.notes + tuple(notes))
 
     def _get_land_plays_for_new_turn(self) -> int:
         return (
@@ -139,7 +139,7 @@ class GameState(NamedTuple):
                 mana_pool += c.taps_for
         return mana_pool, self.mana_debt
 
-    def handle_sagas(self) -> "GameState":
+    def _handle_sagas(self) -> "GameState":
         new_battlefield = []
         note_args = []
         for c in self.battlefield:
@@ -154,124 +154,124 @@ class GameState(NamedTuple):
                 note_args += ["\nsack ", new_c, ", grab ", Card("Amulet of Vigor")]
             else:
                 new_battlefield.append(new_c)
-        return self.copy_with_updates(battlefield=Cards(new_battlefield)).add_notes(
+        return self._copy_with_updates(battlefield=Cards(new_battlefield))._add_notes(
             *note_args
         )
 
-    def add_mana(self, m: Mana) -> "GameState":
+    def _add_mana(self, m: Mana) -> "GameState":
         if not m:
             return self
-        return self.copy_with_updates(mana_pool=self.mana_pool + m).note_mana_pool()
+        return self._copy_with_updates(mana_pool=self.mana_pool + m)._note_mana_pool()
 
-    def pay_mana(self, m: Mana) -> "GameState":
+    def _pay_mana(self, m: Mana) -> "GameState":
         if not m:
             return self
-        return self.copy_with_updates(mana_pool=self.mana_pool - m).note_mana_pool()
+        return self._copy_with_updates(mana_pool=self.mana_pool - m)._note_mana_pool()
 
-    def note_mana_pool(self) -> "GameState":
-        return self.add_notes(", ", self.mana_pool, " in pool")
+    def _note_mana_pool(self) -> "GameState":
+        return self._add_notes(", ", self.mana_pool, " in pool")
 
-    def draw_a_card(self) -> "GameState":
+    def _draw_a_card(self) -> "GameState":
         c = self.library[0]
-        return self.copy_with_updates(
+        return self._copy_with_updates(
             hand=self.hand + c,
             library=self.library[1:],
-        ).add_notes("\n", "draw ", c)
+        )._add_notes("\n", "draw ", c)
 
-    def maybe_play_land(self, c: Card) -> Set["GameState"]:
+    def _maybe_play_land(self, c: Card) -> Set["GameState"]:
         if c not in self.hand or not self.land_plays_remaining or not c.is_land:
             return set()
-        state = self.copy_with_updates(
+        state = self._copy_with_updates(
             land_plays_remaining=self.land_plays_remaining - 1,
-        ).add_notes("\n", "play ", c)
+        )._add_notes("\n", "play ", c)
         if c.enters_tapped:
-            return state.play_land_tapped(c)
+            return state._play_land_tapped(c)
         else:
-            return state.play_land_untapped(c)
+            return state._play_land_untapped(c)
 
-    def play_land_tapped(self, c: Card) -> Set["GameState"]:
+    def _play_land_tapped(self, c: Card) -> Set["GameState"]:
         m = c.taps_for * self.battlefield.count(Card("Amulet of Vigor"))
-        state = self.move_from_hand_to_battlefield(
+        state = self._move_from_hand_to_battlefield(
             c,
-        ).add_mana(m)
-        return getattr(state, "play_" + c.slug)()
+        )._add_mana(m)
+        return getattr(state, "_play_" + c.slug)()
 
-    def play_land_untapped(self, c: Card) -> Set["GameState"]:
-        state = self.move_from_hand_to_battlefield(
+    def _play_land_untapped(self, c: Card) -> Set["GameState"]:
+        state = self._move_from_hand_to_battlefield(
             c,
-        ).add_mana(c.taps_for)
-        return getattr(state, "play_" + c.slug)()
+        )._add_mana(c.taps_for)
+        return getattr(state, "_play_" + c.slug)()
 
-    def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
+    def _maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
             return set()
         state = (
-            self.move_from_hand_to_battlefield(c)
-            .add_notes("\n", "cast ", c)
-            .pay_mana(c.mana_cost)
+            self._move_from_hand_to_battlefield(c)
+            ._add_notes("\n", "cast ", c)
+            ._pay_mana(c.mana_cost)
         )
-        return getattr(state, "cast_" + c.slug)()
+        return getattr(state, "_cast_" + c.slug)()
 
-    def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
-        return self.copy_with_updates(
+    def _move_from_hand_to_battlefield(self, c: Card) -> "GameState":
+        return self._copy_with_updates(
             hand=self.hand - c,
             battlefield=self.battlefield + c,
         )
 
-    def cast_amulet_of_vigor(self) -> Set["GameState"]:
+    def _cast_amulet_of_vigor(self) -> Set["GameState"]:
         return {self}
 
-    def cast_arboreal_grazer(self) -> Set["GameState"]:
+    def _cast_arboreal_grazer(self) -> Set["GameState"]:
         states = set()
         for c in set(self.hand):
             if not c.is_land:
                 continue
-            states |= self.add_notes(", into ", c).play_land_tapped(c)
+            states |= self._add_notes(", into ", c)._play_land_tapped(c)
         return states
 
-    def cast_azusa_lost_but_seeking(
+    def _cast_azusa_lost_but_seeking(
         self,
     ) -> Set["GameState"]:
         # If we just cast a duplicate Azusa, bail
         if self.battlefield.count(Card("Azusa, Lost but Seeking")) > 1:
             return set()
         return {
-            self.copy_with_updates(land_plays_remaining=self.land_plays_remaining + 2)
+            self._copy_with_updates(land_plays_remaining=self.land_plays_remaining + 2)
         }
 
-    def cast_cultivator_colossus(self) -> Set["GameState"]:
+    def _cast_cultivator_colossus(self) -> Set["GameState"]:
         return {
-            self.copy_with_updates(
+            self._copy_with_updates(
                 is_done=True,
             )
         }
 
-    def cast_dryad_of_the_ilysian_grove(
+    def _cast_dryad_of_the_ilysian_grove(
         self,
     ) -> Set["GameState"]:
         return {
-            self.copy_with_updates(land_plays_remaining=self.land_plays_remaining + 1)
+            self._copy_with_updates(land_plays_remaining=self.land_plays_remaining + 1)
         }
 
-    def cast_explore(
+    def _cast_explore(
         self,
     ) -> Set["GameState"]:
         return {
-            self.copy_with_updates(
+            self._copy_with_updates(
                 land_plays_remaining=self.land_plays_remaining + 1
-            ).draw_a_card()
+            )._draw_a_card()
         }
 
-    def cast_primeval_titan(
+    def _cast_primeval_titan(
         self,
     ) -> Set["GameState"]:
         return {
-            self.copy_with_updates(
+            self._copy_with_updates(
                 is_done=True,
             )
         }
 
-    def cast_summoners_pact(
+    def _cast_summoners_pact(
         self,
     ) -> Set["GameState"]:
         states = set()
@@ -286,51 +286,46 @@ class GameState(NamedTuple):
                 continue
             # Optimization: whatever we Pact for, cast it right away
             states |= (
-                self.copy_with_updates(
+                self._copy_with_updates(
                     hand=self.hand + c,
                     mana_debt=self.mana_debt + mana("2GG"),
                 )
-                .add_notes(", grab ", c)
-                .maybe_cast_spell(c)
+                ._add_notes(", grab ", c)
+                ._maybe_cast_spell(c)
             )
         return states
 
-    def play_bojuka_bog(self) -> Set["GameState"]:
+    def _play_bojuka_bog(self) -> Set["GameState"]:
         return {self}
 
-    def play_forest(self) -> Set["GameState"]:
+    def _play_forest(self) -> Set["GameState"]:
         return {self}
 
-    def play_radiant_fountain(self) -> Set["GameState"]:
+    def _play_radiant_fountain(self) -> Set["GameState"]:
         return {self}
 
-    def play_simic_growth_chamber(self) -> Set["GameState"]:
+    def _play_simic_growth_chamber(self) -> Set["GameState"]:
         states = set()
         for c in set(self.battlefield):
             if c.is_land:
                 states.add(
-                    self.copy_with_updates(
+                    self._copy_with_updates(
                         hand=self.hand + c.without_counters(),
                         battlefield=self.battlefield - c,
-                    ).add_notes(", bounce ", c)
+                    )._add_notes(", bounce ", c)
                 )
         return states
 
-    def play_urzas_saga(self) -> Set["GameState"]:
-
+    def _play_urzas_saga(self) -> Set["GameState"]:
         c = Card("Urza's Saga")
         c_new = c.plus_counter()
-        if c not in self.battlefield:
-            self.dump()
-            raise ValueError
-
         return {
-            self.copy_with_updates(
+            self._copy_with_updates(
                 battlefield=(self.battlefield - c) + c_new,
-            ).add_notes(", tick up to ", c_new)
+            )._add_notes(", tick up to ", c_new)
         }
 
-    def dump(self) -> None:
+    def _dump(self) -> None:
         lines = [
             f"hand: {self.hand}",
             f"battlefield: {self.battlefield}",
@@ -340,12 +335,12 @@ class GameState(NamedTuple):
         print("\n".join(lines))
 
     def __hash__(self) -> int:
-        return tuple.__hash__(self.get_comparable_tuple())
+        return tuple.__hash__(self._get_comparable_tuple())
 
     def __eq__(self, other: "GameState") -> bool:
-        return self.get_comparable_tuple() == other.get_comparable_tuple()
+        return self._get_comparable_tuple() == other._get_comparable_tuple()
 
-    def get_comparable_tuple(self) -> Tuple:
+    def _get_comparable_tuple(self) -> Tuple:
         # Ignore notes when collapsing duplicates, and sort unordered tuples
         seq = []
         for key, val in sorted(self._asdict().items()):
@@ -357,7 +352,7 @@ class GameState(NamedTuple):
                 seq.append(val)
         return tuple(seq)
 
-    def copy_with_updates(self, **kwargs) -> "GameState":
+    def _copy_with_updates(self, **kwargs) -> "GameState":
         new_kwargs = self._asdict()
         new_kwargs.update(kwargs)
         return GameState(**new_kwargs)
