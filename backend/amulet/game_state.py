@@ -88,7 +88,7 @@ class GameState(GameStateBase):
         return states
 
     def pass_turn(self, max_turn: int) -> Set["GameState"]:
-        if self.turn < max_turn and self._should_be_abandoned():
+        if self.turn < max_turn and self._should_be_abandoned_when_passing_turn():
             return set()
         # Passing the final turn means this state failed to converge
         if self.turn == max_turn:
@@ -98,18 +98,19 @@ class GameState(GameStateBase):
         if mana_pool is None:
             return set()
         state = self.copy_with_updates(
-            notes=self.notes + f"\n---- turn {self.turn+1}{pact_note}",
+            notes=self.notes
+            + f"\n---- turn {self.turn+1}{pact_note}, {mana_pool} in pool",
             turn=self.turn + 1,
             land_plays_remaining=land_plays_remaining,
             mana_debt=mana(""),
-            mana_pool=mana(""),
-        ).add_mana(mana_pool)
+            mana_pool=mana_pool,
+        )
         if state.turn > 1 or not state.on_the_play:
             return {state.draw_a_card()}
         else:
             return {state}
 
-    def _should_be_abandoned(self):
+    def _should_be_abandoned_when_passing_turn(self):
         # Cast a Pact on turn 1
         if self.turn == 1 and self.mana_debt:
             return True
@@ -155,22 +156,9 @@ class GameState(GameStateBase):
             mana_pool=mana_pool, notes=self.notes + f", {mana_pool} in pool"
         )
 
-    def pay_mana(self, m: Mana) -> "GameState":
-        mana_pool = self.mana_pool - m
-        return self.copy_with_updates(
-            mana_pool=mana_pool, notes=self.notes + f", {mana_pool} in pool"
-        )
-
     def tap(self, c: Card) -> "GameState":
         m = c.taps_for
         return self.add_mana(m) if m else self
-
-    def tap_out(self) -> "GameState":
-        m = mana("")
-        for c in self.battlefield:
-            if c.taps_for:
-                m += c.taps_for
-        return self.add_mana(m)
 
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
@@ -206,11 +194,12 @@ class GameState(GameStateBase):
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
             return set()
+        mana_pool = self.mana_pool - c.mana_cost
         state = self.copy_with_updates(
             hand=self.hand - c,
             battlefield=self.battlefield + c,
-            mana_pool=self.mana_pool - c.mana_cost,
-            notes=self.notes + f"\ncast {c}",
+            mana_pool=mana_pool,
+            notes=self.notes + f"\ncast {c}, {mana_pool} in pool",
         )
         return getattr(state, "cast_" + c.slug)()
 
@@ -235,6 +224,13 @@ class GameState(GameStateBase):
             return set()
         return {
             self.copy_with_updates(land_plays_remaining=self.land_plays_remaining + 2)
+        }
+
+    def cast_cultivator_colossus(self) -> Set["GameState"]:
+        return {
+            self.copy_with_updates(
+                is_done=True,
+            )
         }
 
     def cast_dryad_of_the_ilysian_grove(

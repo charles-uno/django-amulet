@@ -1,4 +1,3 @@
-import random
 from typing import Sequence, Set
 
 from .card import Card
@@ -7,17 +6,17 @@ from .game_state import GameState
 
 class GameStateManager:
     def __init__(self, deck_list: Sequence[str], max_turn: int = 4):
-
+        # Draw our opening hand and pass into turn 1
         states = GameState.get_initial_state_from_deck_list(
             [Card(x) for x in deck_list]
         ).get_next_states(max_turn)
 
         for i in range(max_turn):
-            states = self.get_next_turn(states, max_turn)
+            states = self._get_next_turn(states, max_turn)
 
         print(states.pop().get_notes())
 
-    def get_next_turn(
+    def _get_next_turn(
         self, old_states: Set[GameState], max_turn: int
     ) -> Set[GameState]:
         for s in old_states:
