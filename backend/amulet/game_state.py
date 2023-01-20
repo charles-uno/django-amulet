@@ -205,8 +205,10 @@ class GameState(GameStateBase):
         for c in set(self.hand):
             if not c.is_land:
                 continue
-            states |= self.play_land_tapped(c)
-        return {self}
+            states |= self.copy_with_updates(
+                notes=self.notes + f", play {c}"
+            ).play_land_tapped(c)
+        return states
 
     def cast_azusa_lost_but_seeking(
         self,
