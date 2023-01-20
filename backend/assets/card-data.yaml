@@ -10,6 +10,10 @@ Arboreal Grazer:
 Azusa, Lost but Seeking:
   mana_cost: "2G"
   type: creature
+Bojuka Bog:
+  type: land
+  taps_for: "1"
+  enters_tapped: true
 Boros Garrison:
   enters_tapped: true
   taps_for: "WR"

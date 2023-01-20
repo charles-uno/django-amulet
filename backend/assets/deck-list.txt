@@ -1,10 +1,12 @@
-5 Amulet of Vigor
-5 Arboreal Grazer
-5 Dryad of the Ilysian Grove
-5 Explore
-5 Primeval Titan
-5 Summoner's Pact
-15 Forest
-5 Radiant Fountain
-10 Simic Growth Chamber
+4 Amulet of Vigor
+4 Arboreal Grazer
+1 Azusa, Lost but Seeking
+4 Dryad of the Ilysian Grove
+4 Explore
+4 Primeval Titan
+4 Summoner's Pact
 
+10 Simic Growth Chamber
+10 Forest
+10 Radiant Fountain
+5 Bojuka Bog

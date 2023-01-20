@@ -44,7 +44,7 @@ class Card(NamedTuple):
 
     @property
     def is_green_creature(self):
-        return self.mana_cost >= mana("G") and "creature" in self.types
+        return "creature" in self.types and self.mana_cost >= mana("G")
 
     @property
     def mana_cost(self) -> Mana:

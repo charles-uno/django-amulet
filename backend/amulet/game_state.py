@@ -11,7 +11,7 @@ from typing import List, Optional, Set, NamedTuple, Tuple
 from .mana import Mana, mana
 from .card import Card
 from .cards import Cards
-
+from . import helpers
 
 # NOTE: we can probably improve performance quite a bit by copying less often.
 # Pass around intermediate values instead of making a new state every time we
@@ -77,24 +77,26 @@ class GameState(GameStateBase):
         new_kwargs.update(kwargs)
         return GameState(**new_kwargs)
 
-    def get_next_states(self, max_turns: int = 10) -> Set["GameState"]:
-        if self.is_done:
+    def get_next_states(self, max_turn: int) -> Set["GameState"]:
+        if self.is_done or self.turn > max_turn:
             return {self}
-        states = set()
-        if self.turn != max_turns:
-            states |= self.pass_turn()
+        # Passing the turn is always an option
+        states = self.pass_turn(max_turn)
         for c in set(self.hand):
             states |= self.maybe_play_land(c)
             states |= self.maybe_cast_spell(c)
         return states
 
-    def pass_turn(self) -> Set["GameState"]:
+    def pass_turn(self, max_turn: int) -> Set["GameState"]:
+        # Passing the final turn means this state failed to converge
+        if self.turn == max_turn:
+            return {self._mark_as_abandoned()}
         land_plays_remaining = self._get_land_plays_for_new_turn()
         mana_pool, pact_note = self._get_mana_pool_and_note_for_new_turn()
         if mana_pool is None:
             return set()
         state = self.copy_with_updates(
-            notes=self.notes + f"\nturn {self.turn+1}" + pact_note,
+            notes=self.notes + f"\n---- turn {self.turn+1}{pact_note}",
             turn=self.turn + 1,
             land_plays_remaining=land_plays_remaining,
             mana_debt=mana(""),
@@ -104,6 +106,12 @@ class GameState(GameStateBase):
             return {state.draw_a_card()}
         else:
             return {state}
+
+    def _mark_as_abandoned(self) -> "GameState":
+        return self.copy_with_updates(
+            turn=self.turn + 1,
+            notes=self.notes + "\n" + helpers.highlight("FAILED TO CONVERGE", "red"),
+        )
 
     def _get_land_plays_for_new_turn(self) -> int:
         return (
@@ -119,8 +127,8 @@ class GameState(GameStateBase):
                 mana_pool += c.taps_for
         if not mana_pool >= self.mana_debt:
             return None, ""
-        if mana_pool:
-            return mana_pool - self.mana_debt, ", paid for pact"
+        if self.mana_debt:
+            return mana_pool - self.mana_debt, ", pay for pact"
         else:
             return mana_pool, ""
 
@@ -150,7 +158,7 @@ class GameState(GameStateBase):
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
         return self.copy_with_updates(
-            notes=self.notes + f", draw {c}",
+            notes=self.notes + f"\ndraw {c}",
             hand=self.hand + c,
             library=self.library[1:],
         )
@@ -242,6 +250,12 @@ class GameState(GameStateBase):
         for c in set(self.library):
             if not c.is_green_creature:
                 continue
+            # Never pact for something that we already have
+            if c in self.hand:
+                continue
+            # Never pact for something we can't afford
+            if not self.mana_pool >= c.mana_cost:
+                continue
             states.add(
                 self.copy_with_updates(
                     notes=self.notes + f", grab {c}",
@@ -249,13 +263,10 @@ class GameState(GameStateBase):
                     mana_debt=self.mana_debt + mana("2GG"),
                 )
             )
-            return states
+        return states
 
-        return {
-            self.copy_with_updates(
-                is_done=True,
-            )
-        }
+    def play_bojuka_bog(self) -> Set["GameState"]:
+        return {self}
 
     def play_forest(self) -> Set["GameState"]:
         return {self}
