@@ -8,29 +8,21 @@ from typing import Optional, NamedTuple
 from . import helpers
 
 
-class ManaBase(NamedTuple):
+class Mana(NamedTuple):
     green: int = 0
     total: int = 0
 
     def __hash__(self) -> int:
         return tuple.__hash__(self)
 
-    def __eq__(self, other: "ManaBase") -> bool:
+    def __eq__(self, other: "Mana") -> bool:
         return self.total == other.total and self.green == other.green
 
-    def __ge__(self, other: "ManaBase"):
+    def __ge__(self, other: "Mana"):
         return self.total >= other.total and self.green >= other.green
 
-    def __le__(self, other: "ManaBase"):
+    def __le__(self, other: "Mana"):
         return self.total <= other.total and self.green <= other.green
-
-
-class Mana(ManaBase):
-    def __new__(cls, expr: str = ""):
-        n_green = expr.upper().count("G")
-        digits_value = sum([int(x) for x in expr if x.isdigit()])
-        symbols_value = len([x for x in expr if not x.isdigit()])
-        return super().__new__(cls, n_green, digits_value + symbols_value)
 
     @property
     def name(self) -> str:
@@ -40,22 +32,29 @@ class Mana(ManaBase):
             ret = ""
         return ret + "G" * self.green
 
-    def __add__(self, other: ManaBase) -> "Mana":
+    def __add__(self, other: "Mana") -> "Mana":
         green = self.green + other.green
         total = self.total + other.total
-        return super().__new__(Mana, green, total)
+        return Mana(green, total)
 
-    def __sub__(self, other: ManaBase) -> "Mana":
+    def __sub__(self, other: "Mana") -> "Mana":
         # Sometimes we might have to pay a generic cost with green
         new_total = self.total - other.total
         new_green = min(self.green - other.green, new_total)
-        return super().__new__(Mana, new_green, new_total)
+        return Mana(new_green, new_total)
 
     def __mul__(self, n: int) -> "Mana":
-        return super().__new__(Mana, self.green * n, self.total * n)
+        return Mana(self.green * n, self.total * n)
 
     def __str__(self):
         return helpers.highlight(self.name, "magenta")
 
     def __repr__(self):
         return f"Mana(green={self.green}, total={self.total})"
+
+
+def mana(expr: str) -> Mana:
+    n_green = expr.upper().count("G")
+    digits_value = sum([int(x) for x in expr if x.isdigit()])
+    symbols_value = len([x for x in expr if not x.isdigit()])
+    return Mana(green=n_green, total=digits_value + symbols_value)

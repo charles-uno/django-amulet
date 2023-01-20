@@ -14,7 +14,7 @@ class GameStateManager:
             GameState.get_initial_state_from_deck_list([Card(x) for x in deck_list])
         }
 
-        for i in range(1, 5):
+        for i in range(5):
             states = self.get_next_turn(states)
             if i > 1 and len(states) == 1:
                 break

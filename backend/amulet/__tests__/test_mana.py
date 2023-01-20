@@ -1,48 +1,48 @@
 import pytest
 
-from ..mana import Mana
+from ..mana import mana
 
 
 def test_creation():
-    assert Mana("2GG").name == "2GG"
-    assert Mana("WUBRG").name == "4G"
-    assert Mana("G123G").name == "6GG"
-    assert Mana("2GG").green == 2
-    assert Mana("2GG").green == 2
+    assert mana("2GG").name == "2GG"
+    assert mana("WUBRG").name == "4G"
+    assert mana("G123G").name == "6GG"
+    assert mana("2GG").green == 2
+    assert mana("2GG").green == 2
 
 
 def test_ge():
-    assert Mana("3GG") >= Mana("1GG")
-    assert Mana("3GG") >= Mana("3GG")
+    assert mana("3GG") >= mana("1GG")
+    assert mana("3GG") >= mana("3GG")
     # No comparison
-    assert not Mana("8G") >= Mana("GG")
-    assert not Mana("GG") >= Mana("8G")
+    assert not mana("8G") >= mana("GG")
+    assert not mana("GG") >= mana("8G")
 
 
 def test_le():
-    assert Mana("1GG") <= Mana("3GG")
-    assert Mana("3GG") <= Mana("3GG")
+    assert mana("1GG") <= mana("3GG")
+    assert mana("3GG") <= mana("3GG")
     # No comparison
-    assert not Mana("GG") <= Mana("8G")
-    assert not Mana("8G") <= Mana("GG")
+    assert not mana("GG") <= mana("8G")
+    assert not mana("8G") <= mana("GG")
 
 
 def test_eq():
-    assert Mana("3GG") == Mana("3GG")
+    assert mana("3GG") == mana("3GG")
 
 
 def test_add():
-    assert Mana("2G") + Mana("1G") == Mana("3GG")
+    assert mana("2G") + mana("1G") == mana("3GG")
 
 
 def test_sub():
-    assert Mana("2G") - Mana("1G") == Mana("1")
-    assert Mana("2GG") - Mana("3") == Mana("G")
+    assert mana("2G") - mana("1G") == mana("1")
+    assert mana("2GG") - mana("3") == mana("G")
 
 
 def test_mul():
-    assert Mana("1G") * 3 == Mana("3GGG")
-    assert Mana("1G") * 0 == Mana("0")
+    assert mana("1G") * 3 == mana("3GGG")
+    assert mana("1G") * 0 == mana("0")
 
 
 if __name__ == "__main__":

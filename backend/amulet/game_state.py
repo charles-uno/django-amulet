@@ -8,7 +8,7 @@ iterate through all possible sequences of plays until we find a winning line.
 import random
 from typing import List, Optional, Set, NamedTuple
 
-from .mana import Mana
+from .mana import Mana, mana
 from .card import Card
 from .cards import Cards
 
@@ -24,7 +24,8 @@ class GameStateBase(NamedTuple):
     is_done: bool = False
     land_plays_remaining: int = 0
     library: Cards = Cards()
-    mana_pool: Mana = Mana()
+    mana_debt: Mana = mana("")
+    mana_pool: Mana = mana("")
     notes: str = ""
     on_the_play: bool = False
     turn: int = 0
@@ -97,12 +98,18 @@ class GameState(GameStateBase):
             notes=self.notes + f"\nturn {self.turn+1}",
             turn=self.turn + 1,
             land_plays_remaining=land_plays_remaining,
-            mana_pool=Mana(),
-        )
-        if self.turn > 0 or not self.on_the_play:
+            mana_pool=mana(""),
+        ).tap_out()
+        if state.turn > 1 or not state.on_the_play:
             state = state.draw_a_card()
-        # Always tap out immediately
-        return {state.tap_out()}
+        # Pay for any pacts
+        if state.mana_debt >= self.mana_pool:
+            return set()
+        elif self.mana_debt:
+            state = self.copy_with_updates(
+                notes=self.notes + f", pay for pact"
+            ).pay_mana(self.mana_debt)
+        return {state}
 
     def add_mana(self, m: Mana) -> "GameState":
         mana_pool = self.mana_pool + m
@@ -121,7 +128,7 @@ class GameState(GameStateBase):
         return self.add_mana(m) if m else self
 
     def tap_out(self) -> "GameState":
-        m = Mana()
+        m = mana("")
         for c in self.battlefield:
             if c.taps_for:
                 m += c.taps_for
@@ -172,22 +179,65 @@ class GameState(GameStateBase):
     def cast_amulet_of_vigor(self) -> Set["GameState"]:
         return {self}
 
+    def cast_arboreal_grazer(self) -> Set["GameState"]:
+        states = set()
+        for c in set(self.hand):
+            if not c.is_land:
+                continue
+            states |= self.play_land_tapped(c)
+        return {self}
+
     def cast_azusa_lost_but_seeking(
         self,
     ) -> Set["GameState"]:
         # If we just cast a duplicate Azusa, bail
         if self.battlefield.count(Card("Azusa, Lost but Seeking")) > 1:
             return set()
-        return {self}
+        return {
+            self.copy_with_updates(land_plays_remaining=self.land_plays_remaining + 2)
+        }
 
     def cast_dryad_of_the_ilysian_grove(
         self,
     ) -> Set["GameState"]:
-        return {self}
+        return {
+            self.copy_with_updates(land_plays_remaining=self.land_plays_remaining + 1)
+        }
+
+    def cast_explore(
+        self,
+    ) -> Set["GameState"]:
+        return {
+            self.copy_with_updates(
+                land_plays_remaining=self.land_plays_remaining + 1
+            ).draw_a_card()
+        }
 
     def cast_primeval_titan(
         self,
     ) -> Set["GameState"]:
+        return {
+            self.copy_with_updates(
+                is_done=True,
+            )
+        }
+
+    def cast_summoners_pact(
+        self,
+    ) -> Set["GameState"]:
+        states = set()
+        for c in set(self.library):
+            if not c.is_green_creature:
+                continue
+            states.add(
+                self.copy_with_updates(
+                    notes=self.notes + f", grab {c}",
+                    hand=self.hand + c,
+                    mana_debt=self.mana_debt + mana("2GG"),
+                )
+            )
+            return states
+
         return {
             self.copy_with_updates(
                 is_done=True,
