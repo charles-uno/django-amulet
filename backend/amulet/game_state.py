@@ -13,9 +13,8 @@ from .card import Card
 from .cards import Cards
 from . import helpers
 
-# NOTE: we can probably improve performance quite a bit by copying less often.
-# Pass around intermediate values instead of making a new state every time we
-# draw a card or whatever
+# NOTE: we can probably improve performance by copying less often. Pass around
+# intermediate values instead of making a new state every time we draw a card
 
 
 class GameStateBase(NamedTuple):
@@ -31,21 +30,22 @@ class GameStateBase(NamedTuple):
     turn: int = 0
 
     def __hash__(self) -> int:
-        # Ignore notes when collapsing duplicates
-        fields = []
+        return tuple.__hash__(self.get_comparable_tuple())
+
+    def __eq__(self, other: "GameStateBase") -> bool:
+        return self.get_comparable_tuple() == other.get_comparable_tuple()
+
+    def get_comparable_tuple(self) -> Tuple:
+        # Ignore notes when collapsing duplicates, and sort unordered tuples
+        seq = []
         for key, val in sorted(self._asdict().items()):
             if key == "notes":
                 continue
-            fields.append(val)
-        return tuple.__hash__(tuple(fields))
-
-    def __eq__(self, other: "GameStateBase") -> bool:
-        for key, val in self._asdict().items():
-            if key == "notes":
-                continue
-            if getattr(other, key) != val:
-                return False
-        return True
+            if key in ["hand", "battlefield"]:
+                seq.append(tuple(sorted(val)))
+            else:
+                seq.append(val)
+        return tuple(seq)
 
     def get_notes(self):
         return self.notes
@@ -110,12 +110,14 @@ class GameState(GameStateBase):
             return {state}
 
     def _should_be_abandoned(self):
-        # Cast a pact turn 1
+        # Cast a Pact on turn 1
         if self.turn == 1 and self.mana_debt:
             return True
         # Skipped a land drop when we have ETB untapped lands in hand. Note: we
         # sometimes want to hold onto ETB tapped lands due to Amulet.
-
+        etb_untapped_lands = [c for c in self.hand if c.is_land and not c.enters_tapped]
+        if self.land_plays_remaining and etb_untapped_lands:
+            return True
         return False
 
     def _with_tombstone(self) -> "GameState":
