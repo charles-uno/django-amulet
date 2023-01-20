@@ -1,30 +1,25 @@
-from typing import List, Set
+from typing import Tuple, List, Set
 
 from .game_state import GameState
+from .note import Note
 
 
-class GameStateManager:
-    def __init__(self, deck_list: List[str], max_turn: int = 4):
+class GameManager:
+    @classmethod
+    def run_from_deck_list(
+        cls, deck_list: List[str], max_turn: int = 4
+    ) -> Tuple[Note, ...]:
         # Draw our opening hand and pass into turn 1
         states = GameState.get_initial_state_from_deck_list(deck_list).get_next_states(
             max_turn
         )
+        for _ in range(max_turn):
+            states = cls._get_next_turn(states, max_turn)
+        return states.pop().get_notes()
 
-        for i in range(max_turn):
-            states = self._get_next_turn(states, max_turn)
-
-        to_print = ""
-        for n in states.pop().get_notes():
-            try:
-                to_print += n.get_pretty()
-            except Exception as e:
-                print(n)
-                raise
-
-        print(to_print)
-
+    @classmethod
     def _get_next_turn(
-        self, old_states: Set[GameState], max_turn: int
+        cls, old_states: Set[GameState], max_turn: int
     ) -> Set[GameState]:
         for s in old_states:
             if s.is_done:

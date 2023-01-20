@@ -48,11 +48,6 @@ class GameState(NamedTuple):
             on_the_play=True,
         ).add_notes(initial_text + " with ", hand)
 
-    def copy_with_updates(self, **kwargs) -> "GameState":
-        new_kwargs = self._asdict()
-        new_kwargs.update(kwargs)
-        return GameState(**new_kwargs)
-
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
         if self.is_done or self.turn > max_turn:
             return {self}
@@ -367,3 +362,8 @@ class GameState(NamedTuple):
             else:
                 seq.append(val)
         return tuple(seq)
+
+    def copy_with_updates(self, **kwargs) -> "GameState":
+        new_kwargs = self._asdict()
+        new_kwargs.update(kwargs)
+        return GameState(**new_kwargs)

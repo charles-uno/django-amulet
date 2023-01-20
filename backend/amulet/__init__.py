@@ -1,3 +1,1 @@
-from .mana import Mana
-from .card import Card
-from .game_state import GameState
+from .main import run_and_print_pretty
