@@ -88,9 +88,11 @@ class GameState(GameStateBase):
         return states
 
     def pass_turn(self, max_turn: int) -> Set["GameState"]:
+        if self.turn < max_turn and self._should_be_abandoned():
+            return set()
         # Passing the final turn means this state failed to converge
         if self.turn == max_turn:
-            return {self._mark_as_abandoned()}
+            return {self._with_tombstone()}
         land_plays_remaining = self._get_land_plays_for_new_turn()
         mana_pool, pact_note = self._get_mana_pool_and_note_for_new_turn()
         if mana_pool is None:
@@ -107,7 +109,16 @@ class GameState(GameStateBase):
         else:
             return {state}
 
-    def _mark_as_abandoned(self) -> "GameState":
+    def _should_be_abandoned(self):
+        # Cast a pact turn 1
+        if self.turn == 1 and self.mana_debt:
+            return True
+        # Skipped a land drop when we have ETB untapped lands in hand. Note: we
+        # sometimes want to hold onto ETB tapped lands due to Amulet.
+
+        return False
+
+    def _with_tombstone(self) -> "GameState":
         return self.copy_with_updates(
             turn=self.turn + 1,
             notes=self.notes + "\n" + helpers.highlight("FAILED TO CONVERGE", "red"),
@@ -206,7 +217,7 @@ class GameState(GameStateBase):
             if not c.is_land:
                 continue
             states |= self.copy_with_updates(
-                notes=self.notes + f", play {c}"
+                notes=self.notes + f" into {c}"
             ).play_land_tapped(c)
         return states
 
@@ -258,13 +269,12 @@ class GameState(GameStateBase):
             # Never pact for something we can't afford
             if not self.mana_pool >= c.mana_cost:
                 continue
-            states.add(
-                self.copy_with_updates(
-                    notes=self.notes + f", grab {c}",
-                    hand=self.hand + c,
-                    mana_debt=self.mana_debt + mana("2GG"),
-                )
-            )
+            # Optimization: whatever we Pact for, cast it right away
+            states |= self.copy_with_updates(
+                notes=self.notes + f", grab {c}",
+                hand=self.hand + c,
+                mana_debt=self.mana_debt + mana("2GG"),
+            ).maybe_cast_spell(c)
         return states
 
     def play_bojuka_bog(self) -> Set["GameState"]:
