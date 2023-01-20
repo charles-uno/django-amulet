@@ -13,9 +13,6 @@ from .card import Card
 from .cards import Cards
 from . import helpers
 
-# NOTE: we can probably improve performance by copying less often. Pass around
-# intermediate values instead of making a new state every time we draw a card
-
 
 class GameStateBase(NamedTuple):
     battlefield: Cards = Cards()
@@ -95,6 +92,7 @@ class GameState(GameStateBase):
             return {self._with_tombstone()}
         land_plays_remaining = self._get_land_plays_for_new_turn()
         mana_pool, pact_note = self._get_mana_pool_and_note_for_new_turn()
+        skip_draw = self.turn == 0 and self.on_the_play
         if mana_pool is None:
             return set()
         state = self.copy_with_updates(
@@ -105,10 +103,7 @@ class GameState(GameStateBase):
             mana_debt=mana(""),
             mana_pool=mana_pool,
         )
-        if state.turn > 1 or not state.on_the_play:
-            return {state.draw_a_card()}
-        else:
-            return {state}
+        return {state} if skip_draw else {state.draw_a_card()}
 
     def _should_be_abandoned_when_passing_turn(self):
         # Cast a Pact on turn 1
@@ -116,11 +111,11 @@ class GameState(GameStateBase):
             return True
         # Skipped playing a land when there is no reason to defer. Note: this
         # does not apply to ETB tapped lands because of Amulet.
-        mandatory_lands = {c for c in self.hand if c.always_play}
+        mandatory_lands = {c for c in self.hand if c.is_land and c.never_defer}
         if self.land_plays_remaining and mandatory_lands:
             return True
         # Skipped casting a spell when there is no reason to defer
-        mandatory_spells = {c for c in self.hand if c.always_cast}
+        mandatory_spells = {c for c in self.hand if c.is_spell and c.never_defer}
         if any(self.mana_pool >= c.mana_cost for c in mandatory_spells):
             return True
         return False

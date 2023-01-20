@@ -3,26 +3,28 @@ For simplicity, track only green mana and total mana. That means there's no
 ambiguity when we tap lands or pay costs.
 """
 
+from dataclasses import dataclass
 from typing import NamedTuple
 
 from . import helpers
 
 
-class Mana(NamedTuple):
+@dataclass(frozen=True)
+class Mana:
     green: int = 0
     total: int = 0
-
-    def __hash__(self) -> int:
-        return tuple.__hash__(self)
-
-    def __eq__(self, other: "Mana") -> bool:
-        return self.total == other.total and self.green == other.green
 
     def __ge__(self, other: "Mana"):
         return self.total >= other.total and self.green >= other.green
 
     def __le__(self, other: "Mana"):
         return self.total <= other.total and self.green <= other.green
+
+    def __gt__(self, other):
+        raise NotImplementedError
+
+    def __lt__(self, other):
+        raise NotImplementedError
 
     def __bool__(self) -> bool:
         return self.total > 0
