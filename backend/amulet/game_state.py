@@ -64,15 +64,13 @@ class GameState(NamedTuple):
         # tombstone on it so we can still look
         if self.turn == max_turn:
             return {self._with_tombstone()}
-        land_plays_remaining = self._get_land_plays_for_new_turn()
         mana_pool = self._get_mana_pool_for_new_turn()
-        skip_draw = self.turn == 0 and self.on_the_play
         notes = (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, "))
         return {
             self._copy_with_updates(
                 notes=self.notes + notes,
                 turn=self.turn + 1,
-                land_plays_remaining=land_plays_remaining,
+                land_plays_remaining=self._get_land_plays_for_new_turn(),
                 mana_pool=mana(""),
             )
             ._add_mana(mana_pool)
@@ -146,7 +144,7 @@ class GameState(NamedTuple):
                 continue
             new_c = c.plus_counter()
             note_args += ["\ntick ", c, " up to ", new_c]
-
+            # Always get Amulet
             if new_c.n_counters == 3:
                 new_battlefield.append(Card("Amulet of Vigor"))
                 note_args += ["\nsack ", new_c, ", grab ", Card("Amulet of Vigor")]
@@ -179,8 +177,8 @@ class GameState(NamedTuple):
     def _maybe_play_land(self, c: Card) -> Set["GameState"]:
         if c not in self.hand or not self.land_plays_remaining or not c.is_land:
             return set()
-        state = self._copy_with_updates(
-            land_plays_remaining=self.land_plays_remaining - 1,
+        state = self._add_land_plays(
+            -1,
         )._add_notes("\n", "play ", c)
         if c.enters_tapped:
             return state._play_land_tapped(c)
@@ -219,6 +217,11 @@ class GameState(NamedTuple):
     def _cast_amulet_of_vigor(self) -> Set["GameState"]:
         return {self}
 
+    def _add_land_plays(self, n: int) -> "GameState":
+        return self._copy_with_updates(
+            land_plays_remaining=self.land_plays_remaining + n
+        )
+
     def _cast_arboreal_grazer(self) -> Set["GameState"]:
         states = set()
         for c in set(self.hand):
@@ -233,9 +236,7 @@ class GameState(NamedTuple):
         # If we just cast a duplicate Azusa, bail
         if self.battlefield.count(Card("Azusa, Lost but Seeking")) > 1:
             return set()
-        return {
-            self._copy_with_updates(land_plays_remaining=self.land_plays_remaining + 2)
-        }
+        return {self._add_land_plays(2)}
 
     def _cast_cultivator_colossus(self) -> Set["GameState"]:
         return {
@@ -247,18 +248,12 @@ class GameState(NamedTuple):
     def _cast_dryad_of_the_ilysian_grove(
         self,
     ) -> Set["GameState"]:
-        return {
-            self._copy_with_updates(land_plays_remaining=self.land_plays_remaining + 1)
-        }
+        return {self._add_land_plays(1)}
 
     def _cast_explore(
         self,
     ) -> Set["GameState"]:
-        return {
-            self._copy_with_updates(
-                land_plays_remaining=self.land_plays_remaining + 1
-            )._draw_a_card()
-        }
+        return {self._add_land_plays(1)._draw_a_card()}
 
     def _cast_primeval_titan(
         self,
