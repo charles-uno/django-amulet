@@ -111,9 +111,6 @@ class GameState(NamedTuple):
             ),
         )
 
-    def note_mana_pool(self) -> "GameState":
-        return self.add_notes(", ", self.mana_pool, " in pool")
-
     def add_notes(self, *args: str | Card | Cards | Mana) -> "GameState":
         notes: List[Note] = []
         for arg in args:
@@ -171,6 +168,9 @@ class GameState(NamedTuple):
             return self
         return self.copy_with_updates(mana_pool=self.mana_pool - m).note_mana_pool()
 
+    def note_mana_pool(self) -> "GameState":
+        return self.add_notes(", ", self.mana_pool, " in pool")
+
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
         return self.copy_with_updates(
@@ -181,7 +181,6 @@ class GameState(NamedTuple):
     def maybe_play_land(self, c: Card) -> Set["GameState"]:
         if c not in self.hand or not self.land_plays_remaining or not c.is_land:
             return set()
-
         state = self.copy_with_updates(
             land_plays_remaining=self.land_plays_remaining - 1,
         ).add_notes("\n", "play ", c)
@@ -192,16 +191,14 @@ class GameState(NamedTuple):
 
     def play_land_tapped(self, c: Card) -> Set["GameState"]:
         m = c.taps_for * self.battlefield.count(Card("Amulet of Vigor"))
-        state = self.copy_with_updates(
-            hand=self.hand - c,
-            battlefield=self.battlefield + c,
+        state = self.move_from_hand_to_battlefield(
+            c,
         ).add_mana(m)
         return getattr(state, "play_" + c.slug)()
 
     def play_land_untapped(self, c: Card) -> Set["GameState"]:
-        state = self.copy_with_updates(
-            hand=self.hand - c,
-            battlefield=self.battlefield + c,
+        state = self.move_from_hand_to_battlefield(
+            c,
         ).add_mana(c.taps_for)
         return getattr(state, "play_" + c.slug)()
 
@@ -209,14 +206,17 @@ class GameState(NamedTuple):
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
             return set()
         state = (
-            self.copy_with_updates(
-                hand=self.hand - c,
-                battlefield=self.battlefield + c,
-            )
+            self.move_from_hand_to_battlefield(c)
             .add_notes("\n", "cast ", c)
             .pay_mana(c.mana_cost)
         )
         return getattr(state, "cast_" + c.slug)()
+
+    def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
+        return self.copy_with_updates(
+            hand=self.hand - c,
+            battlefield=self.battlefield + c,
+        )
 
     def cast_amulet_of_vigor(self) -> Set["GameState"]:
         return {self}
