@@ -2,7 +2,8 @@
 5 Arboreal Grazer
 5 Dryad of the Ilysian Grove
 5 Explore
-10 Primeval Titan
+5 Primeval Titan
+5 Summoner's Pact
 15 Forest
 5 Radiant Fountain
 10 Simic Growth Chamber

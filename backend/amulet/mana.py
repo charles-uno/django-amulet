@@ -24,6 +24,9 @@ class Mana(NamedTuple):
     def __le__(self, other: "Mana"):
         return self.total <= other.total and self.green <= other.green
 
+    def __bool__(self) -> bool:
+        return self.total > 0
+
     @property
     def name(self) -> str:
         if self.green == 0 or self.total > self.green:

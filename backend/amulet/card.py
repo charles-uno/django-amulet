@@ -3,7 +3,7 @@ A single card is stored as a string. We use a class for a collection of cards.
 """
 
 
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, Set
 import yaml
 
 from .mana import Mana, mana
@@ -14,14 +14,12 @@ with open("assets/card-data.yaml") as handle:
     CARD_DATA = yaml.safe_load(handle)
 
 
-class CardBase(NamedTuple):
+class Card(NamedTuple):
     name: str
 
     def __hash__(self) -> int:
         return tuple.__hash__(self)
 
-
-class Card(CardBase):
     @property
     def slug(self) -> str:
         return helpers.slugify(self.name)
@@ -33,12 +31,20 @@ class Card(CardBase):
         return helpers.highlight(helpers.squish(self.name), "green")
 
     @property
+    def types(self) -> Set[str]:
+        return set(CARD_DATA[self.name].get("type", "").split(","))
+
+    @property
     def is_land(self) -> bool:
-        return "land" in CARD_DATA[self.name].get("type", "")
+        return "land" in self.types
 
     @property
     def is_spell(self) -> bool:
         return not self.is_land
+
+    @property
+    def is_green_creature(self):
+        return self.mana_cost >= mana("G") and "creature" in self.types
 
     @property
     def mana_cost(self) -> Mana:

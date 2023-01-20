@@ -44,5 +44,10 @@ def test_mul():
     assert mana("1G") * 0 == mana("0")
 
 
+def test_bool():
+    assert bool(mana("")) is False
+    assert bool(mana("1")) is True
+
+
 if __name__ == "__main__":
     pytest.main()
