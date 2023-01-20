@@ -1,6 +1,7 @@
 Amulet of Vigor:
   mana_cost: "1"
   type: artifact
+  always_cast: true
 Ancient Stirrings:
   type: sorcery
   mana_cost: G
@@ -10,6 +11,7 @@ Arboreal Grazer:
 Azusa, Lost but Seeking:
   mana_cost: "2G"
   type: creature
+  always_cast: true
 Bojuka Bog:
   type: land
   taps_for: "1"
@@ -25,10 +27,11 @@ Crumbling Vestige:
 Cultivator Colossus:
   type: creature
   mana_cost: "4GGG"
-  wins_when_cast: true
+  always_cast: true
 Dryad of the Ilysian Grove:
   type: creature
   mana_cost: "2G"
+  always_cast: true
 Explore:
   mana_cost: "1G"
   type: sorcery
@@ -36,14 +39,16 @@ Forest:
   type: basic,land,forest
   taps_for: G
   enters_tapped: false
+  always_play: true
 Primeval Titan:
   mana_cost: 4GG
   type: creature
-  wins_when_cast: true
+  always_cast: true
 Radiant Fountain:
   display: Fountain
   type: land
   taps_for: "1"
+  always_play: true
 Selesnya Sanctuary:
   type: land
   taps_for: "GW"

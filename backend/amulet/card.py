@@ -59,3 +59,11 @@ class Card(NamedTuple):
     @property
     def taps_for(self) -> Mana:
         return mana(CARD_DATA[self.name].get("taps_for", ""))
+
+    @property
+    def always_cast(self) -> bool:
+        return CARD_DATA[self.name].get("always_cast", False)
+
+    @property
+    def always_play(self) -> bool:
+        return CARD_DATA[self.name].get("always_play", False)

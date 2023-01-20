@@ -113,10 +113,14 @@ class GameState(GameStateBase):
         # Cast a Pact on turn 1
         if self.turn == 1 and self.mana_debt:
             return True
-        # Skipped a land drop when we have ETB untapped lands in hand. Note: we
-        # sometimes want to hold onto ETB tapped lands due to Amulet.
-        etb_untapped_lands = [c for c in self.hand if c.is_land and not c.enters_tapped]
-        if self.land_plays_remaining and etb_untapped_lands:
+        # Skipped playing a land when there is no reason to defer. Note: this
+        # does not apply to ETB tapped lands because of Amulet.
+        mandatory_lands = {c for c in self.hand if c.always_play}
+        if self.land_plays_remaining and mandatory_lands:
+            return True
+        # Skipped casting a spell when there is no reason to defer
+        mandatory_spells = {c for c in self.hand if c.always_cast}
+        if any(self.mana_pool >= c.mana_cost for c in mandatory_spells):
             return True
         return False
 
