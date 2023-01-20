@@ -60,33 +60,38 @@ class GameState(NamedTuple):
     def _pass_turn(self, max_turn: int) -> Set["GameState"]:
         if self.turn < max_turn and self._should_be_abandoned_when_passing_turn():
             return set()
-        # Passing the final turn means this state failed to converge
+        # Passing the final turn means this state failed to converge. Put a
+        # tombstone on it so we can still look
         if self.turn == max_turn:
             return {self._with_tombstone()}
         land_plays_remaining = self._get_land_plays_for_new_turn()
-        mana_pool, mana_debt = self._get_mana_pool_and_debt_for_new_turn()
+        mana_pool = self._get_mana_pool_for_new_turn()
         skip_draw = self.turn == 0 and self.on_the_play
-        # If we cast a pact we can't pay for, bail
-        if not mana_pool >= mana_debt:
-            return set()
         notes = (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, "))
-        state = (
+        return {
             self._copy_with_updates(
                 notes=self.notes + notes,
                 turn=self.turn + 1,
                 land_plays_remaining=land_plays_remaining,
-                mana_debt=mana(""),
                 mana_pool=mana(""),
             )
             ._add_mana(mana_pool)
-            ._pay_mana(mana_debt)
-        )
-        if skip_draw:
-            return {state._handle_sagas()}
+            ._pay_mana_debt()
+            ._draw_for_turn()
+            ._handle_sagas()
+        }
+
+    def _draw_for_turn(self) -> "GameState":
+        if self.turn == 1 and self.on_the_play:
+            return self
         else:
-            return {state._draw_a_card()._handle_sagas()}
+            return self._draw_a_card()
 
     def _should_be_abandoned_when_passing_turn(self):
+        # Cast a pact we can't pay for
+        mana_pool = self._get_mana_pool_for_new_turn()
+        if not mana_pool >= self.mana_debt:
+            return True
         # Cast a Pact on turn 1
         if self.turn == 1 and self.mana_debt:
             return True
@@ -111,19 +116,12 @@ class GameState(NamedTuple):
             ),
         )
 
-    def _add_notes(self, *args: str | Card | Cards | Mana) -> "GameState":
-        notes: List[Note] = []
-        for arg in args:
-            if isinstance(arg, str):
-                if arg.startswith("\n"):
-                    arg = arg.lstrip("\n")
-                    notes.append(Note("", NoteType.LINE_BREAK))
-                if not arg:
-                    continue
-                notes.append(Note(arg))
-            else:
-                notes.extend(arg.notes)
-        return self._copy_with_updates(notes=self.notes + tuple(notes))
+    def _pay_mana_debt(self) -> "GameState":
+        if not self.mana_debt:
+            return self
+        if self.mana_pool >= self.mana_debt:
+            return self._add_notes(", pay for pact")._pay_mana(self.mana_debt)
+        raise RuntimeError(f"attempting to pay {self.mana_debt} with {self.mana_pool}")
 
     def _get_land_plays_for_new_turn(self) -> int:
         return (
@@ -132,12 +130,12 @@ class GameState(NamedTuple):
             + 2 * self.battlefield.count(Card("Azusa, Lost but Seeking"))
         )
 
-    def _get_mana_pool_and_debt_for_new_turn(self) -> Tuple[Mana, Mana]:
+    def _get_mana_pool_for_new_turn(self) -> Mana:
         mana_pool = mana("")
         for c in self.battlefield:
             if c.taps_for:
                 mana_pool += c.taps_for
-        return mana_pool, self.mana_debt
+        return mana_pool
 
     def _handle_sagas(self) -> "GameState":
         new_battlefield = []
@@ -356,3 +354,17 @@ class GameState(NamedTuple):
         new_kwargs = self._asdict()
         new_kwargs.update(kwargs)
         return GameState(**new_kwargs)
+
+    def _add_notes(self, *args: str | Card | Cards | Mana) -> "GameState":
+        notes: List[Note] = []
+        for arg in args:
+            if isinstance(arg, str):
+                if arg.startswith("\n"):
+                    arg = arg.lstrip("\n")
+                    notes.append(Note("", NoteType.LINE_BREAK))
+                if not arg:
+                    continue
+                notes.append(Note(arg))
+            else:
+                notes.extend(arg.notes)
+        return self._copy_with_updates(notes=self.notes + tuple(notes))
