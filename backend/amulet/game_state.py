@@ -9,8 +9,7 @@ import random
 from typing import List, Optional, Set, NamedTuple, Tuple
 
 from .mana import Mana, mana
-from .card import Card
-from .cards import Cards
+from .card import Card, Cards
 from .note import Note, NoteType
 
 
