@@ -13,7 +13,7 @@ Azusa, Lost but Seeking:
 Boros Garrison:
   enters_tapped: true
   taps_for: "WR"
-  type: land,bounce
+  type: land
 Crumbling Vestige:
   type: land
   taps_for: "1"
@@ -41,11 +41,11 @@ Radiant Fountain:
   type: land
   taps_for: "1"
 Selesnya Sanctuary:
-  type: land,bounce
+  type: land
   taps_for: "GW"
   enters_tapped: true
 Simic Growth Chamber:
-  type: land,bounce
+  type: land
   taps_for: GU
   enters_tapped: true
 Summoner's Pact:

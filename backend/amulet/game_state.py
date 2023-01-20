@@ -169,11 +169,15 @@ class GameState(GameStateBase):
         )
         return getattr(state, "cast_" + c.slug)()
 
+    def cast_amulet_of_vigor(self) -> Set["GameState"]:
+        return {self}
+
     def cast_azusa_lost_but_seeking(
         self,
     ) -> Set["GameState"]:
-        # TODO: don't allow duplicates
-
+        # If we just cast a duplicate Azusa, bail
+        if self.battlefield.count(Card("Azusa, Lost but Seeking")) > 1:
+            return set()
         return {self}
 
     def cast_dryad_of_the_ilysian_grove(
@@ -191,6 +195,9 @@ class GameState(GameStateBase):
         }
 
     def play_forest(self) -> Set["GameState"]:
+        return {self}
+
+    def play_radiant_fountain(self) -> Set["GameState"]:
         return {self}
 
     def play_simic_growth_chamber(self) -> Set["GameState"]:

@@ -7,6 +7,8 @@ def main():
     deck_list = []
     with open("assets/deck-list.txt") as handle:
         for line in handle:
+            if line.startswith("#") or not line.strip():
+                continue
             n, card_name = line.rstrip().split(None, 1)
             deck_list += [card_name] * int(n)
 
