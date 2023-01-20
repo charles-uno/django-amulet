@@ -26,11 +26,6 @@ class Card(NamedTuple):
     def slug(self) -> str:
         return helpers.slugify(self.name)
 
-    def __str__(self):
-        return helpers.highlight(
-            helpers.squish(self.name) + ("*" * self.n_counters), "green"
-        )
-
     @property
     def notes(self) -> Tuple[Note, ...]:
         ret = (Note(text=self.name, type=NoteType.CARD),)

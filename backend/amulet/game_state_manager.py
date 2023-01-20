@@ -1,6 +1,5 @@
 from typing import List, Set
 
-from .card import Card
 from .game_state import GameState
 
 

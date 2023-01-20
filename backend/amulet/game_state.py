@@ -12,7 +12,6 @@ from .mana import Mana, mana
 from .card import Card
 from .cards import Cards
 from .note import Note, NoteType
-from . import helpers
 
 
 class GameState(NamedTuple):
