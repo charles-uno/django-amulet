@@ -1,14 +1,13 @@
 import pytest
 
-from ..mana import mana
+from ..mana import mana, Mana
 
 
-def test_creation():
-    assert mana("2GG").name == "2GG"
-    assert mana("WUBRG").name == "4G"
-    assert mana("G123G").name == "6GG"
-    assert mana("2GG").green == 2
-    assert mana("2GG").green == 2
+def test_wrapper():
+    assert mana("2GG") == Mana(green=2, total=4)
+    assert mana("") == Mana(green=0, total=0)
+    assert mana("WUBRG") == Mana(green=1, total=5)
+    assert mana("G123G") == Mana(green=2, total=8)
 
 
 def test_ge():
