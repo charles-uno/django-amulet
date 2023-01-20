@@ -103,7 +103,10 @@ class GameState(GameStateBase):
             mana_debt=mana(""),
             mana_pool=mana_pool,
         )
-        return {state} if skip_draw else {state.draw_a_card()}
+        if skip_draw:
+            return {state.handle_sagas()}
+        else:
+            return {state.draw_a_card().handle_sagas()}
 
     def _should_be_abandoned_when_passing_turn(self):
         # Cast a Pact on turn 1
@@ -145,7 +148,27 @@ class GameState(GameStateBase):
         else:
             return mana_pool, ""
 
+    def handle_sagas(self) -> "GameState":
+        new_battlefield = []
+        note = ""
+        for c in self.battlefield:
+            if not c.is_saga:
+                new_battlefield.append(c)
+                continue
+            new_c = c.plus_counter()
+            note += f"\ntick {c} up to {new_c}"
+            if new_c.n_counters == 3:
+                new_battlefield.append(Card("Amulet of Vigor"))
+                note += f"\nsack {new_c}, grab {Card('Amulet of Vigor')}"
+            else:
+                new_battlefield.append(new_c)
+        return self.copy_with_updates(
+            battlefield=Cards(new_battlefield), notes=self.notes + note
+        )
+
     def add_mana(self, m: Mana) -> "GameState":
+        if not m:
+            return self
         mana_pool = self.mana_pool + m
         return self.copy_with_updates(
             mana_pool=mana_pool, notes=self.notes + f", {mana_pool} in pool"
@@ -166,9 +189,8 @@ class GameState(GameStateBase):
     def maybe_play_land(self, c: Card) -> Set["GameState"]:
         if c not in self.hand or not self.land_plays_remaining or not c.is_land:
             return set()
+
         state = self.copy_with_updates(
-            hand=self.hand - c,
-            battlefield=self.battlefield + c,
             notes=self.notes + f"\nplay {c}",
             land_plays_remaining=self.land_plays_remaining - 1,
         )
@@ -179,11 +201,17 @@ class GameState(GameStateBase):
 
     def play_land_tapped(self, c: Card) -> Set["GameState"]:
         m = c.taps_for * self.battlefield.count(Card("Amulet of Vigor"))
-        state = self.add_mana(m) if m else self
+        state = self.copy_with_updates(
+            hand=self.hand - c,
+            battlefield=self.battlefield + c,
+        ).add_mana(m)
         return getattr(state, "play_" + c.slug)()
 
     def play_land_untapped(self, c: Card) -> Set["GameState"]:
-        state = self.tap(c)
+        state = self.copy_with_updates(
+            hand=self.hand - c,
+            battlefield=self.battlefield + c,
+        ).add_mana(c.taps_for)
         return getattr(state, "play_" + c.slug)()
 
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
@@ -207,7 +235,7 @@ class GameState(GameStateBase):
             if not c.is_land:
                 continue
             states |= self.copy_with_updates(
-                notes=self.notes + f" into {c}"
+                notes=self.notes + f", into {c}"
             ).play_land_tapped(c)
         return states
 
@@ -289,9 +317,33 @@ class GameState(GameStateBase):
             if c.is_land:
                 states.add(
                     self.copy_with_updates(
-                        hand=self.hand + c,
+                        hand=self.hand + c.without_counters(),
                         battlefield=self.battlefield - c,
                         notes=self.notes + f", bounce {c}",
                     )
                 )
         return states
+
+    def play_urzas_saga(self) -> Set["GameState"]:
+
+        c = Card("Urza's Saga")
+        c_new = c.plus_counter()
+        if c not in self.battlefield:
+            self.dump()
+            raise ValueError
+
+        return {
+            self.copy_with_updates(
+                battlefield=(self.battlefield - c) + c_new,
+                notes=self.notes + f", tick up to {c_new}",
+            )
+        }
+
+    def dump(self) -> None:
+        lines = [
+            f"hand: {self.hand}",
+            f"battlefield: {self.battlefield}",
+            f"mana pool: {self.mana_pool}",
+            self.notes,
+        ]
+        print("\n".join(lines))

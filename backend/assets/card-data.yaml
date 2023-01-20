@@ -69,6 +69,6 @@ Unyaro Bee Sting:
   type: Sorcery
   mana_cost: "3G"
 Urza's Saga:
-  type: land
+  type: land,saga
   enters_tapped: false
   taps_for: "1"

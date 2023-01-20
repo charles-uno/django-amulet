@@ -58,9 +58,6 @@ class Mana(NamedTuple):
     def __str__(self):
         return helpers.highlight(self.name, "magenta")
 
-    def __repr__(self):
-        return f"Mana(green={self.green}, total={self.total})"
-
 
 def mana(expr: str) -> Mana:
     n_green = expr.upper().count("G")

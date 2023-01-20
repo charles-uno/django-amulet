@@ -3,7 +3,7 @@ A single card is stored as a string. We use a class for a collection of cards.
 """
 
 
-from typing import NamedTuple, Optional, Set
+from typing import NamedTuple, Set
 import yaml
 
 from .mana import Mana, mana
@@ -16,6 +16,7 @@ with open("assets/card-data.yaml") as handle:
 
 class Card(NamedTuple):
     name: str
+    n_counters: int = 0
 
     def __hash__(self) -> int:
         return tuple.__hash__(self)
@@ -24,11 +25,10 @@ class Card(NamedTuple):
     def slug(self) -> str:
         return helpers.slugify(self.name)
 
-    def __repr__(self):
-        return f"Card({repr(self.name)})"
-
     def __str__(self):
-        return helpers.highlight(helpers.squish(self.name), "green")
+        return helpers.highlight(
+            helpers.squish(self.name) + ("*" * self.n_counters), "green"
+        )
 
     @property
     def types(self) -> Set[str]:
@@ -63,3 +63,15 @@ class Card(NamedTuple):
     @property
     def never_defer(self) -> bool:
         return CARD_DATA[self.name].get("never_defer", False)
+
+    @property
+    def is_saga(self) -> bool:
+        return "saga" in self.types
+
+    def plus_counter(self) -> "Card":
+        return Card(name=self.name, n_counters=self.n_counters + 1)
+
+    def without_counters(self) -> "Card":
+        if self.n_counters == 0:
+            return self
+        return Card(name=self.name)
