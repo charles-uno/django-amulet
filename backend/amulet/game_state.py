@@ -6,7 +6,7 @@ iterate through all possible sequences of plays until we find a winning line.
 """
 
 import random
-from typing import List, Optional, Set, NamedTuple
+from typing import List, Optional, Set, NamedTuple, Tuple
 
 from .mana import Mana, mana
 from .card import Card
@@ -89,27 +89,40 @@ class GameState(GameStateBase):
         return states
 
     def pass_turn(self) -> Set["GameState"]:
-        land_plays_remaining = (
+        land_plays_remaining = self._get_land_plays_for_new_turn()
+        mana_pool, pact_note = self._get_mana_pool_and_note_for_new_turn()
+        if mana_pool is None:
+            return set()
+        state = self.copy_with_updates(
+            notes=self.notes + f"\nturn {self.turn+1}" + pact_note,
+            turn=self.turn + 1,
+            land_plays_remaining=land_plays_remaining,
+            mana_debt=mana(""),
+            mana_pool=mana(""),
+        ).add_mana(mana_pool)
+        if state.turn > 1 or not state.on_the_play:
+            return {state.draw_a_card()}
+        else:
+            return {state}
+
+    def _get_land_plays_for_new_turn(self) -> int:
+        return (
             1
             + self.battlefield.count(Card("Dryad of the Ilysian Grove"))
             + 2 * self.battlefield.count(Card("Azusa, Lost but Seeking"))
         )
-        state = self.copy_with_updates(
-            notes=self.notes + f"\nturn {self.turn+1}",
-            turn=self.turn + 1,
-            land_plays_remaining=land_plays_remaining,
-            mana_pool=mana(""),
-        ).tap_out()
-        if state.turn > 1 or not state.on_the_play:
-            state = state.draw_a_card()
-        # Pay for any pacts
-        if state.mana_debt >= self.mana_pool:
-            return set()
-        elif self.mana_debt:
-            state = self.copy_with_updates(
-                notes=self.notes + f", pay for pact"
-            ).pay_mana(self.mana_debt)
-        return {state}
+
+    def _get_mana_pool_and_note_for_new_turn(self) -> Tuple[Optional[Mana], str]:
+        mana_pool = mana("")
+        for c in self.battlefield:
+            if c.taps_for:
+                mana_pool += c.taps_for
+        if not mana_pool >= self.mana_debt:
+            return None, ""
+        if mana_pool:
+            return mana_pool - self.mana_debt, ", paid for pact"
+        else:
+            return mana_pool, ""
 
     def add_mana(self, m: Mana) -> "GameState":
         mana_pool = self.mana_pool + m
