@@ -1,4 +1,6 @@
-from typing import Tuple
+from typing import List, Tuple
+
+from .note import Note
 from .card import Card
 
 
@@ -12,3 +14,11 @@ class Cards(Tuple[Card, ...]):
 
     def __str__(self) -> str:
         return " ".join(str(c) for c in self)
+
+    @property
+    def notes(self) -> Tuple[Note, ...]:
+        ret = []
+        for c in self:
+            ret.append(Note(" "))
+            ret.extend(c.notes)
+        return tuple(ret[:-1])

@@ -14,7 +14,15 @@ class GameStateManager:
         for i in range(max_turn):
             states = self._get_next_turn(states, max_turn)
 
-        print(states.pop().get_notes())
+        to_print = ""
+        for n in states.pop().get_notes():
+            try:
+                to_print += n.get_pretty()
+            except Exception as e:
+                print(n)
+                raise
+
+        print(to_print)
 
     def _get_next_turn(
         self, old_states: Set[GameState], max_turn: int

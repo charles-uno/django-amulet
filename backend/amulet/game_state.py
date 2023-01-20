@@ -11,6 +11,7 @@ from typing import List, Optional, Set, NamedTuple, Tuple
 from .mana import Mana, mana
 from .card import Card
 from .cards import Cards
+from .note import Note, NoteType
 from . import helpers
 
 
@@ -22,7 +23,7 @@ class GameState(NamedTuple):
     library: Cards = Cards()
     mana_debt: Mana = mana("")
     mana_pool: Mana = mana("")
-    notes: str = ""
+    notes: Tuple[Note, ...] = ()
     on_the_play: bool = False
     turn: int = 0
 
@@ -38,16 +39,15 @@ class GameState(NamedTuple):
     ) -> "GameState":
         if on_the_play is None:
             on_the_play = random.choice([True, False])
-        turn_order_note = "on the play" if on_the_play else "on the draw"
         random.shuffle(deck_list)
         hand = Cards(Card(x) for x in deck_list[:7])
         library = Cards(Card(x) for x in deck_list[7:])
+        initial_text = "on the play" if on_the_play else "on the draw"
         return GameState(
             library=library,
             hand=hand,
             on_the_play=True,
-            notes=f"{turn_order_note} with {hand}",
-        )
+        ).add_notes(initial_text + " with ", hand)
 
     def copy_with_updates(self, **kwargs) -> "GameState":
         new_kwargs = self._asdict()
@@ -73,16 +73,17 @@ class GameState(NamedTuple):
         land_plays_remaining = self._get_land_plays_for_new_turn()
         mana_pool, pact_note = self._get_mana_pool_and_note_for_new_turn()
         skip_draw = self.turn == 0 and self.on_the_play
+        # null mana pool means we had pacts we couldn't pay for
         if mana_pool is None:
             return set()
+        notes = (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, "))
         state = self.copy_with_updates(
-            notes=self.notes
-            + f"\n---- turn {self.turn+1}{pact_note}, {mana_pool} in pool",
+            notes=self.notes + notes,
             turn=self.turn + 1,
             land_plays_remaining=land_plays_remaining,
             mana_debt=mana(""),
-            mana_pool=mana_pool,
-        )
+            mana_pool=mana(""),
+        ).add_mana(mana_pool)
         if skip_draw:
             return {state.handle_sagas()}
         else:
@@ -106,8 +107,29 @@ class GameState(NamedTuple):
     def _with_tombstone(self) -> "GameState":
         return self.copy_with_updates(
             turn=self.turn + 1,
-            notes=self.notes + "\n" + helpers.highlight("FAILED TO CONVERGE", "red"),
+            notes=self.notes
+            + (
+                Note("", NoteType.LINE_BREAK),
+                Note("FAILED TO CONVERGE", NoteType.ALERT),
+            ),
         )
+
+    def note_mana_pool(self) -> "GameState":
+        return self.add_notes(", ", self.mana_pool, " in pool")
+
+    def add_notes(self, *args: str | Card | Cards | Mana) -> "GameState":
+        notes: List[Note] = []
+        for arg in args:
+            if isinstance(arg, str):
+                if arg.startswith("\n"):
+                    arg = arg.lstrip("\n")
+                    notes.append(Note("", NoteType.LINE_BREAK))
+                if not arg:
+                    continue
+                notes.append(Note(arg))
+            else:
+                notes.extend(arg.notes)
+        return self.copy_with_updates(notes=self.notes + tuple(notes))
 
     def _get_land_plays_for_new_turn(self) -> int:
         return (
@@ -130,28 +152,29 @@ class GameState(NamedTuple):
 
     def handle_sagas(self) -> "GameState":
         new_battlefield = []
-        note = ""
+        note_args = []
         for c in self.battlefield:
             if not c.is_saga:
                 new_battlefield.append(c)
                 continue
             new_c = c.plus_counter()
-            note += f"\ntick {c} up to {new_c}"
+            note_args += ["\ntick ", c, " up to ", new_c]
+
             if new_c.n_counters == 3:
                 new_battlefield.append(Card("Amulet of Vigor"))
-                note += f"\nsack {new_c}, grab {Card('Amulet of Vigor')}"
+                note_args += ["\nsack ", new_c, ", grab ", Card("Amulet of Vigor")]
             else:
                 new_battlefield.append(new_c)
-        return self.copy_with_updates(
-            battlefield=Cards(new_battlefield), notes=self.notes + note
+        return self.copy_with_updates(battlefield=Cards(new_battlefield)).add_notes(
+            *note_args
         )
 
     def add_mana(self, m: Mana) -> "GameState":
         if not m:
             return self
         mana_pool = self.mana_pool + m
-        return self.copy_with_updates(
-            mana_pool=mana_pool, notes=self.notes + f", {mana_pool} in pool"
+        return self.copy_with_updates(mana_pool=mana_pool).add_notes(
+            ", ", mana_pool, " in pool"
         )
 
     def tap(self, c: Card) -> "GameState":
@@ -161,19 +184,17 @@ class GameState(NamedTuple):
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
         return self.copy_with_updates(
-            notes=self.notes + f"\ndraw {c}",
             hand=self.hand + c,
             library=self.library[1:],
-        )
+        ).add_notes("\n", "draw ", c)
 
     def maybe_play_land(self, c: Card) -> Set["GameState"]:
         if c not in self.hand or not self.land_plays_remaining or not c.is_land:
             return set()
 
         state = self.copy_with_updates(
-            notes=self.notes + f"\nplay {c}",
             land_plays_remaining=self.land_plays_remaining - 1,
-        )
+        ).add_notes("\n", "play ", c)
         if c.enters_tapped:
             return state.play_land_tapped(c)
         else:
@@ -198,11 +219,14 @@ class GameState(NamedTuple):
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
             return set()
         mana_pool = self.mana_pool - c.mana_cost
-        state = self.copy_with_updates(
-            hand=self.hand - c,
-            battlefield=self.battlefield + c,
-            mana_pool=mana_pool,
-            notes=self.notes + f"\ncast {c}, {mana_pool} in pool",
+        state = (
+            self.copy_with_updates(
+                hand=self.hand - c,
+                battlefield=self.battlefield + c,
+                mana_pool=mana_pool,
+            )
+            .add_notes("\n", "cast ", c)
+            .note_mana_pool()
         )
         return getattr(state, "cast_" + c.slug)()
 
@@ -214,9 +238,7 @@ class GameState(NamedTuple):
         for c in set(self.hand):
             if not c.is_land:
                 continue
-            states |= self.copy_with_updates(
-                notes=self.notes + f", into {c}"
-            ).play_land_tapped(c)
+            states |= self.add_notes(", into ", c).play_land_tapped(c)
         return states
 
     def cast_azusa_lost_but_seeking(
@@ -275,11 +297,14 @@ class GameState(NamedTuple):
             if not self.mana_pool >= c.mana_cost:
                 continue
             # Optimization: whatever we Pact for, cast it right away
-            states |= self.copy_with_updates(
-                notes=self.notes + f", grab {c}",
-                hand=self.hand + c,
-                mana_debt=self.mana_debt + mana("2GG"),
-            ).maybe_cast_spell(c)
+            states |= (
+                self.copy_with_updates(
+                    hand=self.hand + c,
+                    mana_debt=self.mana_debt + mana("2GG"),
+                )
+                .add_notes(", grab ", c)
+                .maybe_cast_spell(c)
+            )
         return states
 
     def play_bojuka_bog(self) -> Set["GameState"]:
@@ -299,8 +324,7 @@ class GameState(NamedTuple):
                     self.copy_with_updates(
                         hand=self.hand + c.without_counters(),
                         battlefield=self.battlefield - c,
-                        notes=self.notes + f", bounce {c}",
-                    )
+                    ).add_notes(", bounce ", c)
                 )
         return states
 
@@ -315,8 +339,7 @@ class GameState(NamedTuple):
         return {
             self.copy_with_updates(
                 battlefield=(self.battlefield - c) + c_new,
-                notes=self.notes + f", tick up to {c_new}",
-            )
+            ).add_notes(", tick up to ", c_new)
         }
 
     def dump(self) -> None:

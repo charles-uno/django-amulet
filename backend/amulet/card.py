@@ -3,10 +3,11 @@ A single card is stored as a string. We use a class for a collection of cards.
 """
 
 
-from typing import NamedTuple, Set
+from typing import NamedTuple, Set, Tuple
 import yaml
 
 from .mana import Mana, mana
+from .note import Note, NoteType
 from . import helpers
 
 
@@ -29,6 +30,13 @@ class Card(NamedTuple):
         return helpers.highlight(
             helpers.squish(self.name) + ("*" * self.n_counters), "green"
         )
+
+    @property
+    def notes(self) -> Tuple[Note, ...]:
+        ret = (Note(text=self.name, type=NoteType.CARD),)
+        if self.n_counters:
+            ret += (Note(text="*" * self.n_counters),)
+        return ret
 
     @property
     def types(self) -> Set[str]:

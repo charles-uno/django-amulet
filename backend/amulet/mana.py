@@ -3,7 +3,8 @@ For simplicity, track only green mana and total mana. That means there's no
 ambiguity when we tap lands or pay costs.
 """
 
-from typing import NamedTuple
+from typing import NamedTuple, Tuple
+from .note import Note, NoteType
 
 from . import helpers
 
@@ -57,6 +58,10 @@ class Mana(NamedTuple):
 
     def __str__(self):
         return helpers.highlight(self.name, "magenta")
+
+    @property
+    def notes(self) -> Tuple[Note]:
+        return (Note(self.name, NoteType.MANA),)
 
 
 def mana(expr: str) -> Mana:
