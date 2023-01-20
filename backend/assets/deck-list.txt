@@ -9,6 +9,6 @@
 
 10 Simic Growth Chamber
 10 Forest
-5 Radiant Fountain
-5 Urza's Saga
+6 Radiant Fountain
+4 Urza's Saga
 4 Bojuka Bog

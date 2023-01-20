@@ -1,15 +1,15 @@
-from typing import Sequence, Set
+from typing import List, Set
 
 from .card import Card
 from .game_state import GameState
 
 
 class GameStateManager:
-    def __init__(self, deck_list: Sequence[str], max_turn: int = 4):
+    def __init__(self, deck_list: List[str], max_turn: int = 4):
         # Draw our opening hand and pass into turn 1
-        states = GameState.get_initial_state_from_deck_list(
-            [Card(x) for x in deck_list]
-        ).get_next_states(max_turn)
+        states = GameState.get_initial_state_from_deck_list(deck_list).get_next_states(
+            max_turn
+        )
 
         for i in range(max_turn):
             states = self._get_next_turn(states, max_turn)

@@ -14,7 +14,7 @@ from .cards import Cards
 from . import helpers
 
 
-class GameStateBase(NamedTuple):
+class GameState(NamedTuple):
     battlefield: Cards = Cards()
     hand: Cards = Cards()
     is_done: bool = False
@@ -26,42 +26,22 @@ class GameStateBase(NamedTuple):
     on_the_play: bool = False
     turn: int = 0
 
-    def __hash__(self) -> int:
-        return tuple.__hash__(self.get_comparable_tuple())
-
-    def __eq__(self, other: "GameStateBase") -> bool:
-        return self.get_comparable_tuple() == other.get_comparable_tuple()
-
-    def get_comparable_tuple(self) -> Tuple:
-        # Ignore notes when collapsing duplicates, and sort unordered tuples
-        seq = []
-        for key, val in sorted(self._asdict().items()):
-            if key == "notes":
-                continue
-            if key in ["hand", "battlefield"]:
-                seq.append(tuple(sorted(val)))
-            else:
-                seq.append(val)
-        return tuple(seq)
-
     def get_notes(self):
         return self.notes
 
     def get_turn(self):
         return self.turn
 
-
-class GameState(GameStateBase):
     @classmethod
     def get_initial_state_from_deck_list(
-        cls, deck_list: List[Card], on_the_play: Optional[bool] = None
+        cls, deck_list: List[str], on_the_play: Optional[bool] = None
     ) -> "GameState":
         if on_the_play is None:
             on_the_play = random.choice([True, False])
         turn_order_note = "on the play" if on_the_play else "on the draw"
         random.shuffle(deck_list)
-        hand = Cards(deck_list[:7])
-        library = Cards(deck_list[7:])
+        hand = Cards(Card(x) for x in deck_list[:7])
+        library = Cards(Card(x) for x in deck_list[7:])
         return GameState(
             library=library,
             hand=hand,
@@ -347,3 +327,21 @@ class GameState(GameStateBase):
             self.notes,
         ]
         print("\n".join(lines))
+
+    def __hash__(self) -> int:
+        return tuple.__hash__(self.get_comparable_tuple())
+
+    def __eq__(self, other: "GameState") -> bool:
+        return self.get_comparable_tuple() == other.get_comparable_tuple()
+
+    def get_comparable_tuple(self) -> Tuple:
+        # Ignore notes when collapsing duplicates, and sort unordered tuples
+        seq = []
+        for key, val in sorted(self._asdict().items()):
+            if key == "notes":
+                continue
+            if key in ["hand", "battlefield"]:
+                seq.append(tuple(sorted(val)))
+            else:
+                seq.append(val)
+        return tuple(seq)
