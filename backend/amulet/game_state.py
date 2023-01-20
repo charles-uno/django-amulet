@@ -64,19 +64,23 @@ class GameState(NamedTuple):
         if self.turn == max_turn:
             return {self._with_tombstone()}
         land_plays_remaining = self._get_land_plays_for_new_turn()
-        mana_pool, pact_note = self._get_mana_pool_and_note_for_new_turn()
+        mana_pool, mana_debt = self._get_mana_pool_and_debt_for_new_turn()
         skip_draw = self.turn == 0 and self.on_the_play
-        # null mana pool means we had pacts we couldn't pay for
-        if mana_pool is None:
+        # If we cast a pact we can't pay for, bail
+        if not mana_pool >= mana_debt:
             return set()
         notes = (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, "))
-        state = self.copy_with_updates(
-            notes=self.notes + notes,
-            turn=self.turn + 1,
-            land_plays_remaining=land_plays_remaining,
-            mana_debt=mana(""),
-            mana_pool=mana(""),
-        ).add_mana(mana_pool)
+        state = (
+            self.copy_with_updates(
+                notes=self.notes + notes,
+                turn=self.turn + 1,
+                land_plays_remaining=land_plays_remaining,
+                mana_debt=mana(""),
+                mana_pool=mana(""),
+            )
+            .add_mana(mana_pool)
+            .pay_mana(mana_debt)
+        )
         if skip_draw:
             return {state.handle_sagas()}
         else:
@@ -131,17 +135,12 @@ class GameState(NamedTuple):
             + 2 * self.battlefield.count(Card("Azusa, Lost but Seeking"))
         )
 
-    def _get_mana_pool_and_note_for_new_turn(self) -> Tuple[Optional[Mana], str]:
+    def _get_mana_pool_and_debt_for_new_turn(self) -> Tuple[Mana, Mana]:
         mana_pool = mana("")
         for c in self.battlefield:
             if c.taps_for:
                 mana_pool += c.taps_for
-        if not mana_pool >= self.mana_debt:
-            return None, ""
-        if self.mana_debt:
-            return mana_pool - self.mana_debt, ", pay for pact"
-        else:
-            return mana_pool, ""
+        return mana_pool, self.mana_debt
 
     def handle_sagas(self) -> "GameState":
         new_battlefield = []
@@ -165,14 +164,12 @@ class GameState(NamedTuple):
     def add_mana(self, m: Mana) -> "GameState":
         if not m:
             return self
-        mana_pool = self.mana_pool + m
-        return self.copy_with_updates(mana_pool=mana_pool).add_notes(
-            ", ", mana_pool, " in pool"
-        )
+        return self.copy_with_updates(mana_pool=self.mana_pool + m).note_mana_pool()
 
-    def tap(self, c: Card) -> "GameState":
-        m = c.taps_for
-        return self.add_mana(m) if m else self
+    def pay_mana(self, m: Mana) -> "GameState":
+        if not m:
+            return self
+        return self.copy_with_updates(mana_pool=self.mana_pool - m).note_mana_pool()
 
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
@@ -211,15 +208,13 @@ class GameState(NamedTuple):
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
             return set()
-        mana_pool = self.mana_pool - c.mana_cost
         state = (
             self.copy_with_updates(
                 hand=self.hand - c,
                 battlefield=self.battlefield + c,
-                mana_pool=mana_pool,
             )
             .add_notes("\n", "cast ", c)
-            .note_mana_pool()
+            .pay_mana(c.mana_cost)
         )
         return getattr(state, "cast_" + c.slug)()
 
