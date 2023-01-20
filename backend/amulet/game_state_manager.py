@@ -14,9 +14,6 @@ class GameStateManager:
 
         for i in range(max_turn):
             states = self.get_next_turn(states, max_turn)
-            print("starting turn", i + 1, "with", len(states), "states")
-            if i > 1 and len(states) == 1:
-                break
 
         print(states.pop().get_notes())
 
