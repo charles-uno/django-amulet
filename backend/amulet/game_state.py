@@ -66,7 +66,7 @@ class GameState(NamedTuple):
         return {
             self.copy_with_updates(
                 notes=self.notes
-                + (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, ")),
+                + (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}")),
                 turn=self.turn + 1,
                 land_plays_remaining=self.get_land_plays_for_new_turn(),
                 mana_pool=mana(""),
