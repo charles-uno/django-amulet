@@ -9,16 +9,16 @@ import random
 from typing import List, Optional, Set, NamedTuple, Tuple
 
 from .mana import Mana, mana
-from .card import Card, Cards
+from .card import Card
 from .note import Note, NoteType
 
 
 class GameState(NamedTuple):
-    battlefield: Cards = Cards()
-    hand: Cards = Cards()
+    battlefield: Tuple[Card, ...] = ()
+    hand: Tuple[Card, ...] = ()
     is_done: bool = False
     land_plays_remaining: int = 0
-    library: Cards = Cards()
+    library: Tuple[Card, ...] = ()
     mana_debt: Mana = mana("")
     mana_pool: Mana = mana("")
     notes: Tuple[Note, ...] = ()
@@ -33,19 +33,18 @@ class GameState(NamedTuple):
 
     @classmethod
     def get_initial_state_from_deck_list(
-        cls, deck_list: List[str], on_the_play: Optional[bool] = None
+        cls, deck_list_raw: List[str], on_the_play: Optional[bool] = None
     ) -> "GameState":
         if on_the_play is None:
             on_the_play = random.choice([True, False])
+        deck_list = [Card(x) for x in deck_list_raw]
         random.shuffle(deck_list)
-        hand = Cards(Card(x) for x in deck_list[:7])
-        library = Cards(Card(x) for x in deck_list[7:])
         initial_text = "on the play" if on_the_play else "on the draw"
         return GameState(
-            library=library,
-            hand=hand,
+            library=tuple(deck_list[7:]),
+            hand=tuple(deck_list[:7]),
             on_the_play=True,
-        ).add_notes(initial_text + " with ", hand)
+        ).add_notes(initial_text + " with ", tuple(deck_list[:7]))
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
         if self.is_done or self.turn > max_turn:
@@ -143,14 +142,14 @@ class GameState(NamedTuple):
                 new_battlefield.append(c)
                 continue
             new_c = c.plus_counter()
-            note_args += ["\ntick ", c, " up to ", new_c]
+            note_args += ["\n", "tick ", c, " up to ", new_c]
             # Always get Amulet
             if new_c.n_counters == 3:
                 new_battlefield.append(Card("Amulet of Vigor"))
-                note_args += ["\nsack ", new_c, ", grab ", Card("Amulet of Vigor")]
+                note_args += ["\n", "sack ", new_c, ", grab ", Card("Amulet of Vigor")]
             else:
                 new_battlefield.append(new_c)
-        return self.copy_with_updates(battlefield=Cards(new_battlefield)).add_notes(
+        return self.copy_with_updates(battlefield=tuple(new_battlefield)).add_notes(
             *note_args
         )
 
@@ -170,7 +169,7 @@ class GameState(NamedTuple):
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
         return self.copy_with_updates(
-            hand=self.hand + c,
+            hand=self.hand + (c,),
             library=self.library[1:],
         ).add_notes("\n", "draw ", c)
 
@@ -209,18 +208,23 @@ class GameState(NamedTuple):
         return getattr(state, "effect_for_" + c.slug)()
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
+        i = self.hand.index(c)
         # When playing a saga, tick up to one counter
         c_new = c.plus_counter() if c.is_saga else c
+
+        assert isinstance(c_new, Card)
+
         return self.copy_with_updates(
-            hand=self.hand - c,
-            battlefield=self.battlefield + c_new,
+            hand=self.hand[:i] + self.hand[i + 1 :],
+            battlefield=self.battlefield + (c_new,),
         )
 
     def move_from_battlefield_to_hand(self, c: Card) -> "GameState":
+        i = self.battlefield.index(c)
         # When bouncing a saga, remove all counters
         return self.copy_with_updates(
-            hand=self.hand + c.without_counters(),
-            battlefield=self.battlefield - c,
+            hand=self.hand + (c.without_counters(),),
+            battlefield=self.battlefield[:i] + self.battlefield[i + 1 :],
         )
 
     def add_land_plays(self, n: int) -> "GameState":
@@ -326,7 +330,7 @@ class GameState(NamedTuple):
             f"hand: {self.hand}",
             f"battlefield: {self.battlefield}",
             f"mana pool: {self.mana_pool}",
-            self.notes,
+            "".join(n.get_pretty() for n in self.notes),
         ]
         print("\n".join(lines))
 
@@ -343,7 +347,15 @@ class GameState(NamedTuple):
             if key == "notes":
                 continue
             if key in ["hand", "battlefield"]:
-                seq.append(tuple(sorted(val)))
+
+                try:
+                    seq.append(tuple(sorted(val)))
+                except:
+
+                    print(val)
+
+                    self.dump()
+                    raise
             else:
                 seq.append(val)
         return tuple(seq)
@@ -353,16 +365,26 @@ class GameState(NamedTuple):
         new_kwargs.update(kwargs)
         return GameState(**new_kwargs)
 
-    def add_notes(self, *args: str | Card | Cards | Mana) -> "GameState":
+    def add_notes(self, *args: str | Card | Mana | Tuple[Card, ...]) -> "GameState":
         notes: List[Note] = []
         for arg in args:
             if isinstance(arg, str):
-                if arg.startswith("\n"):
-                    arg = arg.lstrip("\n")
+                if arg == "\n":
                     notes.append(Note("", NoteType.LINE_BREAK))
-                if not arg:
-                    continue
-                notes.append(Note(arg))
-            else:
+                else:
+                    notes.append(Note(arg))
+            elif isinstance(arg, (Card, Mana)):
                 notes.extend(arg.notes)
+            else:
+                notes.extend(self.get_notes_for_card_tuple(arg))
         return self.copy_with_updates(notes=self.notes + tuple(notes))
+
+    def get_notes_for_card_tuple(self, cards: Tuple[Card, ...]) -> Tuple[Note, ...]:
+        notes = []
+        for c in sorted(set(cards)):
+            n = cards.count(c)
+            if n > 1:
+                notes.append(Note(str(n) + "x"))
+            notes.extend(c.notes)
+            notes.append(Note(" "))
+        return tuple(notes[:-1])
