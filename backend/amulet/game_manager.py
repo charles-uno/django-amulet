@@ -34,10 +34,13 @@ class GameManager:
     def _get_next_turn(
         cls, old_states: Set[GameState], max_turn: int, max_time: float
     ) -> Set[GameState]:
+        # If we found a solution, we're done. Just send it back.
         for s in old_states:
             if s.is_done:
                 return {s}
-        # Check if we ran out of turns or time
+        # Check if we ran out of turns or time. Only perform this check at the
+        # start of a new turn to make sure we have checked the previous turn
+        # exhaustively
         for s in old_states:
             if s.is_failed:
                 return {s}
