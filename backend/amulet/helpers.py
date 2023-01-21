@@ -1,7 +1,7 @@
 from typing import Sequence
 
 
-def highlight(text: str, color: str = None) -> str:
+def highlight(text: str, color: str) -> str:
     if color == "green":
         return "\033[32m" + text + "\033[0m"
     if color == "blue":

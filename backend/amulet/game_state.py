@@ -5,8 +5,7 @@ are handled by creating new objects. By using the GameState.get_next_states, we
 iterate through all possible sequences of plays until we find a winning line.
 """
 
-import random
-from typing import List, Optional, Sequence, Set, NamedTuple, Tuple, TypedDict
+from typing import List, Sequence, Set, NamedTuple, Tuple, TypedDict
 
 from .mana import Mana, mana
 from .card import Card

@@ -6,8 +6,6 @@ ambiguity when we tap lands or pay costs.
 from typing import NamedTuple, Tuple
 from .note import Note, NoteType
 
-from . import helpers
-
 
 class Mana(NamedTuple):
     green: int = 0
@@ -55,9 +53,6 @@ class Mana(NamedTuple):
 
     def __mul__(self, n: int) -> "Mana":
         return Mana(self.green * n, self.total * n)
-
-    def __str__(self):
-        return helpers.highlight(self.name, "magenta")
 
     @property
     def notes(self) -> Tuple[Note]:

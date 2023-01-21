@@ -1,5 +1,5 @@
 import random
-from typing import Sequence, Tuple, List, Set, TypedDict
+from typing import Sequence, List, Set
 
 from .game_state import GameState, OpenerDict
 from .note import Note
