@@ -27,7 +27,7 @@ class Note(NamedTuple):
         elif self.type == NoteType.LINE_BREAK:
             return "\n"
         elif self.type == NoteType.TURN_BREAK:
-            return f"\n"
+            return f"\n---- " + self.text
         elif self.type == NoteType.CARD:
             return helpers.highlight(helpers.squish(self.text), "green")
         elif self.type == NoteType.MANA:

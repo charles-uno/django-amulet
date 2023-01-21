@@ -27,11 +27,8 @@ class Card(NamedTuple):
         return helpers.slugify(self.name)
 
     @property
-    def notes(self) -> Tuple[Note, ...]:
-        ret = (Note(text=self.name, type=NoteType.CARD),)
-        if self.n_counters:
-            ret += (Note(text="*" * self.n_counters),)
-        return ret
+    def note(self) -> Note:
+        return Note(text=self.name, type=NoteType.CARD)
 
     @property
     def types(self) -> Set[str]:

@@ -55,8 +55,8 @@ class Mana(NamedTuple):
         return Mana(self.green * n, self.total * n)
 
     @property
-    def notes(self) -> Tuple[Note]:
-        return (Note(self.name, NoteType.MANA),)
+    def note(self) -> Note:
+        return Note(self.name, NoteType.MANA)
 
 
 def mana(expr: str) -> Mana:

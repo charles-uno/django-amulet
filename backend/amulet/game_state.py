@@ -66,8 +66,7 @@ class GameState(NamedTuple):
             return {self.with_tombstone()}
         return {
             self.copy_with_updates(
-                notes=self.notes
-                + (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}")),
+                notes=self.notes + (Note(f"turn {self.turn+1}", NoteType.TURN_BREAK),),
                 turn=self.turn + 1,
                 land_plays_remaining=self.get_land_plays_for_new_turn(),
                 mana_pool=mana(""),
@@ -142,7 +141,6 @@ class GameState(NamedTuple):
                 new_battlefield.append(c)
                 continue
             new_c = c.plus_counter()
-            note_args += ["\n", "tick ", c, " up to ", new_c]
             # Always get Amulet
             if new_c.n_counters == 3:
                 new_battlefield.append(Card("Amulet of Vigor"))
@@ -374,7 +372,7 @@ class GameState(NamedTuple):
                 else:
                     notes.append(Note(arg))
             elif isinstance(arg, (Card, Mana)):
-                notes.extend(arg.notes)
+                notes.append(arg.note)
             else:
                 notes.extend(self.get_notes_for_card_tuple(arg))
         return self.copy_with_updates(notes=self.notes + tuple(notes))
@@ -385,6 +383,6 @@ class GameState(NamedTuple):
             n = cards.count(c)
             if n > 1:
                 notes.append(Note(str(n) + "\u00D7"))
-            notes.extend(c.notes)
+            notes.append(c.note)
             notes.append(Note(" "))
         return tuple(notes[:-1])
