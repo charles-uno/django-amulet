@@ -63,16 +63,15 @@ class GameState(NamedTuple):
         # tombstone on it so we can still look
         if self.turn == max_turn:
             return {self.with_tombstone()}
-        mana_pool = self.get_mana_pool_for_new_turn()
-        notes = (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, "))
         return {
             self.copy_with_updates(
-                notes=self.notes + notes,
+                notes=self.notes
+                + (Note("", NoteType.TURN_BREAK), Note(f"--- turn {self.turn+1}, ")),
                 turn=self.turn + 1,
                 land_plays_remaining=self.get_land_plays_for_new_turn(),
                 mana_pool=mana(""),
             )
-            .add_mana(mana_pool)
+            .add_mana(self.get_mana_pool_for_new_turn())
             .pay_mana_debt()
             .draw_for_turn()
             .handle_sagas()
@@ -384,7 +383,7 @@ class GameState(NamedTuple):
         for c in sorted(set(cards)):
             n = cards.count(c)
             if n > 1:
-                notes.append(Note(str(n) + "x"))
+                notes.append(Note(str(n) + "\u00D7"))
             notes.extend(c.notes)
             notes.append(Note(" "))
         return tuple(notes[:-1])
