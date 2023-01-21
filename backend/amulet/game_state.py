@@ -6,11 +6,17 @@ iterate through all possible sequences of plays until we find a winning line.
 """
 
 import random
-from typing import List, Optional, Set, NamedTuple, Tuple
+from typing import List, Optional, Sequence, Set, NamedTuple, Tuple, TypedDict
 
 from .mana import Mana, mana
 from .card import Card
 from .note import Note, NoteType
+
+
+class OpenerDict(TypedDict):
+    hand: Sequence[str]
+    library: Sequence[str]
+    on_the_play: bool
 
 
 class GameState(NamedTuple):
@@ -32,19 +38,15 @@ class GameState(NamedTuple):
         return self.turn
 
     @classmethod
-    def get_initial_state_from_deck_list(
-        cls, deck_list_raw: List[str], on_the_play: Optional[bool] = None
-    ) -> "GameState":
-        if on_the_play is None:
-            on_the_play = random.choice([True, False])
-        deck_list = [Card(x) for x in deck_list_raw]
-        random.shuffle(deck_list)
-        initial_text = "on the play" if on_the_play else "on the draw"
+    def get_turn_zero_state_from_opener(cls, opener: OpenerDict) -> "GameState":
+        library = tuple(Card(x) for x in opener["library"])
+        hand = tuple(Card(x) for x in opener["hand"])
+        initial_text = "on the play" if opener["on_the_play"] else "on the draw"
         return GameState(
-            library=tuple(deck_list[7:]),
-            hand=tuple(deck_list[:7]),
-            on_the_play=True,
-        ).add_notes(initial_text + " with ", tuple(deck_list[:7]))
+            library=library,
+            hand=hand,
+            on_the_play=opener["on_the_play"],
+        ).add_notes(initial_text + " with ", hand)
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
         if self.is_done or self.turn > max_turn:
