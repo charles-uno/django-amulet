@@ -22,6 +22,7 @@ class GameState(NamedTuple):
     battlefield: Tuple[Card, ...] = ()
     hand: Tuple[Card, ...] = ()
     is_done: bool = False
+    is_failed: bool = False
     land_plays_remaining: int = 0
     library: Tuple[Card, ...] = ()
     mana_debt: Mana = mana("")
@@ -48,6 +49,8 @@ class GameState(NamedTuple):
         ).add_notes(initial_text + " with ", hand)
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
+        if self.is_failed:
+            return set()
         if self.is_done or self.turn > max_turn:
             return {self}
         # Passing the turn is always an option
@@ -63,7 +66,7 @@ class GameState(NamedTuple):
         # Passing the final turn means this state failed to converge. Put a
         # tombstone on it so we can still look
         if self.turn == max_turn:
-            return {self.with_tombstone()}
+            return {self.with_tombstone(f"no solution within {max_turn} turns")}
         return {
             self.copy_with_updates(
                 notes=self.notes + (Note(f"turn {self.turn+1}", NoteType.TURN_BREAK),),
@@ -102,13 +105,14 @@ class GameState(NamedTuple):
             return True
         return False
 
-    def with_tombstone(self) -> "GameState":
+    def with_tombstone(self, reason: str) -> "GameState":
         return self.copy_with_updates(
+            is_failed=True,
             turn=self.turn + 1,
             notes=self.notes
             + (
                 Note("", NoteType.LINE_BREAK),
-                Note("FAILED TO CONVERGE", NoteType.ALERT),
+                Note(f"FAILED: {reason.upper()}", NoteType.ALERT),
             ),
         )
 
