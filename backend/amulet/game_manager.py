@@ -18,26 +18,30 @@ class GameManager:
         }
 
     @classmethod
-    def run_from_opener(cls, opener: OpenerDict, max_turn: int = 4) -> Sequence[Note]:
-        t0 = time.time()
-        t1 = t0 + 5
+    def run_from_opener(
+        cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
+    ) -> Sequence[Note]:
+        max_time = time.time() + max_wait_seconds
         # Draw our opening hand and pass into turn 1
         states = GameState.get_turn_zero_state_from_opener(opener).get_next_states(
             max_turn
         )
         for _ in range(max_turn):
-            states = cls._get_next_turn(states, max_turn=max_turn, max_time=t1)
-        return states.pop().get_notes()
+            states = cls._get_next_turn(states, max_turn=max_turn, max_time=max_time)
+        return states.pop().notes
 
     @classmethod
     def _get_next_turn(
         cls, old_states: Set[GameState], max_turn: int, max_time: float
     ) -> Set[GameState]:
         for s in old_states:
-            # If we're done, that'll be the only state
-            if s.is_done or s.is_failed:
+            if s.is_done:
                 return {s}
-        old_turn = max(s.get_turn() for s in old_states)
+        # Check if we ran out of turns or time
+        for s in old_states:
+            if s.is_failed:
+                return {s}
+        old_turn = max(s.turn for s in old_states)
         new_states = set()
         while old_states:
             for s in old_states.pop().get_next_states(max_turn):
@@ -45,7 +49,7 @@ class GameManager:
                     return {s}
                 elif time.time() > max_time:
                     return {s.with_tombstone("timeout")}
-                elif s.get_turn() > old_turn:
+                elif s.turn > old_turn:
                     new_states.add(s)
                 else:
                     old_states.add(s)

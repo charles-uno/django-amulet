@@ -31,12 +31,6 @@ class GameState(NamedTuple):
     on_the_play: bool = False
     turn: int = 0
 
-    def get_notes(self):
-        return self.notes
-
-    def get_turn(self):
-        return self.turn
-
     @classmethod
     def get_turn_zero_state_from_opener(cls, opener: OpenerDict) -> "GameState":
         library = tuple(Card(x) for x in opener["library"])
@@ -49,16 +43,19 @@ class GameState(NamedTuple):
         ).add_notes(initial_text + " with ", hand)
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
-        if self.is_failed:
-            return set()
-        if self.is_done or self.turn > max_turn:
-            return {self}
-        # Passing the turn is always an option
-        states = self.pass_turn(max_turn)
-        for c in set(self.hand):
-            states |= self.maybe_play_land(c)
-            states |= self.maybe_cast_spell(c)
-        return states
+        try:
+            if self.is_failed:
+                return set()
+            if self.is_done or self.turn > max_turn:
+                return {self}
+            # Passing the turn is always an option
+            states = self.pass_turn(max_turn)
+            for c in set(self.hand):
+                states |= self.maybe_play_land(c)
+                states |= self.maybe_cast_spell(c)
+            return states
+        except Exception as exc:
+            return {self.with_tombstone(f"crash: {exc}")}
 
     def pass_turn(self, max_turn: int) -> Set["GameState"]:
         if self.turn < max_turn and self.should_be_abandoned_when_passing_turn():
