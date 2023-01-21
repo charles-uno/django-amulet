@@ -190,13 +190,13 @@ class GameState(NamedTuple):
         state = self.move_from_hand_to_battlefield(
             c,
         ).add_mana(m)
-        return getattr(state, "play_" + c.slug)()
+        return getattr(state, "effect_for_" + c.slug)()
 
     def put_land_onto_battlefield_untapped(self, c: Card) -> Set["GameState"]:
         state = self.move_from_hand_to_battlefield(
             c,
         ).add_mana(c.taps_for)
-        return getattr(state, "play_" + c.slug)()
+        return getattr(state, "effect_for_" + c.slug)()
 
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
@@ -206,7 +206,7 @@ class GameState(NamedTuple):
             .add_notes("\n", "cast ", c)
             .pay_mana(c.mana_cost)
         )
-        return getattr(state, "cast_" + c.slug)()
+        return getattr(state, "effect_for_" + c.slug)()
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
         # When playing a saga, tick up to one counter
@@ -228,10 +228,10 @@ class GameState(NamedTuple):
             land_plays_remaining=self.land_plays_remaining + n
         )
 
-    def cast_amulet_of_vigor(self) -> Set["GameState"]:
+    def effect_for_amulet_of_vigor(self) -> Set["GameState"]:
         return {self}
 
-    def cast_arboreal_grazer(self) -> Set["GameState"]:
+    def effect_for_arboreal_grazer(self) -> Set["GameState"]:
         states = set()
         for c in set(self.hand):
             if not c.is_land:
@@ -239,7 +239,7 @@ class GameState(NamedTuple):
             states |= self.add_notes(", into ", c).put_land_onto_battlefield_tapped(c)
         return states
 
-    def cast_azusa_lost_but_seeking(
+    def effect_for_azusa_lost_but_seeking(
         self,
     ) -> Set["GameState"]:
         # If we just cast a duplicate Azusa, bail
@@ -247,24 +247,27 @@ class GameState(NamedTuple):
             return set()
         return {self.add_land_plays(2)}
 
-    def cast_cultivator_colossus(self) -> Set["GameState"]:
+    def effect_for_cultivator_colossus(self) -> Set["GameState"]:
+        # Don't cast unless we have at least one land in hand
+        if not any(c.is_land for c in self.hand):
+            return set()
         return {
             self.copy_with_updates(
                 is_done=True,
             )
         }
 
-    def cast_dryad_of_the_ilysian_grove(
+    def effect_for_dryad_of_the_ilysian_grove(
         self,
     ) -> Set["GameState"]:
         return {self.add_land_plays(1)}
 
-    def cast_explore(
+    def effect_for_explore(
         self,
     ) -> Set["GameState"]:
         return {self.add_land_plays(1).draw_a_card()}
 
-    def cast_primeval_titan(
+    def effect_for_primeval_titan(
         self,
     ) -> Set["GameState"]:
         return {
@@ -273,7 +276,7 @@ class GameState(NamedTuple):
             )
         }
 
-    def cast_summoners_pact(
+    def effect_for_summoners_pact(
         self,
     ) -> Set["GameState"]:
         states = set()
@@ -297,28 +300,25 @@ class GameState(NamedTuple):
             )
         return states
 
-    def play_bojuka_bog(self) -> Set["GameState"]:
+    def effect_for_bojuka_bog(self) -> Set["GameState"]:
         return {self}
 
-    def play_forest(self) -> Set["GameState"]:
+    def effect_for_forest(self) -> Set["GameState"]:
         return {self}
 
-    def play_radiant_fountain(self) -> Set["GameState"]:
+    def effect_for_radiant_fountain(self) -> Set["GameState"]:
         return {self}
 
-    def play_simic_growth_chamber(self) -> Set["GameState"]:
+    def effect_for_simic_growth_chamber(self) -> Set["GameState"]:
         states = set()
         for c in set(self.battlefield):
             if c.is_land:
                 states.add(
-                    self.copy_with_updates(
-                        hand=self.hand + c.without_counters(),
-                        battlefield=self.battlefield - c,
-                    ).add_notes(", bounce ", c)
+                    self.move_from_battlefield_to_hand(c).add_notes(", bounce ", c)
                 )
         return states
 
-    def play_urzas_saga(self) -> Set["GameState"]:
+    def effect_for_urzas_saga(self) -> Set["GameState"]:
         return {self}
 
     def dump(self) -> None:
