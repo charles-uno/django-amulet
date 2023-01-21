@@ -58,7 +58,7 @@ class GameState(NamedTuple):
         return states
 
     def pass_turn(self, max_turn: int) -> Set["GameState"]:
-        if self.turn < max_turn and self._should_be_abandoned_when_passing_turn():
+        if self.turn < max_turn and self.should_be_abandoned_when_passing_turn():
             return set()
         # Passing the final turn means this state failed to converge. Put a
         # tombstone on it so we can still look
@@ -75,17 +75,17 @@ class GameState(NamedTuple):
             )
             .add_mana(mana_pool)
             .pay_mana_debt()
-            ._draw_for_turn()
+            .draw_for_turn()
             .handle_sagas()
         }
 
-    def _draw_for_turn(self) -> "GameState":
+    def draw_for_turn(self) -> "GameState":
         if self.turn == 1 and self.on_the_play:
             return self
         else:
             return self.draw_a_card()
 
-    def _should_be_abandoned_when_passing_turn(self):
+    def should_be_abandoned_when_passing_turn(self):
         # Cast a pact we can't pay for
         mana_pool = self.get_mana_pool_for_new_turn()
         if not mana_pool >= self.mana_debt:
@@ -190,7 +190,7 @@ class GameState(NamedTuple):
         state = self.move_from_hand_to_battlefield(
             c,
         ).add_mana(m)
-        return getattr(state, "_play_" + c.slug)()
+        return getattr(state, "play_" + c.slug)()
 
     def put_land_onto_battlefield_untapped(self, c: Card) -> Set["GameState"]:
         state = self.move_from_hand_to_battlefield(
@@ -209,9 +209,18 @@ class GameState(NamedTuple):
         return getattr(state, "cast_" + c.slug)()
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
+        # When playing a saga, tick up to one counter
+        c_new = c.plus_counter() if c.is_saga else c
         return self.copy_with_updates(
             hand=self.hand - c,
-            battlefield=self.battlefield + c,
+            battlefield=self.battlefield + c_new,
+        )
+
+    def move_from_battlefield_to_hand(self, c: Card) -> "GameState":
+        # When bouncing a saga, remove all counters
+        return self.copy_with_updates(
+            hand=self.hand + c.without_counters(),
+            battlefield=self.battlefield - c,
         )
 
     def add_land_plays(self, n: int) -> "GameState":
@@ -310,13 +319,7 @@ class GameState(NamedTuple):
         return states
 
     def play_urzas_saga(self) -> Set["GameState"]:
-        c = Card("Urza's Saga")
-        c_new = c.plus_counter()
-        return {
-            self.copy_with_updates(
-                battlefield=(self.battlefield - c) + c_new,
-            ).add_notes(", tick up to ", c_new)
-        }
+        return {self}
 
     def dump(self) -> None:
         lines = [
