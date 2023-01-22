@@ -4,6 +4,11 @@ from typing import List
 from .note import NoteDict
 from .game_manager import GameManager
 
+from pathlib import Path
+
+# Root of the amulet_backend project
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
 
 def main():
     deck_list = load_deck_list()
@@ -13,7 +18,7 @@ def main():
 
 def load_deck_list() -> List[str]:
     deck_list = []
-    with open("assets/deck-list.txt") as handle:
+    with open(f"{BASE_DIR}/assets/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue
