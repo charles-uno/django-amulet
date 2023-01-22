@@ -361,15 +361,7 @@ class GameState(NamedTuple):
             if key == "notes":
                 continue
             if key in ["hand", "battlefield"]:
-
-                try:
-                    seq.append(tuple(sorted(val)))
-                except:
-
-                    print(val)
-
-                    self.dump()
-                    raise
+                seq.append(tuple(sorted(val)))
             else:
                 seq.append(val)
         return tuple(seq)
