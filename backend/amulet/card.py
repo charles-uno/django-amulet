@@ -3,7 +3,7 @@ A single card is stored as a string. We use a class for a collection of cards.
 """
 
 
-from typing import NamedTuple, Set, Tuple
+from typing import NamedTuple, Set
 import yaml
 
 from .mana import Mana, mana

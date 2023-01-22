@@ -6,6 +6,7 @@ iterate through all possible sequences of plays until we find a winning line.
 """
 
 from typing import List, Sequence, Set, NamedTuple, Tuple, TypedDict
+from typing_extensions import NotRequired, Unpack
 
 from .mana import Mana, mana
 from .card import Card
@@ -16,6 +17,20 @@ class OpenerDict(TypedDict):
     hand: Sequence[str]
     library: Sequence[str]
     on_the_play: bool
+
+
+class GameStateUpdate(TypedDict):
+    battlefield: NotRequired[Tuple[Card, ...]]
+    hand: NotRequired[Tuple[Card, ...]]
+    is_done: NotRequired[bool]
+    is_failed: NotRequired[bool]
+    land_plays_remaining: NotRequired[int]
+    library: NotRequired[Tuple[Card, ...]]
+    mana_debt: NotRequired[Mana]
+    mana_pool: NotRequired[Mana]
+    notes: NotRequired[Tuple[Note, ...]]
+    on_the_play: NotRequired[bool]
+    turn: NotRequired[int]
 
 
 class GameState(NamedTuple):
@@ -295,7 +310,7 @@ class GameState(NamedTuple):
             # Optimization: whatever we Pact for, cast it right away
             states |= (
                 self.copy_with_updates(
-                    hand=self.hand + c,
+                    hand=self.hand + (c,),
                     mana_debt=self.mana_debt + mana("2GG"),
                 )
                 .add_notes(", grab ", c)
@@ -359,7 +374,7 @@ class GameState(NamedTuple):
                 seq.append(val)
         return tuple(seq)
 
-    def copy_with_updates(self, **kwargs) -> "GameState":
+    def copy_with_updates(self, **kwargs: Unpack[GameStateUpdate]) -> "GameState":
         new_kwargs = self._asdict()
         new_kwargs.update(kwargs)
         return GameState(**new_kwargs)
