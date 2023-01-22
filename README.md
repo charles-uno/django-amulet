@@ -10,4 +10,3 @@ Type annotation is a work in progress
 - pyyaml
 - pytest
 - typing_extensions
-- decouple (for handling django secret)
