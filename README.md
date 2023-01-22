@@ -6,6 +6,7 @@ Type annotation is a work in progress
 
 ## Requirements
 
-django
-pyyaml
-pytest
+- django
+- pyyaml
+- pytest
+- typing_extensions
