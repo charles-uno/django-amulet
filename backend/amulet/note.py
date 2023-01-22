@@ -2,8 +2,6 @@ from enum import Enum
 import json
 from typing import NamedTuple, TypedDict
 
-from . import helpers
-
 
 class NoteDict(TypedDict):
     text: str

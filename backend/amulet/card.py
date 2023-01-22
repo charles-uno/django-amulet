@@ -8,7 +8,6 @@ import yaml
 
 from .mana import Mana, mana
 from .note import Note, NoteType
-from . import helpers
 
 
 with open("assets/card-data.yaml") as handle:
