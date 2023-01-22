@@ -178,7 +178,7 @@ class GameState(NamedTuple):
         return self.copy_with_updates(mana_pool=self.mana_pool - m).note_mana_pool()
 
     def note_mana_pool(self) -> "GameState":
-        return self.add_notes(", ", self.mana_pool, " in pool")
+        return self.add_notes(" (mana: ", self.mana_pool, ")")
 
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
@@ -254,7 +254,7 @@ class GameState(NamedTuple):
         for c in set(self.hand):
             if not c.is_land:
                 continue
-            states |= self.add_notes(", into ", c).put_land_onto_battlefield_tapped(c)
+            states |= self.add_notes(" into ", c).put_land_onto_battlefield_tapped(c)
         return states
 
     def effect_for_azusa_lost_but_seeking(
