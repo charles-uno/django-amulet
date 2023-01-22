@@ -1,8 +1,13 @@
 from enum import Enum
 import json
-from typing import NamedTuple
+from typing import NamedTuple, TypedDict
 
 from . import helpers
+
+
+class NoteDict(TypedDict):
+    text: str
+    type: str
 
 
 class NoteType(Enum):
@@ -18,19 +23,5 @@ class Note(NamedTuple):
     text: str
     type: NoteType = NoteType.TEXT
 
-    def to_json(self):
-        return json.dumps(self._asdict())
-
-    def get_pretty(self):
-        if self.type == NoteType.TEXT:
-            return self.text
-        elif self.type == NoteType.LINE_BREAK:
-            return "\n"
-        elif self.type == NoteType.TURN_BREAK:
-            return f"\n---- " + self.text
-        elif self.type == NoteType.CARD:
-            return helpers.highlight(helpers.squish(self.text), "green")
-        elif self.type == NoteType.MANA:
-            return helpers.highlight(self.text, "magenta")
-        else:
-            return helpers.highlight(self.text, "red")
+    def to_dict(self) -> NoteDict:
+        return {"text": self.text, "type": self.type.name}

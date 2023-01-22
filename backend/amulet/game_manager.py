@@ -3,10 +3,16 @@ import time
 from typing import Sequence, List, Set
 
 from .game_state import GameState, OpenerDict
-from .note import Note
+from .note import Note, NoteDict
 
 
 class GameManager:
+    @classmethod
+    def run_e2e(cls, deck_list: List[str]) -> List[NoteDict]:
+        opener = cls.get_opener_from_deck_list(deck_list)
+        notes = cls.run_from_opener(opener)
+        return [n.to_dict() for n in notes]
+
     @classmethod
     def get_opener_from_deck_list(cls, deck_list: List[str]) -> OpenerDict:
         on_the_play = random.choice([True, False])
