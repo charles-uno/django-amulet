@@ -24,7 +24,10 @@ class Card(NamedTuple):
 
     @property
     def slug(self) -> str:
-        return helpers.slugify(self.name)
+        text = self.name.replace("'", "").lower()
+        for c in "-,.":
+            text = text.replace(c, "")
+        return text.replace(" ", "_")
 
     @property
     def note(self) -> Note:
