@@ -7,8 +7,8 @@ from .game_manager import GameManager
 
 def main():
     deck_list = load_deck_list()
-    notes = GameManager.run_e2e(deck_list)
-    print_pretty(notes)
+    summary = GameManager.run_e2e(deck_list)
+    print_pretty(summary["notes"])
 
 
 def load_deck_list() -> List[str]:
