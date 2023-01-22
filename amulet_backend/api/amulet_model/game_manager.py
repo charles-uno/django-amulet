@@ -1,17 +1,15 @@
 import random
 import time
-from typing import Sequence, List, Set
+from typing import List, Set
 
-from .game_state import GameState, OpenerDict
-from .note import Note, NoteDict
+from .game_state import GameState, GameSummaryDict, OpenerDict
 
 
 class GameManager:
     @classmethod
-    def run_e2e(cls, deck_list: List[str]) -> List[NoteDict]:
+    def run_e2e(cls, deck_list: List[str]) -> GameSummaryDict:
         opener = cls.get_opener_from_deck_list(deck_list)
-        notes = cls.run_from_opener(opener)
-        return [n.to_dict() for n in notes]
+        return cls.run_from_opener(opener)
 
     @classmethod
     def get_opener_from_deck_list(cls, deck_list: List[str]) -> OpenerDict:
@@ -26,7 +24,7 @@ class GameManager:
     @classmethod
     def run_from_opener(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> Sequence[Note]:
+    ) -> GameSummaryDict:
         max_time = time.time() + max_wait_seconds
         # Draw our opening hand and pass into turn 1
         states = GameState.get_turn_zero_state_from_opener(opener).get_next_states(
@@ -34,7 +32,7 @@ class GameManager:
         )
         for _ in range(max_turn):
             states = cls._get_next_turn(states, max_turn=max_turn, max_time=max_time)
-        return states.pop().notes
+        return states.pop().get_summary_from_completed_game()
 
     @classmethod
     def _get_next_turn(
