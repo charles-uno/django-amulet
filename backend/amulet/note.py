@@ -3,18 +3,19 @@ import json
 from typing import NamedTuple, TypedDict
 
 
+# For JSON serializability
 class NoteDict(TypedDict):
     text: str
     type: str
 
 
 class NoteType(Enum):
-    TEXT = 1
-    CARD = 2
-    MANA = 3
-    LINE_BREAK = 4
-    TURN_BREAK = 5
-    ALERT = 6
+    TEXT = "TEXT"
+    CARD = "CARD"
+    MANA = "MANA"
+    LINE_BREAK = "LINE_BREAK"
+    TURN_BREAK = "TURN_BREAK"
+    ALERT = "ALERT"
 
 
 class Note(NamedTuple):
