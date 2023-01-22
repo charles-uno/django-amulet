@@ -1,8 +1,3 @@
-"""
-A single card is stored as a string. We use a class for a collection of cards.
-"""
-
-
 from typing import NamedTuple, Set
 import yaml
 

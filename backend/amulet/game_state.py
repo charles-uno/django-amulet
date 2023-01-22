@@ -344,7 +344,7 @@ class GameState(NamedTuple):
             f"hand: {self.hand}",
             f"battlefield: {self.battlefield}",
             f"mana pool: {self.mana_pool}",
-            "".join(n.get_pretty() for n in self.notes),
+            "".join(n.dump() for n in self.notes),
         ]
         print("\n".join(lines))
 

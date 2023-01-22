@@ -22,5 +22,11 @@ class Note(NamedTuple):
     text: str
     type: NoteType = NoteType.TEXT
 
+    def dump(self) -> str:
+        if self.type in [NoteType.LINE_BREAK, NoteType.TURN_BREAK]:
+            return "\n"
+        else:
+            return self.text
+
     def to_dict(self) -> NoteDict:
         return {"text": self.text, "type": self.type.name}
