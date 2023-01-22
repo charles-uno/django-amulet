@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
-
 from typing import List
-from amulet_model import GameManager, NoteDict
+
+
+from .note import NoteDict
+from .game_manager import GameManager
 
 
 def main():
