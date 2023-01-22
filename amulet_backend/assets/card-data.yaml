@@ -1,0 +1,74 @@
+Amulet of Vigor:
+  mana_cost: "1"
+  type: artifact
+  never_defer: true
+Ancient Stirrings:
+  type: sorcery
+  mana_cost: G
+Arboreal Grazer:
+  mana_cost: G
+  type: creature
+Azusa, Lost but Seeking:
+  mana_cost: "2G"
+  type: creature
+  never_defer: true
+Bojuka Bog:
+  type: land
+  taps_for: "1"
+  enters_tapped: true
+Boros Garrison:
+  enters_tapped: true
+  taps_for: "WR"
+  type: land
+Crumbling Vestige:
+  type: land
+  taps_for: "1"
+  enters_tapped: true
+Cultivator Colossus:
+  type: creature
+  mana_cost: "4GGG"
+  never_defer: true
+Dryad of the Ilysian Grove:
+  type: creature
+  mana_cost: "2G"
+  never_defer: true
+Explore:
+  mana_cost: "1G"
+  type: sorcery
+Forest:
+  type: basic,land,forest
+  taps_for: G
+  enters_tapped: false
+  never_defer: true
+Primeval Titan:
+  mana_cost: 4GG
+  type: creature
+  never_defer: true
+Radiant Fountain:
+  display: Fountain
+  type: land
+  taps_for: "1"
+  never_defer: true
+Selesnya Sanctuary:
+  type: land
+  taps_for: "GW"
+  enters_tapped: true
+Simic Growth Chamber:
+  type: land
+  taps_for: GU
+  enters_tapped: true
+Summoner's Pact:
+  type: instant
+  mana_cost: "0"
+Valakut, the Molten Pinnacle:
+  type: land
+  taps_for: "R"
+  enters_tapped: true
+# Standing in for a blank
+Unyaro Bee Sting:
+  type: Sorcery
+  mana_cost: "3G"
+Urza's Saga:
+  type: land,saga
+  enters_tapped: false
+  taps_for: "1"
