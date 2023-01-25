@@ -64,7 +64,7 @@ class GameState(NamedTuple):
         ).add_notes(initial_text + " with ", hand)
 
     def get_summary_from_completed_game(self) -> GameSummaryDict:
-        if not self.is_done or self.is_failed:
+        if not self.is_done and not self.is_failed:
             raise ValueError("This game is still in progress!")
         return {
             "on_the_play": self.on_the_play,
