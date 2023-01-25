@@ -16,3 +16,4 @@ python3 -m amulet_backend.api.amulet_model
 - pyyaml
 - pytest
 - typing_extensions
+- django-cors-headers
