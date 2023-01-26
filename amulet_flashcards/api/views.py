@@ -1,14 +1,19 @@
 from typing import List
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from .amulet_model import GameManager
 
 
-def index(request):
+def json(request):
     deck_list = load_deck_list()
-    notes = GameManager.run_e2e(deck_list)
+    summary = GameManager.run_e2e_json(deck_list)
+    return JsonResponse(summary)
 
-    return JsonResponse({"notes": notes})
+
+def html(request):
+    deck_list = load_deck_list()
+    summary = GameManager.run_e2e_html(deck_list)
+    return HttpResponse(summary)
 
 
 def load_deck_list() -> List[str]:

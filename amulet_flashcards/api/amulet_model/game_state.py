@@ -20,8 +20,6 @@ class OpenerDict(TypedDict):
 
 
 class GameSummaryDict(TypedDict):
-    on_the_play: bool
-    turn: int
     notes: List[NoteDict]
 
 
@@ -63,14 +61,17 @@ class GameState(NamedTuple):
             on_the_play=opener["on_the_play"],
         ).add_notes(initial_text + " with ", hand)
 
-    def get_summary_from_completed_game(self) -> GameSummaryDict:
+    def get_json_summary_from_completed_game(self) -> GameSummaryDict:
         if not self.is_done and not self.is_failed:
             raise ValueError("This game is still in progress!")
         return {
-            "on_the_play": self.on_the_play,
-            "turn": self.turn if self.is_done else -1,
             "notes": [n.to_dict() for n in self.notes],
         }
+
+    def get_html_summary_from_completed_game(self) -> str:
+        if not self.is_done and not self.is_failed:
+            raise ValueError("This game is still in progress!")
+        return "\n".join(n.to_html() for n in self.notes)
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
         try:

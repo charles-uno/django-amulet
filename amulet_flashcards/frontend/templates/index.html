@@ -10,9 +10,24 @@
   <meta name="author" content="">
   <link href="/static/css/style.css" rel="stylesheet">
 
+  <script src="https://unpkg.com/htmx.org@1.8.5" integrity="sha384-7aHh9lqPYGYZ7sTHvzP1t3BAfLhYSTy9ArHdP3Xsr9/3TlGurYgcPBoFmXX2TX/w" crossorigin="anonymous"></script>
+
+
+
     </head>
     <body>
         <p class="foo">foo bar</p>
-        <p>fixx buxx</p>
-    </body>
+
+        <button hx-get="/api"
+        hx-trigger="click"
+        hx-target="#target"
+        hx-swap="outerHTML"
+    >
+        Click Me!
+    </button>
+
+    <div id="target">initial contents</div>
+
+
+  </body>
 </html>

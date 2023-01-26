@@ -29,3 +29,17 @@ class Note(NamedTuple):
 
     def to_dict(self) -> NoteDict:
         return {"text": self.text, "type": self.type.name}
+
+    def to_html(self) -> str:
+        if self.type == NoteType.TEXT:
+            return f"<span class='summary-text'>{self.text}</span>"
+        elif self.type == NoteType.LINE_BREAK:
+            return f"<br>"
+        elif self.type == NoteType.TURN_BREAK:
+            return f"<br>"
+        elif self.type == NoteType.MANA:
+            return f"<span class='summary-mana'>{self.text}</span>"
+        elif self.type == NoteType.CARD:
+            return f"<span class='summary-card'>{self.text}</span>"
+        else:
+            return f"<span class='summary-alert'>{self.text}</span>"

@@ -7,9 +7,14 @@ from .game_state import GameState, GameSummaryDict, OpenerDict
 
 class GameManager:
     @classmethod
-    def run_e2e(cls, deck_list: List[str]) -> GameSummaryDict:
+    def run_e2e_json(cls, deck_list: List[str]) -> GameSummaryDict:
         opener = cls.get_opener_from_deck_list(deck_list)
-        return cls.run_from_opener(opener)
+        return cls.run_from_opener_json(opener)
+
+    @classmethod
+    def run_e2e_html(cls, deck_list: List[str]) -> str:
+        opener = cls.get_opener_from_deck_list(deck_list)
+        return cls.run_from_opener_html(opener)
 
     @classmethod
     def get_opener_from_deck_list(cls, deck_list: List[str]) -> OpenerDict:
@@ -22,9 +27,25 @@ class GameManager:
         }
 
     @classmethod
-    def run_from_opener(
+    def run_from_opener_json(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> GameSummaryDict:
+        return cls._run_from_opener(
+            opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
+        ).get_json_summary_from_completed_game()
+
+    @classmethod
+    def run_from_opener_html(
+        cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
+    ) -> str:
+        return cls._run_from_opener(
+            opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
+        ).get_html_summary_from_completed_game()
+
+    @classmethod
+    def _run_from_opener(
+        cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
+    ) -> GameState:
         max_time = time.time() + max_wait_seconds
         # Draw our opening hand and pass into turn 1
         states = GameState.get_turn_zero_state_from_opener(opener).get_next_states(
@@ -32,7 +53,7 @@ class GameManager:
         )
         for _ in range(max_turn):
             states = cls._get_next_turn(states, max_turn=max_turn, max_time=max_time)
-        return states.pop().get_summary_from_completed_game()
+        return states.pop()
 
     @classmethod
     def _get_next_turn(
