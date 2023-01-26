@@ -31,8 +31,9 @@ class Note(NamedTuple):
         return {"text": self.text, "type": self.type.name}
 
     def to_html(self) -> str:
+        text_safe = self.text.replace("'", "&apos;").replace('"', "&quot;")
         if self.type == NoteType.TEXT:
-            return f"<span class='summary-text'>{self.text}</span>"
+            return f"<span class='summary-text'>{text_safe}</span>"
         elif self.type == NoteType.LINE_BREAK:
             return f"<br>"
         elif self.type == NoteType.TURN_BREAK:
@@ -40,12 +41,9 @@ class Note(NamedTuple):
         elif self.type == NoteType.MANA:
             return f"<span class='summary-mana'>{self.get_inner_html_mana()}</span>"
         elif self.type == NoteType.CARD:
-            # Watch out for the single quote in Summoner's Pact. If they ever
-            # print a card with a " we'll need to upgrade our escaping.
-            text_safe = self.text.replace("'", "&#39;")
-            return f"<span class='summary-card' onclick='autocard(\"{text_safe}\")'>{self.text}</span>"
+            return f"<span class='summary-card' onclick='autocard(\"{text_safe}\")'>{text_safe}</span>"
         else:
-            return f"<span class='summary-alert'>{self.text}</span>"
+            return f"<span class='summary-alert'>{text_safe}</span>"
 
     def get_inner_html_mana(self) -> str:
         urls = []
