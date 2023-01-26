@@ -37,11 +37,11 @@ class Note(NamedTuple):
         elif self.type == NoteType.LINE_BREAK:
             return f"<br>"
         elif self.type == NoteType.TURN_BREAK:
-            return f"<br>"
+            return f"<br><span class='summary-text'>{self.text}</span>"
         elif self.type == NoteType.MANA:
             return f"<span class='summary-mana'>{self.get_inner_html_mana()}</span>"
         elif self.type == NoteType.CARD:
-            return f"<span class='summary-card' onclick='autocard(\"{self.get_card_image_url()}\")'>{text_safe}</span>"
+            return f"<span class='summary-card' onclick='show_autocard(\"{self.get_card_image_url()}\")'>{text_safe}</span>"
         else:
             return f"<span class='summary-alert'>{text_safe}</span>"
 

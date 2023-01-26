@@ -10,31 +10,32 @@
   <meta name="author" content="">
   <link href="/static/css/app.css" rel="stylesheet">
 
-  <script src="https://unpkg.com/htmx.org@1.8.5" integrity="sha384-7aHh9lqPYGYZ7sTHvzP1t3BAfLhYSTy9ArHdP3Xsr9/3TlGurYgcPBoFmXX2TX/w" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/htmx.org@1.8.5"
+    integrity="sha384-7aHh9lqPYGYZ7sTHvzP1t3BAfLhYSTy9ArHdP3Xsr9/3TlGurYgcPBoFmXX2TX/w"
+    crossorigin="anonymous"></script>
 
   <script src="/static/js/app.js"></script>
 
 
-    </head>
-    <body>
+</head>
 
+<body>
 
-      <div id="autocard-backdrop" class="autocard-backdrop" onclick="hide_autocard()">
-        <img id="autocard" class="autocard">
-      </div>
+  <div id="autocard-backdrop" class="autocard-backdrop" onclick="hide_autocard()">
+    <img id="autocard" class="autocard">
+  </div>
 
-      <p class="foo" onclick="autocard()">foo bar</p>
-
-        <button hx-get="/api/html"
-        hx-trigger="click"
-        hx-target="#target"
-        hx-swap="innerHTML"
-    >
+  <div class="main-wrap">
+    <div class="main">
+      <button hx-get="/api/html" hx-trigger="click" hx-target="#target" hx-swap="innerHTML">
         Click Me!
-    </button>
+      </button>
 
-    <div id="target">initial contents</div>
+      <div id="target">initial contents</div>
 
+    </div>
+  </div>
 
-  </body>
+</body>
+
 </html>
