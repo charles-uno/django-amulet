@@ -1,6 +1,6 @@
 
 
-function autocard() {
-    console.log("autocard!");
+function autocard(card_name) {
+    console.log("autocard!", card_name);
 }
 

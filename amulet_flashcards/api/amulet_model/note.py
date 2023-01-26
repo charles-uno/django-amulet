@@ -40,11 +40,14 @@ class Note(NamedTuple):
         elif self.type == NoteType.MANA:
             return f"<span class='summary-mana'>{self.get_inner_html_mana()}</span>"
         elif self.type == NoteType.CARD:
-            return f"<span class='summary-card'>{self.text}</span>"
+            # Watch out for the single quote in Summoner's Pact. If they ever
+            # print a card with a " we'll need to upgrade our escaping.
+            text_safe = self.text.replace("'", "&#39;")
+            return f"<span class='summary-card' onclick='autocard(\"{text_safe}\")'>{self.text}</span>"
         else:
             return f"<span class='summary-alert'>{self.text}</span>"
 
-    def get_inner_html_mana(self):
+    def get_inner_html_mana(self) -> str:
         urls = []
         for c in self.text:
             urls.append(
