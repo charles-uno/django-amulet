@@ -1,8 +1,11 @@
 
 
-function autocard(card_name) {
-    console.log("autocard!", card_name);
+function autocard(card_image_url) {
+    console.log("autocard!", card_image_url);
+    document.getElementById("autocard").src = card_image_url;
+    document.getElementById("autocard-backdrop").style.display = "block";
 }
 
-
-// "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name=" + c;
+function hide_autocard() {
+    document.getElementById("autocard-backdrop").style.display = "none";
+}

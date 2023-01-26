@@ -41,7 +41,7 @@ class Note(NamedTuple):
         elif self.type == NoteType.MANA:
             return f"<span class='summary-mana'>{self.get_inner_html_mana()}</span>"
         elif self.type == NoteType.CARD:
-            return f"<span class='summary-card' onclick='autocard(\"{text_safe}\")'>{text_safe}</span>"
+            return f"<span class='summary-card' onclick='autocard(\"{self.get_card_image_url()}\")'>{text_safe}</span>"
         else:
             return f"<span class='summary-alert'>{text_safe}</span>"
 
@@ -53,3 +53,12 @@ class Note(NamedTuple):
             )
         tags = [f"<img class='mana-symbol' src='{url}'>" for url in urls]
         return "".join(tags)
+
+    def get_card_image_url(self) -> str:
+        text_safe = (
+            self.text.replace("'", "&apos;").replace('"', "&quot;").replace(" ", "%20")
+        )
+        return (
+            "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
+            + text_safe
+        )

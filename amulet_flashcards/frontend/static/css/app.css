@@ -1,0 +1,28 @@
+body {
+    color: red;
+}
+
+#autocard-backdrop {
+    position: fixed;
+    /* Some wiggle room since things move when scrolling */
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    z-index: 998;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    text-align: center;
+}
+
+#autocard {
+    z-index: 999;
+    width: 500px;
+    max-width: 50%;
+    border-radius: 5%;
+    overflow: hidden;
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}

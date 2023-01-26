@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <link href="/static/css/style.css" rel="stylesheet">
+  <link href="/static/css/app.css" rel="stylesheet">
 
   <script src="https://unpkg.com/htmx.org@1.8.5" integrity="sha384-7aHh9lqPYGYZ7sTHvzP1t3BAfLhYSTy9ArHdP3Xsr9/3TlGurYgcPBoFmXX2TX/w" crossorigin="anonymous"></script>
 
@@ -17,7 +17,13 @@
 
     </head>
     <body>
-        <p class="foo" onclick="autocard()">foo bar</p>
+
+
+      <div id="autocard-backdrop" class="autocard-backdrop" onclick="hide_autocard()">
+        <img id="autocard" class="autocard">
+      </div>
+
+      <p class="foo" onclick="autocard()">foo bar</p>
 
         <button hx-get="/api/html"
         hx-trigger="click"
