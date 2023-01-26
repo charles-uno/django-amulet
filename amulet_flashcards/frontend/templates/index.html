@@ -27,9 +27,11 @@
 
   <div class="main-wrap">
     <div class="main">
-      <button hx-get="/api/html" hx-trigger="click" hx-target="#target" hx-swap="innerHTML">
+      <button hx-get="/api/html" hx-trigger="click" hx-target="#target" hx-indicator="#indicator" hx-swap="innerHTML">
         Click Me!
       </button>
+
+      <div id="indicator" class="htmx-indicator">Working...</div>
 
       <div id="target">initial contents</div>
 
