@@ -38,8 +38,17 @@ class Note(NamedTuple):
         elif self.type == NoteType.TURN_BREAK:
             return f"<br>"
         elif self.type == NoteType.MANA:
-            return f"<span class='summary-mana'>{self.text}</span>"
+            return f"<span class='summary-mana'>{self.get_inner_html_mana()}</span>"
         elif self.type == NoteType.CARD:
             return f"<span class='summary-card'>{self.text}</span>"
         else:
             return f"<span class='summary-alert'>{self.text}</span>"
+
+    def get_inner_html_mana(self):
+        urls = []
+        for c in self.text:
+            urls.append(
+                f"https://gatherer.wizards.com/Handlers/Image.ashx?size=medium&type=symbol&name={c}"
+            )
+        tags = [f"<img class='mana-symbol' src='{url}'>" for url in urls]
+        return "".join(tags)
