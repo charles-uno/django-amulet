@@ -32,13 +32,9 @@ class GameManager:
     def get_opener_from_deck_list_htmx(cls, deck_list: List[str]) -> HtmlExpression:
         opener = cls.get_opener_from_deck_list(deck_list)
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
-        turn_order_tag = HtmlBuilder.tag(
-            "div", inner_html=turn_order, klass="opener-turn-order"
-        )
+        turn_order_tag = HtmlBuilder.div(turn_order, klass="opener-turn-order")
         card_tags = [HtmlBuilder.card_image(c) for c in opener["hand"]]
-        cards_tag = HtmlBuilder.tag(
-            "div", inner_html="".join(card_tags), klass="opener-cards"
-        )
+        cards_tag = HtmlBuilder.div("".join(card_tags), klass="opener-cards")
 
         play_payload = HtmlBuilder.span(json.dumps(opener), klass="payload")
         play_button = HtmlBuilder.tag(
