@@ -1,2 +1,2 @@
 test:
-	pytest __tests__
+	pytest tests
