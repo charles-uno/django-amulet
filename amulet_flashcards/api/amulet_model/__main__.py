@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from .note import NoteDict
+from .note import Note, NoteType
 from .game_manager import GameManager
 from .game_state import GameSummaryDict
 
@@ -32,21 +32,21 @@ def print_pretty(summary: GameSummaryDict) -> None:
     print("".join(note_to_str(n) for n in summary["notes"]))
 
 
-def note_to_str(n: NoteDict) -> str:
-    if n["type"] == "TEXT":
-        return n["text"]
-    if n["type"] == "LINE_BREAK":
+def note_to_str(n: Note) -> str:
+    if n.type == NoteType.TEXT:
+        return n.text
+    if n.type == NoteType.LINE_BREAK:
         return "\n"
-    elif n["type"] == "TURN_BREAK":
-        return f"\n---- " + n["text"]
-    elif n["type"] == "CARD":
-        return highlight(squish(n["text"]), "green")
-    elif n["type"] == "MANA":
-        return highlight(n["text"], "magenta")
-    elif n["type"] == "ALERT":
-        return highlight(n["text"], "red")
+    elif n.type == NoteType.TURN_BREAK:
+        return f"\n---- " + n.text
+    elif n.type == NoteType.CARD:
+        return highlight(squish(n.text), "green")
+    elif n.type == NoteType.MANA:
+        return highlight(n.text, "magenta")
+    elif n.type == NoteType.ALERT:
+        return highlight(n.text, "red")
     else:
-        raise ValueError(f"unexpected note type: {n['type']}")
+        raise ValueError(f"unexpected note type: {n.type}")
 
 
 def squish(text: str) -> str:
