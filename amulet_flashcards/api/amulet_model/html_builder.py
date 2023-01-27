@@ -18,7 +18,6 @@ class HtmlExpression(str):
 
 class HtmlTagArgs(TypedDict):
     klass: NotRequired[str]
-    inner_html: NotRequired[str]
     onclick: NotRequired[str]
     src: NotRequired[str]
 
@@ -81,17 +80,14 @@ class HtmlBuilder:
         return cls._tag("span", klass="summary-alert", inner_html=cls._quote_safe(text))
 
     @classmethod
-    def _tag(cls, tag_name: str, **kwargs: Unpack[HtmlTagArgs]) -> HtmlExpression:
+    def _tag(
+        cls, tag_name: str, inner_html: str = "", **kwargs: Unpack[HtmlTagArgs]
+    ) -> HtmlExpression:
         expr = "<" + tag_name
-        if klass := kwargs.get("klass"):
-            expr += f" class='{klass}'"
-        if src := kwargs.get("src"):
-            expr += f" src='{src}'"
-        if onclick := kwargs.get("onclick"):
-            expr += f" onclick='{onclick}'"
+        for key, val in kwargs.items():
+            key = key.replace("klass", "class")
+            expr += f" {key}='{val}'"
         expr += ">"
-        if inner_html := kwargs.get("inner_html"):
-            expr += inner_html
         if tag_name not in ["img", "br"]:
-            expr += f"</{tag_name}>"
+            expr += f"{inner_html}</{tag_name}>"
         return HtmlExpression(expr)
