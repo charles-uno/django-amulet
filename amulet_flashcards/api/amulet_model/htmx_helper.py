@@ -2,8 +2,8 @@ from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
 
 
-class HtmlExpression(str):
-    def __new__(cls, expr: str) -> "HtmlExpression":
+class Htmx(str):
+    def __new__(cls, expr: str) -> "Htmx":
         # Sanity check. Just make sure the braces match up
         braces = []
         for x in expr:
@@ -13,12 +13,12 @@ class HtmlExpression(str):
                 braces.pop()
             elif x == ">":
                 raise ValueError(f"mismatched braces in {repr(expr)}")
-        return super().__new__(HtmlExpression, expr)
+        return super().__new__(Htmx, expr)
 
 
-class HtmlBuilder:
+class HtmxHelper:
     @classmethod
-    def from_opener(cls, opener: OpenerDict) -> HtmlExpression:
+    def from_opener(cls, opener: OpenerDict) -> Htmx:
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
         turn_order_tag = cls.div(turn_order, klass="opener-turn-order")
         card_tags = [cls.card_image(c) for c in opener["hand"]]
@@ -44,17 +44,17 @@ class HtmlBuilder:
         )
         play_target = cls.div("placeholder contents", id="play-target")
 
-        return HtmlExpression(
+        return Htmx(
             turn_order_tag + cards_tag + play_button + play_indicator + play_target
         )
 
     @classmethod
-    def from_play_summary(cls, summary: GameSummaryDict) -> HtmlExpression:
+    def from_play_summary(cls, summary: GameSummaryDict) -> Htmx:
         html_notes = [cls.from_note(n) for n in summary["notes"]]
-        return HtmlExpression("\n".join(html_notes))
+        return Htmx("\n".join(html_notes))
 
     @classmethod
-    def from_note(cls, n: Note) -> HtmlExpression:
+    def from_note(cls, n: Note) -> Htmx:
         if n.type == NoteType.TEXT:
             return cls.text(n.text)
         elif n.type == NoteType.LINE_BREAK:
@@ -69,7 +69,7 @@ class HtmlBuilder:
             return cls.alert(n.text)
 
     @classmethod
-    def card_name(cls, card_name: str) -> HtmlExpression:
+    def card_name(cls, card_name: str) -> Htmx:
         return cls.span(
             cls._quote_safe(card_name),
             klass="card-name",
@@ -77,7 +77,7 @@ class HtmlBuilder:
         )
 
     @classmethod
-    def card_image(cls, card_name: str) -> HtmlExpression:
+    def card_image(cls, card_name: str) -> Htmx:
         return cls.img(klass="card", src=cls._card_image_url(card_name))
 
     @classmethod
@@ -96,51 +96,49 @@ class HtmlBuilder:
         return text.replace("'", "&apos;").replace('"', "&quot;").replace(" ", "%20")
 
     @classmethod
-    def mana(cls, expr: str) -> HtmlExpression:
+    def mana(cls, expr: str) -> Htmx:
         urls = [cls.mana_symbol_url(x) for x in expr]
         tags = [cls.img(klass="mana-symbol", src=url) for url in urls]
-        return HtmlExpression("".join(tags))
+        return Htmx("".join(tags))
 
     @classmethod
     def mana_symbol_url(cls, c: str) -> str:
         return f"https://gatherer.wizards.com/Handlers/Image.ashx?size=medium&type=symbol&name={c}"
 
     @classmethod
-    def text(cls, text: str) -> HtmlExpression:
+    def text(cls, text: str) -> Htmx:
         return cls.span(cls._quote_safe(text), klass="summary-text")
 
     @classmethod
-    def line_break(cls) -> HtmlExpression:
+    def line_break(cls) -> Htmx:
         return cls.br()
 
     @classmethod
-    def turn_break(cls, text: str) -> HtmlExpression:
-        return HtmlExpression(
-            cls.br() + cls.span(cls._quote_safe(text), klass="summary-text")
-        )
+    def turn_break(cls, text: str) -> Htmx:
+        return Htmx(cls.br() + cls.span(cls._quote_safe(text), klass="summary-text"))
 
     @classmethod
-    def alert(cls, text: str) -> HtmlExpression:
+    def alert(cls, text: str) -> Htmx:
         return cls.span(cls._quote_safe(text), klass="summary-alert")
 
     @classmethod
-    def br(cls) -> HtmlExpression:
-        return HtmlExpression(cls.tag("br"))
+    def br(cls) -> Htmx:
+        return Htmx(cls.tag("br"))
 
     @classmethod
-    def img(cls, **kwargs: str) -> HtmlExpression:
+    def img(cls, **kwargs: str) -> Htmx:
         return cls.tag("img", "", **kwargs)
 
     @classmethod
-    def span(cls, inner_html: str, **kwargs: str) -> HtmlExpression:
+    def span(cls, inner_html: str, **kwargs: str) -> Htmx:
         return cls.tag("span", inner_html, **kwargs)
 
     @classmethod
-    def div(cls, inner_html: str, **kwargs: str) -> HtmlExpression:
+    def div(cls, inner_html: str, **kwargs: str) -> Htmx:
         return cls.tag("div", inner_html, **kwargs)
 
     @classmethod
-    def tag(cls, tag_name: str, inner_html: str = "", **kwargs: str) -> HtmlExpression:
+    def tag(cls, tag_name: str, inner_html: str = "", **kwargs: str) -> Htmx:
         expr = "<" + tag_name
         for key, val in kwargs.items():
             key = key.replace("klass", "class")
@@ -149,4 +147,4 @@ class HtmlBuilder:
         expr += ">"
         if tag_name not in ["img", "br"]:
             expr += f"{inner_html}</{tag_name}>"
-        return HtmlExpression(expr)
+        return Htmx(expr)
