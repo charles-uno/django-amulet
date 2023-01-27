@@ -56,8 +56,7 @@ class GameManager:
         summary = cls.run_from_opener(
             opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
         )
-        html_notes = [HtmlBuilder.from_note(n) for n in summary["notes"]]
-        return HtmlExpression("\n".join(html_notes))
+        return HtmlBuilder.from_play_summary(summary)
 
     @classmethod
     def run_from_opener(

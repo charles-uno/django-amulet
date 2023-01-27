@@ -1,3 +1,4 @@
+from .game_state import GameSummaryDict
 from .note import Note, NoteType
 
 
@@ -16,6 +17,11 @@ class HtmlExpression(str):
 
 
 class HtmlBuilder:
+    @classmethod
+    def from_play_summary(cls, summary: GameSummaryDict) -> HtmlExpression:
+        html_notes = [HtmlBuilder.from_note(n) for n in summary["notes"]]
+        return HtmlExpression("\n".join(html_notes))
+
     @classmethod
     def from_note(cls, n: Note) -> HtmlExpression:
         if n.type == NoteType.TEXT:
