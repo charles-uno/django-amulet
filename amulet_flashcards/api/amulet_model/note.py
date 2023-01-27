@@ -2,12 +2,6 @@ from enum import Enum
 from typing import NamedTuple, TypedDict
 
 
-# For JSON serializability
-class NoteDict(TypedDict):
-    text: str
-    type: str
-
-
 class NoteType(Enum):
     TEXT = "TEXT"
     CARD = "CARD"
