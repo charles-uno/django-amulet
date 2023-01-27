@@ -9,7 +9,7 @@ from typing import List, Sequence, Set, NamedTuple, Tuple, TypedDict
 from typing_extensions import NotRequired, Unpack
 
 from .mana import Mana, mana
-from .card import Card
+from .card import Card, card
 from .note import Note, NoteDict, NoteType
 from .html_builder import HtmlExpression
 
@@ -53,8 +53,8 @@ class GameState(NamedTuple):
 
     @classmethod
     def get_turn_zero_state_from_opener(cls, opener: OpenerDict) -> "GameState":
-        library = tuple(Card(x) for x in opener["library"])
-        hand = tuple(Card(x) for x in opener["hand"])
+        library = tuple(card(x) for x in opener["library"])
+        hand = tuple(card(x) for x in opener["hand"])
         initial_text = "on the play" if opener["on_the_play"] else "on the draw"
         return GameState(
             library=library,
@@ -155,8 +155,8 @@ class GameState(NamedTuple):
     def get_land_plays_for_new_turn(self) -> int:
         return (
             1
-            + self.battlefield.count(Card("Dryad of the Ilysian Grove"))
-            + 2 * self.battlefield.count(Card("Azusa, Lost but Seeking"))
+            + self.battlefield.count(card("Dryad of the Ilysian Grove"))
+            + 2 * self.battlefield.count(card("Azusa, Lost but Seeking"))
         )
 
     def get_mana_pool_for_new_turn(self) -> Mana:
@@ -176,8 +176,8 @@ class GameState(NamedTuple):
             new_c = c.plus_counter()
             # Always get Amulet
             if new_c.n_counters == 3:
-                new_battlefield.append(Card("Amulet of Vigor"))
-                note_args += ["\n", "sack ", new_c, ", grab ", Card("Amulet of Vigor")]
+                new_battlefield.append(card("Amulet of Vigor"))
+                note_args += ["\n", "sack ", new_c, ", grab ", card("Amulet of Vigor")]
             else:
                 new_battlefield.append(new_c)
         return self.copy_with_updates(battlefield=tuple(new_battlefield)).add_notes(
@@ -216,7 +216,7 @@ class GameState(NamedTuple):
             return state.put_land_onto_battlefield_untapped(c)
 
     def put_land_onto_battlefield_tapped(self, c: Card) -> Set["GameState"]:
-        m = c.taps_for * self.battlefield.count(Card("Amulet of Vigor"))
+        m = c.taps_for * self.battlefield.count(card("Amulet of Vigor"))
         state = self.move_from_hand_to_battlefield(
             c,
         ).add_mana(m)
@@ -278,7 +278,7 @@ class GameState(NamedTuple):
         self,
     ) -> Set["GameState"]:
         # If we just cast a duplicate Azusa, bail
-        if self.battlefield.count(Card("Azusa, Lost but Seeking")) > 1:
+        if self.battlefield.count(card("Azusa, Lost but Seeking")) > 1:
             return set()
         return {self.add_land_plays(2)}
 

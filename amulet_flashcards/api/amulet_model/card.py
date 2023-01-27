@@ -76,3 +76,9 @@ class Card(NamedTuple):
         if self.n_counters == 0:
             return self
         return Card(name=self.name)
+
+
+def card(card_name) -> Card:
+    if card_name not in CARD_DATA:
+        raise ValueError(f"unknown card: {repr(card_name)}")
+    return Card(card_name)
