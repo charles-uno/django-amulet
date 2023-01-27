@@ -1,24 +1,24 @@
 from typing import List
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.http.request import QueryDict
 
 from .amulet_model import GameManager, OpenerDict
 
 
-def htmx_e2e(request):
+def e2e(request):
     deck_list = load_deck_list()
     opener = GameManager.get_opener_from_deck_list(deck_list)
     summary = GameManager.run_from_opener_htmx(opener)
     return HttpResponse(summary)
 
 
-def htmx_opener(request):
+def opener(request):
     deck_list = load_deck_list()
     opener = GameManager.get_opener_from_deck_list_htmx(deck_list)
     return HttpResponse(opener)
 
 
-def htmx_play_it_out(request: HttpRequest) -> HttpResponse:
+def play_it_out(request: HttpRequest) -> HttpResponse:
     opener = get_opener_dict_from_htmx_request(request)
     return HttpResponse(GameManager.run_from_opener_htmx(opener))
 

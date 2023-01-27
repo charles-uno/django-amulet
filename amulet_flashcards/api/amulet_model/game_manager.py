@@ -32,7 +32,7 @@ class GameManager:
             "button",
             inner_html="play it out",
             **{
-                "hx-get": "/api/html/play",
+                "hx-get": "/api/play",
                 "hx-trigger": "click",
                 "hx-target": "#play-target",
                 "hx-indicator": "#play-indicator",
