@@ -36,18 +36,21 @@ class GameManager:
         card_tags = [HtmlBuilder.card_image(c) for c in opener["hand"]]
         cards_tag = HtmlBuilder.div("".join(card_tags), klass="opener-cards")
 
-        play_payload = HtmlBuilder.span(json.dumps(opener), klass="payload")
         play_button = HtmlBuilder.tag(
             "button",
-            inner_html="play it out" + play_payload,
+            inner_html="play it out",
             **{
-                "hx-target": "/api/html/play",
+                "hx-get": "/api/html/play",
                 "hx-trigger": "click",
                 "hx-target": "#play-target",
                 "hx-indicator": "#play-indicator",
                 "hx-swap": "innerHTML",
-            }
+                "hx-vals": json.dumps({"on_the_play": True}),
+            },
         )
+
+        print(play_button)
+
         play_indicator = HtmlBuilder.div(
             "working...", id="play-indicator", klass="htmx-indicator"
         )

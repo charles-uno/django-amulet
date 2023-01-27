@@ -85,6 +85,7 @@ class HtmlBuilder:
         expr = "<" + tag_name
         for key, val in kwargs.items():
             key = key.replace("klass", "class")
+            val = val.replace("'", "\\'")
             expr += f" {key}='{val}'"
         expr += ">"
         if tag_name not in ["img", "br"]:

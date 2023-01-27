@@ -9,17 +9,13 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <link href="/static/css/app.css" rel="stylesheet">
-
-  <script src="https://unpkg.com/htmx.org@1.8.5"
-    integrity="sha384-7aHh9lqPYGYZ7sTHvzP1t3BAfLhYSTy9ArHdP3Xsr9/3TlGurYgcPBoFmXX2TX/w"
-    crossorigin="anonymous"></script>
-
+  <script src="/static/js/htmx.min.js"></script>
   <script src="/static/js/app.js"></script>
 
 
 </head>
 
-<body>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
   <div id="autocard-backdrop" class="autocard-backdrop" onclick="hide_autocard()">
     <img id="autocard" class="autocard">
