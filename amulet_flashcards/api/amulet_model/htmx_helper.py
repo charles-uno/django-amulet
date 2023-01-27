@@ -3,25 +3,27 @@ Helpers for converting Python data structures into HTMX
 For more information on HTMX, see htmx.org
 """
 
+from typing import Dict, List
 from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
 
 
 class Htmx(str):
-    def __new__(cls, expr: str) -> "Htmx":
-        # Sanity check. Just make sure the braces match up
-        braces = []
-        for x in expr:
-            if x == "<":
-                braces.append("<")
-            elif x == ">" and braces:
-                braces.pop()
-            elif x == ">":
-                raise ValueError(f"mismatched braces in {repr(expr)}")
-        return super().__new__(Htmx, expr)
+    pass
 
 
 class HtmxHelper:
+    @classmethod
+    def get_opener_from_request_payload(cls, payload: Dict[str, str]) -> OpenerDict:
+        hand = cls.deserialize_list_of_strings(payload["hand"])
+        library = cls.deserialize_list_of_strings(payload["library"])
+        on_the_play = cls.deserialize_bool(payload["on_the_play"])
+        return {
+            "hand": hand,
+            "library": library,
+            "on_the_play": on_the_play,
+        }
+
     @classmethod
     def from_opener(cls, opener: OpenerDict) -> Htmx:
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
@@ -52,6 +54,23 @@ class HtmxHelper:
         return Htmx(
             turn_order_tag + cards_tag + play_button + play_indicator + play_target
         )
+
+    @classmethod
+    def serialize_list_of_strings(cls, x: List[str]) -> str:
+        return ";".join(x).replace("'", "&apos;")
+
+    @classmethod
+    def deserialize_list_of_strings(cls, x: str) -> List[str]:
+        return x.replace("&apos;", "'").split(";")
+
+    @classmethod
+    def deserialize_bool(cls, x: str) -> bool:
+        if x == "true":
+            return True
+        elif x == "false":
+            return False
+        else:
+            raise ValueError(f"unable to get bool from {repr(x)}")
 
     @classmethod
     def from_play_summary(cls, summary: GameSummaryDict) -> Htmx:

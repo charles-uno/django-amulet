@@ -3,7 +3,7 @@ import time
 from typing import List, Set
 
 from .game_state import GameState, GameSummaryDict, OpenerDict
-from .html_builder import HtmlBuilder, HtmlExpression
+from .htmx_helper import HtmxHelper, Htmx
 
 
 class GameManager:
@@ -18,18 +18,18 @@ class GameManager:
         }
 
     @classmethod
-    def get_opener_from_deck_list_htmx(cls, deck_list: List[str]) -> HtmlExpression:
+    def get_opener_from_deck_list_htmx(cls, deck_list: List[str]) -> Htmx:
         opener = cls.get_opener_from_deck_list(deck_list)
-        return HtmlBuilder.from_opener(opener)
+        return HtmxHelper.from_opener(opener)
 
     @classmethod
     def run_from_opener_htmx(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> HtmlExpression:
+    ) -> Htmx:
         summary = cls.run_from_opener(
             opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
         )
-        return HtmlBuilder.from_play_summary(summary)
+        return HtmxHelper.from_play_summary(summary)
 
     @classmethod
     def run_from_opener(
