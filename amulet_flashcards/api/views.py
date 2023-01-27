@@ -4,13 +4,13 @@ from django.http import JsonResponse, HttpResponse
 from .amulet_model import GameManager
 
 
-def json(request):
+def json_e2e(request):
     deck_list = load_deck_list()
     summary = GameManager.run_e2e_json(deck_list)
     return JsonResponse(summary)
 
 
-def html(request):
+def html_e2e(request):
     deck_list = load_deck_list()
     summary = GameManager.run_e2e_html(deck_list)
     return HttpResponse(summary)

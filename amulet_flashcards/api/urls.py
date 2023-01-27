@@ -3,6 +3,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("json", views.json, name="json"),
-    path("html", views.html, name="html"),
+    path("json/e2e", views.json_e2e),
+    path("html/e2e", views.html_e2e),
 ]
