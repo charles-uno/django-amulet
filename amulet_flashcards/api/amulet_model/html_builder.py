@@ -1,4 +1,4 @@
-from .game_state import GameSummaryDict
+from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
 
 
@@ -18,8 +18,39 @@ class HtmlExpression(str):
 
 class HtmlBuilder:
     @classmethod
+    def from_opener(cls, opener: OpenerDict) -> HtmlExpression:
+        turn_order = "on the play" if opener["on_the_play"] else "on the draw"
+        turn_order_tag = cls.div(turn_order, klass="opener-turn-order")
+        card_tags = [cls.card_image(c) for c in opener["hand"]]
+        cards_tag = cls.div("".join(card_tags), klass="opener-cards")
+        # hx-vals gets confused with structured data
+        hand_joined = ";".join(opener["hand"]).replace("'", "&apos;")
+        library_joined = ";".join(opener["library"]).replace("'", "&apos;")
+        on_the_play = "true" if opener["on_the_play"] else "false"
+        play_button = cls.tag(
+            "button",
+            inner_html="play it out",
+            **{
+                "hx-get": "/api/play",
+                "hx-trigger": "click",
+                "hx-target": "#play-target",
+                "hx-indicator": "#play-indicator",
+                "hx-swap": "innerHTML",
+                "hx-vals": f'"hand": "{hand_joined}", "library": "{library_joined}", "on_the_play": {on_the_play}',
+            },
+        )
+        play_indicator = cls.div(
+            "working...", id="play-indicator", klass="htmx-indicator"
+        )
+        play_target = cls.div("placeholder contents", id="play-target")
+
+        return HtmlExpression(
+            turn_order_tag + cards_tag + play_button + play_indicator + play_target
+        )
+
+    @classmethod
     def from_play_summary(cls, summary: GameSummaryDict) -> HtmlExpression:
-        html_notes = [HtmlBuilder.from_note(n) for n in summary["notes"]]
+        html_notes = [cls.from_note(n) for n in summary["notes"]]
         return HtmlExpression("\n".join(html_notes))
 
     @classmethod

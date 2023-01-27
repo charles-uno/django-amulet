@@ -20,34 +20,7 @@ class GameManager:
     @classmethod
     def get_opener_from_deck_list_htmx(cls, deck_list: List[str]) -> HtmlExpression:
         opener = cls.get_opener_from_deck_list(deck_list)
-        turn_order = "on the play" if opener["on_the_play"] else "on the draw"
-        turn_order_tag = HtmlBuilder.div(turn_order, klass="opener-turn-order")
-        card_tags = [HtmlBuilder.card_image(c) for c in opener["hand"]]
-        cards_tag = HtmlBuilder.div("".join(card_tags), klass="opener-cards")
-        # hx-vals gets confused with structured data
-        hand_joined = ";".join(opener["hand"]).replace("'", "&apos;")
-        library_joined = ";".join(opener["library"]).replace("'", "&apos;")
-        on_the_play = "true" if opener["on_the_play"] else "false"
-        play_button = HtmlBuilder.tag(
-            "button",
-            inner_html="play it out",
-            **{
-                "hx-get": "/api/play",
-                "hx-trigger": "click",
-                "hx-target": "#play-target",
-                "hx-indicator": "#play-indicator",
-                "hx-swap": "innerHTML",
-                "hx-vals": f'"hand": "{hand_joined}", "library": "{library_joined}", "on_the_play": {on_the_play}',
-            },
-        )
-        play_indicator = HtmlBuilder.div(
-            "working...", id="play-indicator", klass="htmx-indicator"
-        )
-        play_target = HtmlBuilder.div("placeholder contents", id="play-target")
-
-        return HtmlExpression(
-            turn_order_tag + cards_tag + play_button + play_indicator + play_target
-        )
+        return HtmlBuilder.from_opener(opener)
 
     @classmethod
     def run_from_opener_htmx(
