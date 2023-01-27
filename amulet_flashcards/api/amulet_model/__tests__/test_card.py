@@ -1,3 +1,7 @@
+"""
+To be run with pytest
+"""
+
 import pytest
 
 from ..card import card
@@ -16,7 +20,3 @@ def test_invalid_card():
 
 def test_taps_for():
     assert card("Forest").taps_for == mana("G")
-
-
-if __name__ == "__main__":
-    pytest.main()

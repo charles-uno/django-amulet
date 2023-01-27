@@ -1,4 +1,6 @@
-import pytest
+"""
+To be run with pytest
+"""
 
 from ..mana import mana, Mana
 
@@ -47,7 +49,3 @@ def test_mul():
 def test_bool():
     assert bool(mana("")) is False
     assert bool(mana("1")) is True
-
-
-if __name__ == "__main__":
-    pytest.main()
