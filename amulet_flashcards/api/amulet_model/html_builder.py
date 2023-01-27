@@ -77,6 +77,10 @@ class HtmlBuilder:
         return cls.tag("span", inner_html, **kwargs)
 
     @classmethod
+    def div(cls, inner_html: str, **kwargs: str) -> HtmlExpression:
+        return cls.tag("div", inner_html, **kwargs)
+
+    @classmethod
     def tag(cls, tag_name: str, inner_html: str = "", **kwargs: str) -> HtmlExpression:
         expr = "<" + tag_name
         for key, val in kwargs.items():

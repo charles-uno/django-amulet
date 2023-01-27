@@ -1,3 +1,4 @@
+import json
 import random
 import time
 from typing import List, Set
@@ -38,7 +39,27 @@ class GameManager:
         cards_tag = HtmlBuilder.tag(
             "div", inner_html="".join(card_tags), klass="opener-cards"
         )
-        return HtmlExpression(turn_order_tag + cards_tag)
+
+        play_payload = HtmlBuilder.span(json.dumps(opener), klass="payload")
+        play_button = HtmlBuilder.tag(
+            "button",
+            inner_html="play it out" + play_payload,
+            **{
+                "hx-target": "/api/html/play",
+                "hx-trigger": "click",
+                "hx-target": "#play-target",
+                "hx-indicator": "#play-indicator",
+                "hx-swap": "innerHTML",
+            }
+        )
+        play_indicator = HtmlBuilder.div(
+            "working...", id="play-indicator", klass="htmx-indicator"
+        )
+        play_target = HtmlBuilder.div("placeholder contents", id="play-target")
+
+        return HtmlExpression(
+            turn_order_tag + cards_tag + play_button + play_indicator + play_target
+        )
 
     @classmethod
     def run_from_opener_json(
