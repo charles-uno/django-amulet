@@ -12,9 +12,13 @@ body {
 
 .main {
     max-width: 500px;
-    margin: 0 auto;
-    vertical-align: top;
     width: 100%;
+    margin: 0 auto;
+}
+
+.opener-turn-order {
+    text-align: center;
+    font-size: 24px;
 }
 
 .opener-cards {
@@ -31,7 +35,6 @@ img.card {
 img.card:not(:first-child) {
     margin-left:-5.5%;
 }
-
 
 #autocard-backdrop {
     position: fixed;

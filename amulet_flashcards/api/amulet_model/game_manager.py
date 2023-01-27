@@ -30,16 +30,15 @@ class GameManager:
     @classmethod
     def get_opener_from_deck_list_html(cls, deck_list: List[str]) -> HtmlExpression:
         opener = cls.get_opener_from_deck_list(deck_list)
-        tags = []
-        if opener["on_the_play"]:
-            tags.append(f"<div class='turn-order'>on the play</div>")
-        else:
-            tags.append(f"<div class='turn-order'>on the draw</div>")
-        tags.append("<div class='opener-cards'>")
-        for c in opener["hand"]:
-            tags.append(HtmlBuilder.card_image(c))
-        tags.append("</div>")
-        return HtmlExpression("".join(tags))
+        turn_order = "on the play" if opener["on_the_play"] else "on the draw"
+        turn_order_tag = HtmlBuilder.tag(
+            "div", inner_html=turn_order, klass="opener-turn-order"
+        )
+        card_tags = [HtmlBuilder.card_image(c) for c in opener["hand"]]
+        cards_tag = HtmlBuilder.tag(
+            "div", inner_html="".join(card_tags), klass="opener-cards"
+        )
+        return HtmlExpression(turn_order_tag + cards_tag)
 
     @classmethod
     def run_from_opener_json(

@@ -25,7 +25,7 @@ class HtmlTagArgs(TypedDict):
 class HtmlBuilder:
     @classmethod
     def card_name(cls, card_name: str) -> HtmlExpression:
-        return cls._tag(
+        return cls.tag(
             "span",
             inner_html=cls._quote_safe(card_name),
             klass="card-name",
@@ -34,7 +34,7 @@ class HtmlBuilder:
 
     @classmethod
     def card_image(cls, card_name: str) -> HtmlExpression:
-        return cls._tag("img", klass="card", src=cls.card_image_url(card_name))
+        return cls.tag("img", klass="card", src=cls.card_image_url(card_name))
 
     @classmethod
     def card_image_url(cls, card_name: str) -> str:
@@ -63,11 +63,11 @@ class HtmlBuilder:
 
     @classmethod
     def text(cls, text: str) -> HtmlExpression:
-        return cls._tag("span", klass="summary-text", inner_html=cls._quote_safe(text))
+        return cls.tag("span", klass="summary-text", inner_html=cls._quote_safe(text))
 
     @classmethod
     def line_break(cls) -> HtmlExpression:
-        return cls._tag("br")
+        return cls.tag("br")
 
     @classmethod
     def turn_break(cls, text: str) -> HtmlExpression:
@@ -77,10 +77,10 @@ class HtmlBuilder:
 
     @classmethod
     def alert(cls, text: str) -> HtmlExpression:
-        return cls._tag("span", klass="summary-alert", inner_html=cls._quote_safe(text))
+        return cls.tag("span", klass="summary-alert", inner_html=cls._quote_safe(text))
 
     @classmethod
-    def _tag(
+    def tag(
         cls, tag_name: str, inner_html: str = "", **kwargs: Unpack[HtmlTagArgs]
     ) -> HtmlExpression:
         expr = "<" + tag_name
