@@ -3,7 +3,6 @@ from typing import NamedTuple, Set
 import yaml
 
 from .mana import Mana, mana
-from .note import Note, NoteType
 
 # Root of the amulet_backend project
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

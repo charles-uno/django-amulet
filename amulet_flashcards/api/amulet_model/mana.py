@@ -4,7 +4,6 @@ ambiguity when we tap lands or pay costs.
 """
 
 from typing import NamedTuple
-from .note import Note, NoteType
 
 
 class Mana(NamedTuple):
