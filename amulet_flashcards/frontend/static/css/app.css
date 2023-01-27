@@ -1,6 +1,37 @@
 body {
-    color: red;
+    font-size: 16px;
 }
+
+.mana-symbol {
+    height: 16px;
+}
+
+.wrap-main {
+    width: 100%;
+}
+
+.main {
+    max-width: 500px;
+    margin: 0 auto;
+    vertical-align: top;
+    width: 100%;
+}
+
+.opener-cards {
+    display: flex;
+    justify-content: space-between;
+}
+
+img.card {
+    border-radius: 5%;
+    overflow: hidden;
+    width: 19%;
+}
+
+img.card:not(:first-child) {
+    margin-left:-5.5%;
+}
+
 
 #autocard-backdrop {
     position: fixed;
