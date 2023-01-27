@@ -2,18 +2,20 @@ from typing import List
 from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.http.request import QueryDict
 
-from .amulet_model import GameManager
+from .amulet_model import GameManager, OpenerDict
 
 
 def json_e2e(request):
     deck_list = load_deck_list()
-    summary = GameManager.run_e2e_json(deck_list)
+    opener = GameManager.get_opener_from_deck_list(deck_list)
+    summary = GameManager.run_from_opener(opener)
     return JsonResponse(summary)
 
 
 def htmx_e2e(request):
     deck_list = load_deck_list()
-    summary = GameManager.run_e2e_htmx(deck_list)
+    opener = GameManager.get_opener_from_deck_list(deck_list)
+    summary = GameManager.run_from_opener_htmx(opener)
     return HttpResponse(summary)
 
 
@@ -24,18 +26,19 @@ def htmx_opener(request):
 
 
 def htmx_play_it_out(request: HttpRequest) -> HttpResponse:
+    opener = get_opener_dict_from_htmx_request(request)
+    return HttpResponse(GameManager.run_from_opener_htmx(opener))
+
+
+def get_opener_dict_from_htmx_request(request: HttpRequest) -> OpenerDict:
     hand = get_list_from_query_qict(request.GET, "hand")
     library = get_list_from_query_qict(request.GET, "library")
     on_the_play = get_bool_from_query_dict(request.GET, "on_the_play")
-    return HttpResponse(
-        GameManager.run_from_opener_htmx(
-            {
-                "hand": hand,
-                "library": library,
-                "on_the_play": on_the_play,
-            }
-        )
-    )
+    return {
+        "hand": hand,
+        "library": library,
+        "on_the_play": on_the_play,
+    }
 
 
 def get_bool_from_query_dict(qd: QueryDict, key: str) -> bool:

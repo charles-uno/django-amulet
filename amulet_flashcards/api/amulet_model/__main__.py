@@ -1,10 +1,10 @@
+from pathlib import Path
 from typing import List
-
 
 from .note import NoteDict
 from .game_manager import GameManager
+from .game_state import GameSummaryDict
 
-from pathlib import Path
 
 # Root of the amulet_backend project
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -12,8 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 def main():
     deck_list = load_deck_list()
-    summary = GameManager.run_e2e(deck_list)
-    print_pretty(summary["notes"])
+    opener = GameManager.get_opener_from_deck_list(deck_list)
+    summary = GameManager.run_from_opener(opener)
+    print_pretty(summary)
 
 
 def load_deck_list() -> List[str]:
@@ -27,8 +28,8 @@ def load_deck_list() -> List[str]:
     return deck_list
 
 
-def print_pretty(notes: List[NoteDict]) -> None:
-    print("".join(note_to_str(n) for n in notes))
+def print_pretty(summary: GameSummaryDict) -> None:
+    print("".join(note_to_str(n) for n in summary["notes"]))
 
 
 def note_to_str(n: NoteDict) -> str:

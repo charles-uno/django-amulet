@@ -9,16 +9,6 @@ from .html_builder import HtmlBuilder, HtmlExpression
 
 class GameManager:
     @classmethod
-    def run_e2e_json(cls, deck_list: List[str]) -> GameSummaryDict:
-        opener = cls.get_opener_from_deck_list(deck_list)
-        return cls.run_from_opener_json(opener)
-
-    @classmethod
-    def run_e2e_htmx(cls, deck_list: List[str]) -> HtmlExpression:
-        opener = cls.get_opener_from_deck_list(deck_list)
-        return cls.run_from_opener_htmx(opener)
-
-    @classmethod
     def get_opener_from_deck_list(cls, deck_list: List[str]) -> OpenerDict:
         on_the_play = random.choice([True, False])
         random.shuffle(deck_list)
@@ -61,7 +51,7 @@ class GameManager:
         )
 
     @classmethod
-    def run_from_opener_json(
+    def run_from_opener(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> GameSummaryDict:
         return cls._run_from_opener(
