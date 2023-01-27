@@ -1,3 +1,8 @@
+"""
+Helpers for converting Python data structures into HTMX
+For more information on HTMX, see htmx.org
+"""
+
 from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
 
