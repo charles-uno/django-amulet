@@ -388,8 +388,10 @@ class GameState(NamedTuple):
                     notes.append(Note("", NoteType.LINE_BREAK))
                 else:
                     notes.append(Note(arg))
-            elif isinstance(arg, (Card, Mana)):
-                notes.append(arg.note)
+            elif isinstance(arg, Card):
+                notes.append(Note(arg.name, NoteType.CARD))
+            elif isinstance(arg, Mana):
+                notes.append(Note(arg.name, NoteType.MANA))
             else:
                 notes.extend(self.get_notes_for_card_tuple(arg))
         return self.copy_with_updates(notes=self.notes + tuple(notes))
@@ -400,6 +402,6 @@ class GameState(NamedTuple):
             n = cards.count(c)
             if n > 1:
                 notes.append(Note(str(n) + "\u00D7"))
-            notes.append(c.note)
+            notes.append(Note(c.name, NoteType.CARD))
             notes.append(Note(" "))
         return tuple(notes[:-1])

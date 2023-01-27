@@ -54,10 +54,6 @@ class Mana(NamedTuple):
     def __mul__(self, n: int) -> "Mana":
         return Mana(self.green * n, self.total * n)
 
-    @property
-    def note(self) -> Note:
-        return Note(self.name, NoteType.MANA)
-
 
 def mana(expr: str) -> Mana:
     n_green = expr.upper().count("G")

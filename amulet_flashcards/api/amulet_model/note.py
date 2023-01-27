@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NamedTuple
+from typing import NamedTuple, TypedDict
 
 
 class NoteType(Enum):

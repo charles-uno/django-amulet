@@ -28,10 +28,6 @@ class Card(NamedTuple):
         return text.replace(" ", "_")
 
     @property
-    def note(self) -> Note:
-        return Note(text=self.name, type=NoteType.CARD)
-
-    @property
     def types(self) -> Set[str]:
         return set(CARD_DATA[self.name].get("type", "").split(","))
 
