@@ -12,13 +12,13 @@ def json_e2e(request):
 
 def html_e2e(request):
     deck_list = load_deck_list()
-    summary = GameManager.run_e2e_html(deck_list)
+    summary = GameManager.run_e2e_htmx(deck_list)
     return HttpResponse(summary)
 
 
 def html_opener(request):
     deck_list = load_deck_list()
-    opener = GameManager.get_opener_from_deck_list_html(deck_list)
+    opener = GameManager.get_opener_from_deck_list_htmx(deck_list)
     return HttpResponse(opener)
 
 

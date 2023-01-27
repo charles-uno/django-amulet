@@ -36,11 +36,6 @@ img.card:not(:first-child) {
     margin-left:-5.5%;
 }
 
-.button-wrapper {
-    border: 1px solid red;
-    position: relative;
-}
-
 #e2e-indicator, #opener-indicator {
 border: 1px solid green;
 }

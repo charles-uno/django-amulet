@@ -1,7 +1,3 @@
-from typing import TypedDict
-from typing_extensions import NotRequired, Unpack
-
-
 class HtmlExpression(str):
     def __new__(cls, expr: str) -> "HtmlExpression":
         # Sanity check. Just make sure the braces match up
@@ -16,25 +12,18 @@ class HtmlExpression(str):
         return super().__new__(HtmlExpression, expr)
 
 
-class HtmlTagArgs(TypedDict):
-    klass: NotRequired[str]
-    onclick: NotRequired[str]
-    src: NotRequired[str]
-
-
 class HtmlBuilder:
     @classmethod
     def card_name(cls, card_name: str) -> HtmlExpression:
-        return cls.tag(
-            "span",
-            inner_html=cls._quote_safe(card_name),
+        return cls.span(
+            cls._quote_safe(card_name),
             klass="card-name",
             onclick=f'show_autocard("{cls.card_image_url(card_name)}")',
         )
 
     @classmethod
     def card_image(cls, card_name: str) -> HtmlExpression:
-        return cls.tag("img", klass="card", src=cls.card_image_url(card_name))
+        return cls.img(klass="card", src=cls.card_image_url(card_name))
 
     @classmethod
     def card_image_url(cls, card_name: str) -> str:
@@ -54,7 +43,7 @@ class HtmlBuilder:
     @classmethod
     def mana(cls, expr: str) -> HtmlExpression:
         urls = [cls.mana_symbol_url(x) for x in expr]
-        tags = [f"<img class='mana-symbol' src='{url}'>" for url in urls]
+        tags = [cls.img(klass="mana-symbol", src=url) for url in urls]
         return HtmlExpression("".join(tags))
 
     @classmethod
@@ -63,7 +52,7 @@ class HtmlBuilder:
 
     @classmethod
     def text(cls, text: str) -> HtmlExpression:
-        return cls.tag("span", klass="summary-text", inner_html=cls._quote_safe(text))
+        return cls.span(cls._quote_safe(text), klass="summary-text")
 
     @classmethod
     def line_break(cls) -> HtmlExpression:
@@ -72,17 +61,23 @@ class HtmlBuilder:
     @classmethod
     def turn_break(cls, text: str) -> HtmlExpression:
         return HtmlExpression(
-            f"<br><span class='summary-text'>{cls._quote_safe(text)}</span>"
+            cls.tag("br") + cls.span(cls._quote_safe(text), klass="summary-text")
         )
 
     @classmethod
     def alert(cls, text: str) -> HtmlExpression:
-        return cls.tag("span", klass="summary-alert", inner_html=cls._quote_safe(text))
+        return cls.span(cls._quote_safe(text), klass="summary-alert")
 
     @classmethod
-    def tag(
-        cls, tag_name: str, inner_html: str = "", **kwargs: Unpack[HtmlTagArgs]
-    ) -> HtmlExpression:
+    def img(cls, **kwargs: str) -> HtmlExpression:
+        return cls.tag("img", "", **kwargs)
+
+    @classmethod
+    def span(cls, inner_html: str, **kwargs: str) -> HtmlExpression:
+        return cls.tag("span", inner_html, **kwargs)
+
+    @classmethod
+    def tag(cls, tag_name: str, inner_html: str = "", **kwargs: str) -> HtmlExpression:
         expr = "<" + tag_name
         for key, val in kwargs.items():
             key = key.replace("klass", "class")

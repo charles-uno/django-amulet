@@ -13,9 +13,9 @@ class GameManager:
         return cls.run_from_opener_json(opener)
 
     @classmethod
-    def run_e2e_html(cls, deck_list: List[str]) -> HtmlExpression:
+    def run_e2e_htmx(cls, deck_list: List[str]) -> HtmlExpression:
         opener = cls.get_opener_from_deck_list(deck_list)
-        return cls.run_from_opener_html(opener)
+        return cls.run_from_opener_htmx(opener)
 
     @classmethod
     def get_opener_from_deck_list(cls, deck_list: List[str]) -> OpenerDict:
@@ -28,7 +28,7 @@ class GameManager:
         }
 
     @classmethod
-    def get_opener_from_deck_list_html(cls, deck_list: List[str]) -> HtmlExpression:
+    def get_opener_from_deck_list_htmx(cls, deck_list: List[str]) -> HtmlExpression:
         opener = cls.get_opener_from_deck_list(deck_list)
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
         turn_order_tag = HtmlBuilder.tag(
@@ -49,7 +49,7 @@ class GameManager:
         ).get_json_summary_from_completed_game()
 
     @classmethod
-    def run_from_opener_html(
+    def run_from_opener_htmx(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> HtmlExpression:
         return cls._run_from_opener(
