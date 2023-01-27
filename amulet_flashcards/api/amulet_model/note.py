@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import NamedTuple, TypedDict
 
+from .html_builder import HtmlBuilder
+
 
 # For JSON serializability
 class NoteDict(TypedDict):
@@ -31,34 +33,15 @@ class Note(NamedTuple):
         return {"text": self.text, "type": self.type.name}
 
     def to_html(self) -> str:
-        text_safe = self.text.replace("'", "&apos;").replace('"', "&quot;")
         if self.type == NoteType.TEXT:
-            return f"<span class='summary-text'>{text_safe}</span>"
+            return HtmlBuilder.text(self.text)
         elif self.type == NoteType.LINE_BREAK:
-            return f"<br>"
+            return HtmlBuilder.line_break()
         elif self.type == NoteType.TURN_BREAK:
-            return f"<br><span class='summary-text'>{self.text}</span>"
+            return HtmlBuilder.turn_break(self.text)
         elif self.type == NoteType.MANA:
-            return f"<span class='summary-mana'>{self.get_inner_html_mana()}</span>"
+            return HtmlBuilder.mana(self.text)
         elif self.type == NoteType.CARD:
-            return f"<span class='summary-card' onclick='show_autocard(\"{self.get_card_image_url()}\")'>{text_safe}</span>"
+            return HtmlBuilder.card_name(self.text)
         else:
-            return f"<span class='summary-alert'>{text_safe}</span>"
-
-    def get_inner_html_mana(self) -> str:
-        urls = []
-        for c in self.text:
-            urls.append(
-                f"https://gatherer.wizards.com/Handlers/Image.ashx?size=medium&type=symbol&name={c}"
-            )
-        tags = [f"<img class='mana-symbol' src='{url}'>" for url in urls]
-        return "".join(tags)
-
-    def get_card_image_url(self) -> str:
-        text_safe = (
-            self.text.replace("'", "&apos;").replace('"', "&quot;").replace(" ", "%20")
-        )
-        return (
-            "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
-            + text_safe
-        )
+            return HtmlBuilder.alert(self.text)
