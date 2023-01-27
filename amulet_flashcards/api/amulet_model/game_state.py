@@ -15,8 +15,8 @@ from .html_builder import HtmlExpression
 
 
 class OpenerDict(TypedDict):
-    hand: Sequence[str]
-    library: Sequence[str]
+    hand: List[str]
+    library: List[str]
     on_the_play: bool
 
 

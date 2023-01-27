@@ -35,7 +35,10 @@ class GameManager:
         turn_order_tag = HtmlBuilder.div(turn_order, klass="opener-turn-order")
         card_tags = [HtmlBuilder.card_image(c) for c in opener["hand"]]
         cards_tag = HtmlBuilder.div("".join(card_tags), klass="opener-cards")
-
+        # hx-vals gets confused with structured data
+        hand_joined = ";".join(opener["hand"]).replace("'", "&apos;")
+        library_joined = ";".join(opener["library"]).replace("'", "&apos;")
+        on_the_play = "true" if opener["on_the_play"] else "false"
         play_button = HtmlBuilder.tag(
             "button",
             inner_html="play it out",
@@ -45,12 +48,9 @@ class GameManager:
                 "hx-target": "#play-target",
                 "hx-indicator": "#play-indicator",
                 "hx-swap": "innerHTML",
-                "hx-vals": json.dumps({"on_the_play": True}),
+                "hx-vals": f'"hand": "{hand_joined}", "library": "{library_joined}", "on_the_play": {on_the_play}',
             },
         )
-
-        print(play_button)
-
         play_indicator = HtmlBuilder.div(
             "working...", id="play-indicator", klass="htmx-indicator"
         )
@@ -80,6 +80,8 @@ class GameManager:
     def _run_from_opener(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> GameState:
+        # Shuffle the every time so we can play through this hand repeatedly
+        random.shuffle(opener["library"])
         max_time = time.time() + max_wait_seconds
         # Draw our opening hand and pass into turn 1
         states = GameState.get_turn_zero_state_from_opener(opener).get_next_states(
