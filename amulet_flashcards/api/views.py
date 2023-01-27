@@ -5,13 +5,6 @@ from django.http.request import QueryDict
 from .amulet_model import GameManager, OpenerDict
 
 
-def json_e2e(request):
-    deck_list = load_deck_list()
-    opener = GameManager.get_opener_from_deck_list(deck_list)
-    summary = GameManager.run_from_opener(opener)
-    return JsonResponse(summary)
-
-
 def htmx_e2e(request):
     deck_list = load_deck_list()
     opener = GameManager.get_opener_from_deck_list(deck_list)

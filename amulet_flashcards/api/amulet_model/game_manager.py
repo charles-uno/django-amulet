@@ -50,25 +50,19 @@ class GameManager:
         )
 
     @classmethod
-    def run_from_opener(
-        cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> GameSummaryDict:
-        return cls._run_from_opener(
-            opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
-        ).get_json_summary_from_completed_game()
-
-    @classmethod
     def run_from_opener_htmx(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> HtmlExpression:
-        return cls._run_from_opener(
+        summary = cls.run_from_opener(
             opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
-        ).get_html_summary_from_completed_game()
+        )
+        html_notes = [HtmlBuilder.from_note(n) for n in summary["notes"]]
+        return HtmlExpression("\n".join(html_notes))
 
     @classmethod
-    def _run_from_opener(
+    def run_from_opener(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> GameState:
+    ) -> GameSummaryDict:
         # Shuffle the every time so we can play through this hand repeatedly
         random.shuffle(opener["library"])
         max_time = time.time() + max_wait_seconds
@@ -78,7 +72,7 @@ class GameManager:
         )
         for _ in range(max_turn):
             states = cls._get_next_turn(states, max_turn=max_turn, max_time=max_time)
-        return states.pop()
+        return states.pop().get_summary_from_completed_game()
 
     @classmethod
     def _get_next_turn(

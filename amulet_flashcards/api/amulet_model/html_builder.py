@@ -1,3 +1,6 @@
+from .note import Note, NoteDict, NoteType
+
+
 class HtmlExpression(str):
     def __new__(cls, expr: str) -> "HtmlExpression":
         # Sanity check. Just make sure the braces match up
@@ -13,6 +16,21 @@ class HtmlExpression(str):
 
 
 class HtmlBuilder:
+    @classmethod
+    def from_note(cls, n: Note) -> HtmlExpression:
+        if n.type == NoteType.TEXT:
+            return cls.text(n.text)
+        elif n.type == NoteType.LINE_BREAK:
+            return cls.line_break()
+        elif n.type == NoteType.TURN_BREAK:
+            return cls.turn_break(n.text)
+        elif n.type == NoteType.MANA:
+            return cls.mana(n.text)
+        elif n.type == NoteType.CARD:
+            return cls.card_name(n.text)
+        else:
+            return cls.alert(n.text)
+
     @classmethod
     def card_name(cls, card_name: str) -> HtmlExpression:
         return cls.span(

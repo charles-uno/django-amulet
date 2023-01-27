@@ -10,8 +10,7 @@ from typing_extensions import NotRequired, Unpack
 
 from .mana import Mana, mana
 from .card import Card, card
-from .note import Note, NoteDict, NoteType
-from .html_builder import HtmlExpression
+from .note import Note, NoteType
 
 
 class OpenerDict(TypedDict):
@@ -21,7 +20,7 @@ class OpenerDict(TypedDict):
 
 
 class GameSummaryDict(TypedDict):
-    notes: List[NoteDict]
+    notes: List[Note]
 
 
 class GameStateUpdate(TypedDict):
@@ -62,17 +61,10 @@ class GameState(NamedTuple):
             on_the_play=opener["on_the_play"],
         ).add_notes(initial_text + " with ", hand)
 
-    def get_json_summary_from_completed_game(self) -> GameSummaryDict:
+    def get_summary_from_completed_game(self) -> GameSummaryDict:
         if not self.is_done and not self.is_failed:
             raise ValueError("This game is still in progress!")
-        return {
-            "notes": [n.to_dict() for n in self.notes],
-        }
-
-    def get_html_summary_from_completed_game(self) -> HtmlExpression:
-        if not self.is_done and not self.is_failed:
-            raise ValueError("This game is still in progress!")
-        return HtmlExpression("\n".join(n.to_html() for n in self.notes))
+        return {"notes": list(self.notes)}
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
         try:

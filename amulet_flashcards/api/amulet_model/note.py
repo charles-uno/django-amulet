@@ -1,8 +1,6 @@
 from enum import Enum
 from typing import NamedTuple, TypedDict
 
-from .html_builder import HtmlBuilder, HtmlExpression
-
 
 # For JSON serializability
 class NoteDict(TypedDict):
@@ -31,17 +29,3 @@ class Note(NamedTuple):
 
     def to_dict(self) -> NoteDict:
         return {"text": self.text, "type": self.type.name}
-
-    def to_html(self) -> HtmlExpression:
-        if self.type == NoteType.TEXT:
-            return HtmlBuilder.text(self.text)
-        elif self.type == NoteType.LINE_BREAK:
-            return HtmlBuilder.line_break()
-        elif self.type == NoteType.TURN_BREAK:
-            return HtmlBuilder.turn_break(self.text)
-        elif self.type == NoteType.MANA:
-            return HtmlBuilder.mana(self.text)
-        elif self.type == NoteType.CARD:
-            return HtmlBuilder.card_name(self.text)
-        else:
-            return HtmlBuilder.alert(self.text)
