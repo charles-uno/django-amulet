@@ -27,14 +27,19 @@
 
   <div class="main-wrap">
     <div class="main">
-      <button hx-get="/api/html/e2e" hx-trigger="click" hx-target="#target" hx-indicator="#indicator"
+      <div id="indicator" class="htmx-indicator">Working...</div>
+
+      <button hx-get="/api/html/e2e" hx-trigger="click" hx-target="#e2e-target" hx-indicator="#indicator"
         hx-swap="innerHTML">
         Click to run E2E
       </button>
+      <div id="e2e-target">initial contents</div>
 
-      <div id="indicator" class="htmx-indicator">Working...</div>
-
-      <div id="target">initial contents</div>
+      <button hx-get="/api/html/opener" hx-trigger="click" hx-target="#opener-target" hx-indicator="#indicator"
+        hx-swap="innerHTML">
+        Click to get opener
+      </button>
+      <div id="opener-target">initial contents</div>
 
     </div>
   </div>

@@ -16,6 +16,12 @@ def html_e2e(request):
     return HttpResponse(summary)
 
 
+def html_opener(request):
+    deck_list = load_deck_list()
+    opener = GameManager.get_opener_from_deck_list_html(deck_list)
+    return HttpResponse(opener)
+
+
 def load_deck_list() -> List[str]:
     deck_list = []
     with open("assets/deck-list.txt") as handle:

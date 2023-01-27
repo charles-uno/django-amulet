@@ -28,6 +28,20 @@ class GameManager:
         }
 
     @classmethod
+    def get_opener_from_deck_list_html(cls, deck_list: List[str]) -> HtmlExpression:
+        opener = cls.get_opener_from_deck_list(deck_list)
+        tags = []
+        if opener["on_the_play"]:
+            tags.append(f"<div class='turn-order'>on the play</div>")
+        else:
+            tags.append(f"<div class='turn-order'>on the draw</div>")
+        tags.append("<div class='opener-cards'>")
+        for c in opener["hand"]:
+            tags.append(HtmlBuilder.card_image(c))
+        tags.append("</div>")
+        return HtmlExpression("".join(tags))
+
+    @classmethod
     def run_from_opener_json(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> GameSummaryDict:
