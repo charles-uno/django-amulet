@@ -3,6 +3,7 @@ import time
 from typing import List, Set
 
 from .game_state import GameState, GameSummaryDict, OpenerDict
+from .html_builder import HtmlBuilder, HtmlExpression
 
 
 class GameManager:
@@ -12,7 +13,7 @@ class GameManager:
         return cls.run_from_opener_json(opener)
 
     @classmethod
-    def run_e2e_html(cls, deck_list: List[str]) -> str:
+    def run_e2e_html(cls, deck_list: List[str]) -> HtmlExpression:
         opener = cls.get_opener_from_deck_list(deck_list)
         return cls.run_from_opener_html(opener)
 
@@ -37,7 +38,7 @@ class GameManager:
     @classmethod
     def run_from_opener_html(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> str:
+    ) -> HtmlExpression:
         return cls._run_from_opener(
             opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
         ).get_html_summary_from_completed_game()
