@@ -1,4 +1,4 @@
-from .note import Note, NoteDict, NoteType
+from .note import Note, NoteType
 
 
 class HtmlExpression(str):

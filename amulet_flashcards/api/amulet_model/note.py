@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NamedTuple, TypedDict
+from typing import NamedTuple
 
 
 class NoteType(Enum):
@@ -20,6 +20,3 @@ class Note(NamedTuple):
             return "\n"
         else:
             return self.text
-
-    def to_dict(self) -> NoteDict:
-        return {"text": self.text, "type": self.type.name}
