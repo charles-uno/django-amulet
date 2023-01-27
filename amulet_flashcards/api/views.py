@@ -1,8 +1,7 @@
 from typing import List
 from django.http import HttpRequest, HttpResponse
 
-from .amulet_model import GameManager
-from .amulet_model.htmx_helper import HtmxHelper
+from .amulet_model import GameManager, HtmxHelper
 
 
 def e2e(request):
