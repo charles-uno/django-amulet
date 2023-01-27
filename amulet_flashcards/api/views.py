@@ -1,27 +1,27 @@
 from typing import List
 from django.http import HttpRequest, HttpResponse
-from django.http.request import QueryDict
 
-from .amulet_model import GameManager, OpenerDict
+from .amulet_model import GameManager
 from .amulet_model.htmx_helper import HtmxHelper
 
 
 def e2e(request):
     deck_list = load_deck_list()
     opener = GameManager.get_opener_from_deck_list(deck_list)
-    summary = GameManager.run_from_opener_htmx(opener)
-    return HttpResponse(summary)
+    summary = GameManager.run_from_opener(opener)
+    return HttpResponse(HtmxHelper.from_play_summary(summary))
 
 
 def opener(request):
     deck_list = load_deck_list()
-    opener = GameManager.get_opener_from_deck_list_htmx(deck_list)
-    return HttpResponse(opener)
+    opener = GameManager.get_opener_from_deck_list(deck_list)
+    return HttpResponse(HtmxHelper.from_opener(opener))
 
 
 def play_it_out(request: HttpRequest) -> HttpResponse:
     opener = HtmxHelper.get_opener_from_request_payload(request.GET)
-    return HttpResponse(GameManager.run_from_opener_htmx(opener))
+    summary = GameManager.run_from_opener(opener)
+    return HttpResponse(HtmxHelper.from_play_summary(summary))
 
 
 def load_deck_list() -> List[str]:

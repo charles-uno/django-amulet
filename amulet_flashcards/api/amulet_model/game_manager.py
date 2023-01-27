@@ -18,20 +18,6 @@ class GameManager:
         }
 
     @classmethod
-    def get_opener_from_deck_list_htmx(cls, deck_list: List[str]) -> Htmx:
-        opener = cls.get_opener_from_deck_list(deck_list)
-        return HtmxHelper.from_opener(opener)
-
-    @classmethod
-    def run_from_opener_htmx(
-        cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> Htmx:
-        summary = cls.run_from_opener(
-            opener=opener, max_turn=max_turn, max_wait_seconds=max_wait_seconds
-        )
-        return HtmxHelper.from_play_summary(summary)
-
-    @classmethod
     def run_from_opener(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> GameSummaryDict:
