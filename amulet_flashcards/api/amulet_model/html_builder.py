@@ -18,15 +18,15 @@ class HtmlBuilder:
         return cls.span(
             cls._quote_safe(card_name),
             klass="card-name",
-            onclick=f'show_autocard("{cls.card_image_url(card_name)}")',
+            onclick=f'show_autocard("{cls._card_image_url(card_name)}")',
         )
 
     @classmethod
     def card_image(cls, card_name: str) -> HtmlExpression:
-        return cls.img(klass="card", src=cls.card_image_url(card_name))
+        return cls.img(klass="card", src=cls._card_image_url(card_name))
 
     @classmethod
-    def card_image_url(cls, card_name: str) -> str:
+    def _card_image_url(cls, card_name: str) -> str:
         return (
             "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
             + cls._url_escape(card_name)
@@ -56,17 +56,21 @@ class HtmlBuilder:
 
     @classmethod
     def line_break(cls) -> HtmlExpression:
-        return cls.tag("br")
+        return cls.br()
 
     @classmethod
     def turn_break(cls, text: str) -> HtmlExpression:
         return HtmlExpression(
-            cls.tag("br") + cls.span(cls._quote_safe(text), klass="summary-text")
+            cls.br() + cls.span(cls._quote_safe(text), klass="summary-text")
         )
 
     @classmethod
     def alert(cls, text: str) -> HtmlExpression:
         return cls.span(cls._quote_safe(text), klass="summary-alert")
+
+    @classmethod
+    def br(cls) -> HtmlExpression:
+        return HtmlExpression(cls.tag("br"))
 
     @classmethod
     def img(cls, **kwargs: str) -> HtmlExpression:
