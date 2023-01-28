@@ -14,7 +14,7 @@ class Htmx(str):
 
 class HtmxHelper:
     @classmethod
-    def get_opener_from_request_payload(cls, payload: Dict[str, str]) -> OpenerDict:
+    def deserialize_opener_from_payload(cls, payload: Dict[str, str]) -> OpenerDict:
         hand = cls.deserialize_list_of_strings(payload["hand"])
         library = cls.deserialize_list_of_strings(payload["library"])
         on_the_play = cls.deserialize_bool(payload["on_the_play"])
@@ -30,10 +30,7 @@ class HtmxHelper:
         turn_order_tag = cls.div(turn_order, klass="opener-turn-order")
         card_tags = [cls.card_image(c) for c in opener["hand"]]
         cards_tag = cls.div("".join(card_tags), klass="opener-cards")
-        # hx-vals gets confused with structured data
-        hand_joined = ";".join(opener["hand"]).replace("'", "&apos;")
-        library_joined = ";".join(opener["library"]).replace("'", "&apos;")
-        on_the_play = "true" if opener["on_the_play"] else "false"
+        opener_serialized = cls.serialize_opener(opener)
         play_button = cls.tag(
             "button",
             inner_html="play it out",
@@ -43,17 +40,23 @@ class HtmxHelper:
                 "hx-target": "#play-target",
                 "hx-indicator": "#play-indicator",
                 "hx-swap": "innerHTML",
-                "hx-vals": f'"hand": "{hand_joined}", "library": "{library_joined}", "on_the_play": {on_the_play}',
+                "hx-vals": opener_serialized,
             },
         )
         play_indicator = cls.div(
             "working...", id="play-indicator", klass="htmx-indicator"
         )
         play_target = cls.div("placeholder contents", id="play-target")
-
         return Htmx(
             turn_order_tag + cards_tag + play_button + play_indicator + play_target
         )
+
+    @classmethod
+    def serialize_opener(cls, opener: OpenerDict) -> str:
+        hand_serialized = cls.serialize_list_of_strings(opener["hand"])
+        library_serialized = cls.serialize_list_of_strings(opener["library"])
+        otp_serialized = "true" if opener["on_the_play"] else "false"
+        return f'"hand": "{hand_serialized}", "library": "{library_serialized}", "on_the_play": {otp_serialized}'
 
     @classmethod
     def serialize_list_of_strings(cls, x: List[str]) -> str:

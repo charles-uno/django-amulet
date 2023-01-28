@@ -18,7 +18,7 @@ def opener(request: HttpRequest) -> HttpResponse:
 
 
 def play_it_out(request: HttpRequest) -> HttpResponse:
-    opener = HtmxHelper.get_opener_from_request_payload(request.GET)
+    opener = HtmxHelper.deserialize_opener_from_payload(request.GET)
     summary = GameManager.run_from_opener(opener)
     return HttpResponse(HtmxHelper.from_play_summary(summary))
 
