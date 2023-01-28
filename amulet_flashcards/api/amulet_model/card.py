@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import NamedTuple, Set
 import yaml
 
-from .mana import Mana, mana
+from .mana import Mana
 
 # Root of the amulet_backend project
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -41,13 +41,13 @@ class Card(str):
 
     @property
     def is_green_creature(self):
-        return "creature" in self.types and self.mana_cost >= mana("G")
+        return "creature" in self.types and self.mana_cost >= Mana.from_string("G")
 
     @property
     def mana_cost(self) -> Mana:
         m = get_card_data(self).get("mana_cost")
         assert m is not None
-        return mana(m)
+        return Mana.from_string(m)
 
     @property
     def enters_tapped(self) -> bool:
@@ -55,7 +55,7 @@ class Card(str):
 
     @property
     def taps_for(self) -> Mana:
-        return mana(get_card_data(self).get("taps_for", ""))
+        return Mana.from_string(get_card_data(self).get("taps_for", ""))
 
     @property
     def never_defer(self) -> bool:

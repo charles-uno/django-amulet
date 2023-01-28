@@ -5,7 +5,7 @@ To be run with pytest
 import pytest
 
 from ..card import Card
-from ..mana import mana
+from ..mana import Mana
 
 
 def test_is_land():
@@ -20,4 +20,4 @@ def test_invalid_card():
 
 
 def test_taps_for():
-    assert Card("Forest").taps_for == mana("G")
+    assert Card("Forest").taps_for == Mana.from_string("G")

@@ -10,6 +10,13 @@ class Mana(NamedTuple):
     green: int = 0
     total: int = 0
 
+    @classmethod
+    def from_string(cls, expr: str) -> "Mana":
+        n_green = expr.upper().count("G")
+        digits_value = sum([int(x) for x in expr if x.isdigit()])
+        symbols_value = len([x for x in expr if not x.isdigit()])
+        return cls(green=n_green, total=digits_value + symbols_value)
+
     def __hash__(self) -> int:
         return tuple.__hash__(self)
 
@@ -31,8 +38,7 @@ class Mana(NamedTuple):
     def __bool__(self) -> bool:
         return self.total > 0
 
-    @property
-    def name(self) -> str:
+    def to_string(self) -> str:
         if self.green == 0 or self.total > self.green:
             ret = str(self.total - self.green)
         else:
@@ -52,10 +58,3 @@ class Mana(NamedTuple):
 
     def __mul__(self, n: int) -> "Mana":
         return Mana(self.green * n, self.total * n)
-
-
-def mana(expr: str) -> Mana:
-    n_green = expr.upper().count("G")
-    digits_value = sum([int(x) for x in expr if x.isdigit()])
-    symbols_value = len([x for x in expr if not x.isdigit()])
-    return Mana(green=n_green, total=digits_value + symbols_value)

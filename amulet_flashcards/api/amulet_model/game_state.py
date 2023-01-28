@@ -9,7 +9,7 @@ from typing import List, Set, NamedTuple, Tuple, TypedDict
 from typing_extensions import NotRequired, Unpack
 import sys
 
-from .mana import Mana, mana
+from .mana import Mana
 from .card import Card, CardWithCounters
 from .note import Note, NoteType
 
@@ -45,8 +45,8 @@ class GameState(NamedTuple):
     is_failed: bool = False
     land_plays_remaining: int = 0
     library: Tuple[Card, ...] = ()
-    mana_debt: Mana = mana("")
-    mana_pool: Mana = mana("")
+    mana_debt: Mana = Mana.from_string("")
+    mana_pool: Mana = Mana.from_string("")
     notes: Tuple[Note, ...] = ()
     on_the_play: bool = False
     turn: int = 0
@@ -96,7 +96,7 @@ class GameState(NamedTuple):
                 notes=self.notes + (Note(f"turn {self.turn+1}", NoteType.TURN_BREAK),),
                 turn=self.turn + 1,
                 land_plays_remaining=self.get_land_plays_for_new_turn(),
-                mana_pool=mana(""),
+                mana_pool=Mana.from_string(""),
             )
             .add_mana(self.get_mana_pool_for_new_turn())
             .pay_mana_debt()
@@ -155,7 +155,7 @@ class GameState(NamedTuple):
         )
 
     def get_mana_pool_for_new_turn(self) -> Mana:
-        mana_pool = mana("")
+        mana_pool = Mana.from_string("")
         for cwc in self.battlefield:
             if cwc.card.taps_for:
                 mana_pool += cwc.card.taps_for
@@ -328,7 +328,7 @@ class GameState(NamedTuple):
             states |= (
                 self.copy_with_updates(
                     hand=self.hand + (c,),
-                    mana_debt=self.mana_debt + mana("2GG"),
+                    mana_debt=self.mana_debt + Mana.from_string("2GG"),
                 )
                 .add_notes(", grab ", c)
                 .maybe_cast_spell(c)
@@ -401,7 +401,7 @@ class GameState(NamedTuple):
                 else:
                     notes.append(Note(arg))
             elif isinstance(arg, Mana):
-                notes.append(Note(arg.name, NoteType.MANA))
+                notes.append(Note(arg.to_string(), NoteType.MANA))
             else:
                 notes.extend(self.get_notes_for_card_tuple(arg))
         return self.copy_with_updates(notes=self.notes + tuple(notes))
