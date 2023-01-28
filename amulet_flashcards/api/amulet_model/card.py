@@ -4,17 +4,19 @@ import yaml
 
 from .mana import Mana
 
-# Root of the amulet_backend project
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-
-with open(f"{BASE_DIR}/assets/card-data.yaml") as handle:
-    CARD_DATA = yaml.safe_load(handle)
+_CARD_DATA = None
 
 
 def _get_card_data(card_name: str):
+    global _CARD_DATA
+    if _CARD_DATA is None:
+        # Root of the project
+        base_dir = Path(__file__).resolve().parent.parent.parent
+        with open(f"{base_dir}/assets/card-data.yaml") as handle:
+            _CARD_DATA = yaml.safe_load(handle)
     try:
-        return CARD_DATA[card_name]
+        return _CARD_DATA[card_name]
     except KeyError:
         raise ValueError(f"unknown card name: {repr(card_name)}")
 
@@ -72,8 +74,3 @@ class CardWithCounters(NamedTuple):
 
     def plus_counter(self) -> "CardWithCounters":
         return CardWithCounters(card=self.card, n_counters=self.n_counters + 1)
-
-    def without_counters(self) -> "CardWithCounters":
-        if self.n_counters == 0:
-            return self
-        return CardWithCounters(card=self.card)
