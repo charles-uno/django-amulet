@@ -12,7 +12,7 @@ with open(f"{BASE_DIR}/assets/card-data.yaml") as handle:
     CARD_DATA = yaml.safe_load(handle)
 
 
-def get_card_data(card_name: str):
+def _get_card_data(card_name: str):
     try:
         return CARD_DATA[card_name]
     except KeyError:
@@ -29,7 +29,7 @@ class Card(str):
 
     @property
     def types(self) -> Set[str]:
-        return set(get_card_data(self).get("type", "").split(","))
+        return set(_get_card_data(self).get("type", "").split(","))
 
     @property
     def is_land(self) -> bool:
@@ -45,21 +45,21 @@ class Card(str):
 
     @property
     def mana_cost(self) -> Mana:
-        m = get_card_data(self).get("mana_cost")
+        m = _get_card_data(self).get("mana_cost")
         assert m is not None
         return Mana.from_string(m)
 
     @property
     def enters_tapped(self) -> bool:
-        return get_card_data(self).get("enters_tapped", False)
+        return _get_card_data(self).get("enters_tapped", False)
 
     @property
     def taps_for(self) -> Mana:
-        return Mana.from_string(get_card_data(self).get("taps_for", ""))
+        return Mana.from_string(_get_card_data(self).get("taps_for", ""))
 
     @property
     def never_defer(self) -> bool:
-        return get_card_data(self).get("never_defer", False)
+        return _get_card_data(self).get("never_defer", False)
 
     @property
     def is_saga(self) -> bool:
