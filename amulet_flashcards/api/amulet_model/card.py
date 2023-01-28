@@ -66,12 +66,6 @@ class Card(str):
         return "saga" in self.types
 
 
-def card(card_name) -> Card:
-    if card_name not in CARD_DATA:
-        raise ValueError(f"unknown card: {repr(card_name)}")
-    return Card(card_name)
-
-
 class CardWithCounters(NamedTuple):
     card: Card
     n_counters: int = 0
