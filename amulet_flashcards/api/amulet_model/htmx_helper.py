@@ -31,7 +31,7 @@ class HtmxHelper:
         card_tags = [cls.card_image(c) for c in opener["hand"]]
         cards_tag = cls.div("".join(card_tags), klass="opener-cards")
         opener_serialized = cls.serialize_opener(opener)
-        play_button = cls.tag(
+        play_button = cls._tag(
             "button",
             inner_html="play it out",
             **{
@@ -55,7 +55,7 @@ class HtmxHelper:
     def serialize_opener(cls, opener: OpenerDict) -> str:
         hand_serialized = cls.serialize_list_of_strings(opener["hand"])
         library_serialized = cls.serialize_list_of_strings(opener["library"])
-        otp_serialized = "true" if opener["on_the_play"] else "false"
+        otp_serialized = cls.serialize_bool(opener["on_the_play"])
         return f'"hand": "{hand_serialized}", "library": "{library_serialized}", "on_the_play": {otp_serialized}'
 
     @classmethod
@@ -74,6 +74,10 @@ class HtmxHelper:
             return False
         else:
             raise ValueError(f"unable to get bool from {repr(x)}")
+
+    @classmethod
+    def serialize_bool(cls, b: bool) -> str:
+        return "true" if b else "false"
 
     @classmethod
     def from_play_summary(cls, summary: GameSummaryDict) -> Htmx:
@@ -150,22 +154,22 @@ class HtmxHelper:
 
     @classmethod
     def br(cls) -> Htmx:
-        return Htmx(cls.tag("br"))
+        return Htmx(cls._tag("br"))
 
     @classmethod
     def img(cls, **kwargs: str) -> Htmx:
-        return cls.tag("img", "", **kwargs)
+        return cls._tag("img", "", **kwargs)
 
     @classmethod
     def span(cls, inner_html: str, **kwargs: str) -> Htmx:
-        return cls.tag("span", inner_html, **kwargs)
+        return cls._tag("span", inner_html, **kwargs)
 
     @classmethod
     def div(cls, inner_html: str, **kwargs: str) -> Htmx:
-        return cls.tag("div", inner_html, **kwargs)
+        return cls._tag("div", inner_html, **kwargs)
 
     @classmethod
-    def tag(cls, tag_name: str, inner_html: str = "", **kwargs: str) -> Htmx:
+    def _tag(cls, tag_name: str, inner_html: str = "", **kwargs: str) -> Htmx:
         expr = "<" + tag_name
         for key, val in kwargs.items():
             key = key.replace("klass", "class")
