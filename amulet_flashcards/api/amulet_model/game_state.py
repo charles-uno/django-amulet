@@ -7,9 +7,10 @@ iterate through all possible sequences of plays until we find a winning line.
 
 from typing import List, Set, NamedTuple, Tuple, TypedDict
 from typing_extensions import NotRequired, Unpack
+import sys
 
 from .mana import Mana, mana
-from .card import Card, card
+from .card import Card, CardWithCounters, card
 from .note import Note, NoteType
 
 
@@ -24,7 +25,7 @@ class GameSummaryDict(TypedDict):
 
 
 class GameStateUpdate(TypedDict):
-    battlefield: NotRequired[Tuple[Card, ...]]
+    battlefield: NotRequired[Tuple[CardWithCounters, ...]]
     hand: NotRequired[Tuple[Card, ...]]
     is_done: NotRequired[bool]
     is_failed: NotRequired[bool]
@@ -38,7 +39,7 @@ class GameStateUpdate(TypedDict):
 
 
 class GameState(NamedTuple):
-    battlefield: Tuple[Card, ...] = ()
+    battlefield: Tuple[CardWithCounters, ...] = ()
     hand: Tuple[Card, ...] = ()
     is_done: bool = False
     is_failed: bool = False
@@ -79,6 +80,8 @@ class GameState(NamedTuple):
                 states |= self.maybe_cast_spell(c)
             return states
         except Exception as exc:
+            if "--debug" in sys.argv:
+                raise
             return {self.with_tombstone(f"crash: {exc}")}
 
     def pass_turn(self, max_turn: int) -> Set["GameState"]:
@@ -153,25 +156,31 @@ class GameState(NamedTuple):
 
     def get_mana_pool_for_new_turn(self) -> Mana:
         mana_pool = mana("")
-        for c in self.battlefield:
-            if c.taps_for:
-                mana_pool += c.taps_for
+        for cwc in self.battlefield:
+            if cwc.card.taps_for:
+                mana_pool += cwc.card.taps_for
         return mana_pool
 
     def handle_sagas(self) -> "GameState":
         new_battlefield = []
         note_args = []
-        for c in self.battlefield:
-            if not c.is_saga:
-                new_battlefield.append(c)
+        for cwc in self.battlefield:
+            if not cwc.card.is_saga:
+                new_battlefield.append(cwc)
                 continue
-            new_c = c.plus_counter()
+            new_cwc = cwc.plus_counter()
             # Always get Amulet
-            if new_c.n_counters == 3:
-                new_battlefield.append(card("Amulet of Vigor"))
-                note_args += ["\n", "sack ", new_c, ", grab ", card("Amulet of Vigor")]
+            if new_cwc.n_counters == 3:
+                new_battlefield.append(CardWithCounters(card("Amulet of Vigor")))
+                note_args += [
+                    "\n",
+                    "sack ",
+                    new_cwc.card,
+                    ", grab ",
+                    card("Amulet of Vigor"),
+                ]
             else:
-                new_battlefield.append(new_c)
+                new_battlefield.append(new_cwc)
         return self.copy_with_updates(battlefield=tuple(new_battlefield)).add_notes(
             *note_args
         )
@@ -233,20 +242,19 @@ class GameState(NamedTuple):
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
         i = self.hand.index(c)
         # When playing a saga, tick up to one counter
-        c_new = c.plus_counter() if c.is_saga else c
-
-        assert isinstance(c_new, Card)
-
+        c_new = CardWithCounters(c)
+        if c.is_saga:
+            c_new = c_new.plus_counter()
         return self.copy_with_updates(
             hand=self.hand[:i] + self.hand[i + 1 :],
             battlefield=self.battlefield + (c_new,),
         )
 
-    def move_from_battlefield_to_hand(self, c: Card) -> "GameState":
-        i = self.battlefield.index(c)
+    def move_from_battlefield_to_hand(self, cwc: CardWithCounters) -> "GameState":
+        i = self.battlefield.index(cwc)
         # When bouncing a saga, remove all counters
         return self.copy_with_updates(
-            hand=self.hand + (c.without_counters(),),
+            hand=self.hand + (cwc.card,),
             battlefield=self.battlefield[:i] + self.battlefield[i + 1 :],
         )
 
@@ -338,10 +346,12 @@ class GameState(NamedTuple):
 
     def effect_for_simic_growth_chamber(self) -> Set["GameState"]:
         states = set()
-        for c in set(self.battlefield):
-            if c.is_land:
+        for cwc in set(self.battlefield):
+            if cwc.card.is_land:
                 states.add(
-                    self.move_from_battlefield_to_hand(c).add_notes(", bounce ", c)
+                    self.move_from_battlefield_to_hand(cwc).add_notes(
+                        ", bounce ", cwc.card
+                    )
                 )
         return states
 
@@ -383,13 +393,13 @@ class GameState(NamedTuple):
     def add_notes(self, *args: str | Card | Mana | Tuple[Card, ...]) -> "GameState":
         notes: List[Note] = []
         for arg in args:
-            if isinstance(arg, str):
+            if isinstance(arg, Card):
+                notes.append(Note(arg, NoteType.CARD))
+            elif isinstance(arg, str):
                 if arg == "\n":
                     notes.append(Note("", NoteType.LINE_BREAK))
                 else:
                     notes.append(Note(arg))
-            elif isinstance(arg, Card):
-                notes.append(Note(arg.name, NoteType.CARD))
             elif isinstance(arg, Mana):
                 notes.append(Note(arg.name, NoteType.MANA))
             else:
@@ -402,6 +412,6 @@ class GameState(NamedTuple):
             n = cards.count(c)
             if n > 1:
                 notes.append(Note(str(n) + "\u00D7"))
-            notes.append(Note(c.name, NoteType.CARD))
+            notes.append(Note(c, NoteType.CARD))
             notes.append(Note(" "))
         return tuple(notes[:-1])

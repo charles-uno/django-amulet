@@ -5,4 +5,4 @@ run:
 	python3 manage.py runserver
 
 model:
-	python3 -m api.amulet_model
+	python3 -m api.amulet_model --debug
