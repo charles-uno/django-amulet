@@ -11,7 +11,7 @@ import sys
 
 from .mana import Mana
 from .card import Card, CardWithCounters
-from .note import Note, NoteType
+from .note import Note
 
 
 class OpenerDict(TypedDict):
@@ -93,7 +93,11 @@ class GameState(NamedTuple):
             return {self.with_tombstone(f"no solution within {max_turn} turns")}
         return {
             self.copy_with_updates(
-                notes=self.notes + (Note(f"Turn {self.turn+1}", NoteType.TURN_BREAK),),
+                notes=self.notes
+                + (
+                    Note.turn_break(),
+                    Note(f"Turn {self.turn+1}"),
+                ),
                 turn=self.turn + 1,
                 land_plays_remaining=self.get_land_plays_for_new_turn(),
                 mana_pool=Mana.from_string(""),
@@ -135,8 +139,8 @@ class GameState(NamedTuple):
             turn=self.turn + 1,
             notes=self.notes
             + (
-                Note("", NoteType.LINE_BREAK),
-                Note(f"FAILED: {reason.upper()}", NoteType.ALERT),
+                Note.line_break(),
+                Note.alert(f"FAILED: {reason.upper()}"),
             ),
         )
 
@@ -150,8 +154,8 @@ class GameState(NamedTuple):
     def get_land_plays_for_new_turn(self) -> int:
         return (
             1
-            + self.battlefield.count(Card("Dryad of the Ilysian Grove"))
-            + 2 * self.battlefield.count(Card("Azusa, Lost but Seeking"))
+            + self._battlefield_count("Dryad of the Ilysian Grove")
+            + 2 * self._battlefield_count("Azusa, Lost but Seeking")
         )
 
     def get_mana_pool_for_new_turn(self) -> Mana:
@@ -221,9 +225,7 @@ class GameState(NamedTuple):
             ).put_land_onto_battlefield_untapped(c)
 
     def put_land_onto_battlefield_tapped(self, c: Card) -> Set["GameState"]:
-        m = c.taps_for * self.battlefield.count(
-            CardWithCounters(Card("Amulet of Vigor"))
-        )
+        m = c.taps_for * self._battlefield_count("Amulet of Vigor")
         state = self.move_from_hand_to_battlefield(
             c,
         ).add_mana(m)
@@ -256,9 +258,11 @@ class GameState(NamedTuple):
             battlefield=self.battlefield + (c_new,),
         )
 
+    def _battlefield_count(self, card_name: str) -> int:
+        return self.battlefield.count(CardWithCounters(Card(card_name)))
+
     def move_from_battlefield_to_hand(self, cwc: CardWithCounters) -> "GameState":
         i = self.battlefield.index(cwc)
-        # When bouncing a saga, remove all counters
         return self.copy_with_updates(
             hand=self.hand + (cwc.card,),
             battlefield=self.battlefield[:i] + self.battlefield[i + 1 :],
@@ -284,7 +288,7 @@ class GameState(NamedTuple):
         self,
     ) -> Set["GameState"]:
         # If we just cast a duplicate Azusa, bail
-        if self.battlefield.count(Card("Azusa, Lost but Seeking")) > 1:
+        if self._battlefield_count("Azusa, Lost but Seeking") > 1:
             return set()
         return {self.add_land_plays(2)}
 
@@ -396,28 +400,18 @@ class GameState(NamedTuple):
         new_kwargs.update(kwargs)
         return GameState(**new_kwargs)
 
-    def add_notes(self, *args: str | Card | Mana | Tuple[Card, ...]) -> "GameState":
+    def add_notes(self, *args: str | Card | Mana) -> "GameState":
         notes: List[Note] = []
         for arg in args:
             if isinstance(arg, Card):
-                notes.append(Note(arg, NoteType.CARD))
+                notes.append(Note.card(arg))
             elif isinstance(arg, str):
                 if arg == "\n":
-                    notes.append(Note("", NoteType.LINE_BREAK))
+                    notes.append(Note.line_break())
                 else:
                     notes.append(Note(arg))
             elif isinstance(arg, Mana):
-                notes.append(Note(arg.to_string(), NoteType.MANA))
+                notes.append(Note.mana(arg))
             else:
-                notes.extend(self.get_notes_for_card_tuple(arg))
+                raise ValueError(f"unable to create Note from {arg}")
         return self.copy_with_updates(notes=self.notes + tuple(notes))
-
-    def get_notes_for_card_tuple(self, cards: Tuple[Card, ...]) -> Tuple[Note, ...]:
-        notes = []
-        for c in sorted(set(cards)):
-            n = cards.count(c)
-            if n > 1:
-                notes.append(Note(str(n) + "\u00D7"))
-            notes.append(Note(c, NoteType.CARD))
-            notes.append(Note(" "))
-        return tuple(notes[:-1])
