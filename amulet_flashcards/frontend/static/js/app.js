@@ -11,12 +11,10 @@ function hide_autocard() {
 
 
 htmx.on('htmx:beforeRequest', function(evt) {
-    console.log("before request");
     document.getElementById("indicator-backdrop").style.display = "block";
 });
 
 
 htmx.on('htmx:afterRequest', function(evt) {
-    console.log("after request");
     document.getElementById("indicator-backdrop").style.display = "none";
 });

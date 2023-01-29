@@ -26,11 +26,9 @@
 
   <div class="main">
 
-    <button hx-get="/api/opener" hx-trigger="click" hx-target="#opener-target" hx-indicator="#opener-indicator"
-      hx-swap="innerHTML">
+    <button hx-get="/api/opener" hx-trigger="click" hx-target="#opener-target" hx-swap="innerHTML">
       Click to get opener
     </button>
-    <div id="opener-indicator" class="htmx-indicator">Working...</div>
     <div id="opener-target">initial contents</div>
 
   </div>

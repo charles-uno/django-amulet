@@ -38,18 +38,12 @@ class HtmxHelper:
                 "hx-get": "/api/play",
                 "hx-trigger": "click",
                 "hx-target": "#play-target",
-                "hx-indicator": "#play-indicator",
                 "hx-swap": "innerHTML",
                 "hx-vals": opener_serialized,
             },
         )
-        play_indicator = cls.div(
-            "working...", id="play-indicator", klass="htmx-indicator"
-        )
         play_target = cls.div("placeholder contents", id="play-target")
-        return Htmx(
-            turn_order_tag + cards_tag + play_button + play_indicator + play_target
-        )
+        return Htmx(turn_order_tag + cards_tag + play_button + play_target)
 
     @classmethod
     def serialize_opener(cls, opener: OpenerDict) -> str:
