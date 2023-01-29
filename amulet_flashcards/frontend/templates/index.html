@@ -15,9 +15,14 @@
 
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
-  <div id="autocard-backdrop" class="autocard-backdrop" onclick="hide_autocard()">
-    <img id="autocard" class="autocard">
+  <div id="autocard-backdrop" onclick="hide_autocard()">
+    <img id="autocard">
   </div>
+
+  <div id="indicator-backdrop" onclick="hide_autocard()">
+    <div id="request-indicator">Working...</div>
+  </div>
+
 
   <div class="main">
 
@@ -27,15 +32,6 @@
     </button>
     <div id="opener-indicator" class="htmx-indicator">Working...</div>
     <div id="opener-target">initial contents</div>
-
-    {% comment %}
-    <button hx-get="/api/html/e2e" hx-trigger="click" hx-target="#e2e-target" hx-indicator="#e2e-indicator"
-      hx-swap="innerHTML" hx-ext="disable-element" hx-disable-element="self">
-      Click to run E2E
-    </button>
-    <div id="e2e-indicator" class="htmx-indicator">Working...</div>
-    <div id="e2e-target">initial contents</div>
-    {% endcomment %}
 
   </div>
 
