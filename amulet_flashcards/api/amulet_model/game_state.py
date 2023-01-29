@@ -210,14 +210,20 @@ class GameState(NamedTuple):
             return set()
         state = self.add_land_plays(
             -1,
-        ).add_notes("\n", "Play ", c)
+        )
         if c.enters_tapped:
-            return state.put_land_onto_battlefield_tapped(c)
+            return state.add_notes(
+                "\n", "Play ", c, " tapped"
+            ).put_land_onto_battlefield_tapped(c)
         else:
-            return state.put_land_onto_battlefield_untapped(c)
+            return state.add_notes(
+                "\n", "Play ", c, " untapped"
+            ).put_land_onto_battlefield_untapped(c)
 
     def put_land_onto_battlefield_tapped(self, c: Card) -> Set["GameState"]:
-        m = c.taps_for * self.battlefield.count(Card("Amulet of Vigor"))
+        m = c.taps_for * self.battlefield.count(
+            CardWithCounters(Card("Amulet of Vigor"))
+        )
         state = self.move_from_hand_to_battlefield(
             c,
         ).add_mana(m)
