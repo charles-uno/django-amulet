@@ -55,12 +55,12 @@ class GameState(NamedTuple):
     def get_turn_zero_state_from_opener(cls, opener: OpenerDict) -> "GameState":
         library = tuple(Card(x) for x in opener["library"])
         hand = tuple(Card(x) for x in opener["hand"])
-        initial_text = "on the play" if opener["on_the_play"] else "on the draw"
+        # Opening hand is displayed above. No need to spell it out
         return GameState(
             library=library,
             hand=hand,
             on_the_play=opener["on_the_play"],
-        ).add_notes(initial_text + " with ", hand)
+        )
 
     def get_summary_from_completed_game(self) -> GameSummaryDict:
         if not self.is_done and not self.is_failed:

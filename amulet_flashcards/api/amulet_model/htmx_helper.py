@@ -89,8 +89,13 @@ class HtmxHelper:
 
     @classmethod
     def from_play_summary(cls, summary: GameSummaryDict) -> Htmx:
-        html_notes = [cls.from_note(n) for n in summary["notes"]]
-        return Htmx("\n".join(html_notes))
+        htmx_summary_raw = "".join(cls.from_note(n) for n in summary["notes"])
+        # Our notes only identify the beginning of turns and lines. Tidy up the
+        # end tag bookkeeping. FYI: even if we skip this step, Chrome still
+        # figures it out
+        misplaced_tags = "</p></div>"
+        print(htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags)
+        return Htmx(htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags)
 
     @classmethod
     def from_note(cls, n: Note) -> Htmx:
@@ -146,23 +151,22 @@ class HtmxHelper:
 
     @classmethod
     def text(cls, text: str) -> Htmx:
-        return cls.span(cls._quote_safe(text), klass="summary-text")
+        return Htmx(cls._quote_safe(text))
 
     @classmethod
     def line_break(cls) -> Htmx:
-        return cls.br()
+        return Htmx("</p><p class='summary-line'>")
 
     @classmethod
     def turn_break(cls, text: str) -> Htmx:
-        return Htmx(cls.br() + cls.span(cls._quote_safe(text), klass="summary-text"))
+        return Htmx(
+            "</p></div><div class='summary-turn'><p class='summary-line'>"
+            + cls.text(text)
+        )
 
     @classmethod
     def alert(cls, text: str) -> Htmx:
         return cls.span(cls._quote_safe(text), klass="summary-alert")
-
-    @classmethod
-    def br(cls) -> Htmx:
-        return Htmx(cls._tag("br"))
 
     @classmethod
     def img(cls, **kwargs: str) -> Htmx:
@@ -184,6 +188,6 @@ class HtmxHelper:
             val = val.replace("'", "\\'")
             expr += f" {key}='{val}'"
         expr += ">"
-        if tag_name not in ["img", "br"]:
+        if tag_name != "img":
             expr += f"{inner_html}</{tag_name}>"
         return Htmx(expr)
