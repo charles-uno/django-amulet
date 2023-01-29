@@ -29,10 +29,6 @@ body {
     flex-shrink: 0;
 }
 
-.mana-symbol {
-    height: 16px;
-}
-
 .opener-turn-order {
     text-align: center;
     font-size: 24px;
@@ -41,6 +37,24 @@ body {
 .opener-cards {
     display: flex;
     justify-content: space-between;
+}
+
+
+.mana-symbol {
+    height: 16px;
+}
+
+.card-name {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+div.summary-turn {
+    border: 1px solid red;
+}
+
+p.summary-line {
+    border: 1px solid blue;
 }
 
 img.card {

@@ -93,7 +93,7 @@ class GameState(NamedTuple):
             return {self.with_tombstone(f"no solution within {max_turn} turns")}
         return {
             self.copy_with_updates(
-                notes=self.notes + (Note(f"turn {self.turn+1}", NoteType.TURN_BREAK),),
+                notes=self.notes + (Note(f"Turn {self.turn+1}", NoteType.TURN_BREAK),),
                 turn=self.turn + 1,
                 land_plays_remaining=self.get_land_plays_for_new_turn(),
                 mana_pool=Mana.from_string(""),
@@ -203,14 +203,14 @@ class GameState(NamedTuple):
         return self.copy_with_updates(
             hand=self.hand + (c,),
             library=self.library[1:],
-        ).add_notes("\n", "draw ", c)
+        ).add_notes(", draw ", c)
 
     def maybe_play_land(self, c: Card) -> Set["GameState"]:
         if c not in self.hand or not self.land_plays_remaining or not c.is_land:
             return set()
         state = self.add_land_plays(
             -1,
-        ).add_notes("\n", "play ", c)
+        ).add_notes("\n", "Play ", c)
         if c.enters_tapped:
             return state.put_land_onto_battlefield_tapped(c)
         else:
@@ -234,7 +234,7 @@ class GameState(NamedTuple):
             return set()
         state = (
             self.move_from_hand_to_battlefield(c)
-            .add_notes("\n", "cast ", c)
+            .add_notes("\n", "Cast ", c)
             .pay_mana(c.mana_cost)
         )
         return getattr(state, "effect_for_" + c.slug)()
