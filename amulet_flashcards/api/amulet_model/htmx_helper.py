@@ -31,6 +31,18 @@ class HtmxHelper:
         card_tags = [cls.card_image(c) for c in opener["hand"]]
         cards_tag = cls.div("".join(card_tags), klass="opener-cards")
         opener_serialized = cls.serialize_opener(opener)
+
+        refresh_button = cls._tag(
+            "button",
+            inner_html="draw a new hand",
+            **{
+                "hx-get": "/api/opener",
+                "hx-trigger": "click",
+                "hx-target": "#opener-target",
+                "hx-swap": "innerHTML",
+            },
+        )
+
         play_button = cls._tag(
             "button",
             inner_html="play it out",
@@ -43,7 +55,9 @@ class HtmxHelper:
             },
         )
         play_target = cls.div("placeholder contents", id="play-target")
-        return Htmx(turn_order_tag + cards_tag + play_button + play_target)
+        return Htmx(
+            refresh_button + play_button + cards_tag + turn_order_tag + play_target
+        )
 
     @classmethod
     def serialize_opener(cls, opener: OpenerDict) -> str:

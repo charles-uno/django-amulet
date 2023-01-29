@@ -23,14 +23,8 @@
     <div id="request-indicator">Working...</div>
   </div>
 
-
-  <div class="main">
-
-    <button hx-get="/api/opener" hx-trigger="click" hx-target="#opener-target" hx-swap="innerHTML">
-      Click to get opener
-    </button>
-    <div id="opener-target">initial contents</div>
-
+  <div class="main" id="opener-target" hx-get="/api/opener" hx-trigger="load" hx-target="#opener-target"
+    hx-swap="innerHTML">
   </div>
 
   <div class="footer">
