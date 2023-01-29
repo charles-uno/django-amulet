@@ -1,23 +1,32 @@
-body {
+html, body {
     font-size: 16px;
+    background-color: #888;
+    padding: 0;
+    margin: 0;
+    height: 100%;
 }
 
-.payload {
-    display: none;
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 50px 20px;
+    border: 1px solid red;
+    background-color: #fff;
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex-shrink: 0;
 }
 
 .mana-symbol {
     height: 16px;
-}
-
-.wrap-main {
-    width: 100%;
-}
-
-.main {
-    max-width: 500px;
-    width: 100%;
-    margin: 0 auto;
 }
 
 .opener-turn-order {
@@ -43,7 +52,6 @@ img.card:not(:first-child) {
 #e2e-indicator, #opener-indicator {
 border: 1px solid green;
 }
-
 
 #autocard-backdrop {
     position: fixed;
