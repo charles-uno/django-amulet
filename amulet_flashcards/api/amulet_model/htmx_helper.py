@@ -3,6 +3,7 @@ Helpers for converting between Python data structures and HTMX
 For more information on HTMX, see htmx.org
 """
 
+import json
 from typing import Dict, List
 from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
@@ -57,14 +58,10 @@ class HtmxHelper:
 
     @classmethod
     def _serialize_opener(cls, opener: OpenerDict) -> str:
-        hand_serialized = cls._serialize_list_of_strings(opener["hand"])
-        library_serialized = cls._serialize_list_of_strings(opener["library"])
-        otp_serialized = cls._serialize_bool(opener["on_the_play"])
-        return (
-            "{"
-            + f'"hand": "{hand_serialized}", "library": "{library_serialized}", "on_the_play": {otp_serialized}'
-            + "}"
-        )
+        hand = cls._serialize_list_of_strings(opener["hand"])
+        library = cls._serialize_list_of_strings(opener["library"])
+        otp = cls._serialize_bool(opener["on_the_play"])
+        return json.dumps({"hand": hand, "library": library, "on_the_play": otp})
 
     @classmethod
     def _serialize_list_of_strings(cls, x: List[str]) -> str:
@@ -97,6 +94,8 @@ class HtmxHelper:
         htmx_notes_raw = "".join(cls._from_note(n) for n in summary["notes"])
         misplaced_tags = "</p></div>"
         htmx_notes = htmx_notes_raw[len(misplaced_tags) :] + misplaced_tags
+
+        # TODO: keep cumulative stats
 
         return Htmx(htmx_opener + htmx_notes)
 

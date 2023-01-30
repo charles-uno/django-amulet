@@ -3,7 +3,6 @@ import time
 from typing import List, Set
 
 from .game_state import GameState, GameSummaryDict, OpenerDict
-from .htmx_helper import HtmxHelper, Htmx
 
 
 class GameManager:
