@@ -1,3 +1,10 @@
+"""
+GameManager is a bookkeeping wrapper around GameState. It sets up the initial
+state, coordinates iteration through the turns, and keeps track of cumulative
+stats.
+"""
+
+
 import random
 import time
 from typing import List, Set
