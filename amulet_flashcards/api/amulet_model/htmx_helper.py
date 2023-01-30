@@ -31,7 +31,6 @@ class HtmxHelper:
         card_tags = [cls.card_image(c) for c in opener["hand"]]
         cards_tag = cls.div("".join(card_tags), klass="opener-cards")
         opener_serialized = cls.serialize_opener(opener)
-
         refresh_button = cls._tag(
             "button",
             inner_html="draw a new hand",

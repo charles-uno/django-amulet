@@ -21,6 +21,7 @@ class OpenerDict(TypedDict):
 
 
 class GameSummaryDict(TypedDict):
+    opener: OpenerDict
     notes: List[Note]
 
 
@@ -49,6 +50,8 @@ class GameState(NamedTuple):
     mana_pool: Mana = Mana.from_string("")
     notes: Tuple[Note, ...] = ()
     on_the_play: bool = False
+    opening_hand: Tuple[Card, ...] = ()
+    opening_library: Tuple[Card, ...] = ()
     turn: int = 0
 
     @classmethod
@@ -57,15 +60,24 @@ class GameState(NamedTuple):
         hand = tuple(Card(x) for x in opener["hand"])
         # Opening hand is displayed above. No need to spell it out
         return GameState(
-            library=library,
             hand=hand,
+            library=library,
+            opening_hand=hand,
+            opening_library=library,
             on_the_play=opener["on_the_play"],
         )
 
     def get_summary_from_completed_game(self) -> GameSummaryDict:
         if not self.is_done and not self.is_failed:
             raise ValueError("This game is still in progress!")
-        return {"notes": list(self.notes)}
+        return {
+            "notes": list(self.notes),
+            "opener": {
+                "hand": list(self.opening_hand),
+                "library": list(self.opening_library),
+                "on_the_play": self.on_the_play,
+            },
+        }
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
         try:
