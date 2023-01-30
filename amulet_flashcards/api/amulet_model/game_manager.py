@@ -12,26 +12,33 @@ from typing import List, Set, TypedDict
 from .game_state import GameState, GameSummaryDict, OpenerDict
 
 
-class PlayOutputDict(TypedDict):
+class ModelInputDict(TypedDict):
+    opener: OpenerDict
+
+
+class ModelOutputDict(TypedDict):
     opener: OpenerDict
     summary: GameSummaryDict
 
 
 class GameManager:
     @classmethod
-    def get_opener_from_deck_list(cls, deck_list: List[str]) -> OpenerDict:
+    def get_model_input_from_deck_list(cls, deck_list: List[str]) -> ModelInputDict:
         on_the_play = random.choice([True, False])
         random.shuffle(deck_list)
         return {
-            "hand": deck_list[:7],
-            "library": deck_list[7:],
-            "on_the_play": on_the_play,
+            "opener": {
+                "hand": deck_list[:7],
+                "library": deck_list[7:],
+                "on_the_play": on_the_play,
+            }
         }
 
     @classmethod
-    def run_from_opener(
-        cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> PlayOutputDict:
+    def run(
+        cls, pid: ModelInputDict, max_turn: int = 4, max_wait_seconds: float = 3
+    ) -> ModelOutputDict:
+        opener = pid["opener"]
         # Shuffle the every time so we can play through this hand repeatedly
         random.shuffle(opener["library"])
         max_time = time.time() + max_wait_seconds

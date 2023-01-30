@@ -1,12 +1,13 @@
 """
-Helpers for converting between Python data structures and HTMX
+Helpers for parsing HTMX payloads into Python data structures, as well as
+formatting Python data structures into HTMX
 For more information on HTMX, see htmx.org
 """
 
 import json
 from typing import Dict, List
 
-from .game_manager import PlayOutputDict
+from .game_manager import ModelInputDict, ModelOutputDict, ModelOutputDict
 from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
 
@@ -17,18 +18,8 @@ class Htmx(str):
 
 class HtmxHelper:
     @classmethod
-    def deserialize_opener_from_payload(cls, payload: Dict[str, str]) -> OpenerDict:
-        hand = cls._deserialize_list_of_strings(payload["hand"])
-        library = cls._deserialize_list_of_strings(payload["library"])
-        on_the_play = cls._deserialize_bool(payload["on_the_play"])
-        return {
-            "hand": hand,
-            "library": library,
-            "on_the_play": on_the_play,
-        }
-
-    @classmethod
-    def from_opener(cls, opener: OpenerDict) -> Htmx:
+    def format_input(cls, mid: ModelInputDict) -> Htmx:
+        opener = mid["opener"]
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
         turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls._card_image(c) for c in opener["hand"]]
@@ -59,6 +50,34 @@ class HtmxHelper:
         return Htmx(refresh_button + play_button + cards_tag + turn_order_tag)
 
     @classmethod
+    def parse_payload(cls, payload: Dict[str, str]) -> ModelInputDict:
+        hand = cls._deserialize_list_of_strings(payload["hand"])
+        library = cls._deserialize_list_of_strings(payload["library"])
+        on_the_play = cls._deserialize_bool(payload["on_the_play"])
+        return {
+            "opener": {
+                "hand": hand,
+                "library": library,
+                "on_the_play": on_the_play,
+            }
+        }
+
+    @classmethod
+    def format_output(cls, mod: ModelOutputDict) -> Htmx:
+        # We redraw everything, so gotta include the opener here
+        htmx_opener = cls.format_input({"opener": mod["opener"]})
+        # Our notes only identify the beginning of turns and lines. Tidy up the
+        # end tag bookkeeping. FYI: even if we skip this step, Chrome still
+        # figures it out
+        htmx_notes_raw = "".join(cls._from_note(n) for n in mod["summary"]["notes"])
+        misplaced_tags = "</p></div>"
+        htmx_notes = htmx_notes_raw[len(misplaced_tags) :] + misplaced_tags
+
+        # TODO: handle stats
+
+        return Htmx(htmx_opener + htmx_notes)
+
+    @classmethod
     def _serialize_opener(cls, opener: OpenerDict) -> str:
         hand = cls._serialize_list_of_strings(opener["hand"])
         library = cls._serialize_list_of_strings(opener["library"])
@@ -85,21 +104,6 @@ class HtmxHelper:
     @classmethod
     def _serialize_bool(cls, b: bool) -> str:
         return "true" if b else "false"
-
-    @classmethod
-    def from_play_output(cls, pod: PlayOutputDict) -> Htmx:
-        # We redraw everything, so gotta include the opener here
-        htmx_opener = cls.from_opener(pod["opener"])
-        # Our notes only identify the beginning of turns and lines. Tidy up the
-        # end tag bookkeeping. FYI: even if we skip this step, Chrome still
-        # figures it out
-        htmx_notes_raw = "".join(cls._from_note(n) for n in pod["summary"]["notes"])
-        misplaced_tags = "</p></div>"
-        htmx_notes = htmx_notes_raw[len(misplaced_tags) :] + misplaced_tags
-
-        # TODO: keep cumulative stats
-
-        return Htmx(htmx_opener + htmx_notes)
 
     @classmethod
     def _from_note(cls, n: Note) -> Htmx:
