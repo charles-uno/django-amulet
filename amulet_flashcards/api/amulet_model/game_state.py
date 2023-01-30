@@ -178,7 +178,7 @@ class GameState(NamedTuple):
                 new_battlefield.append(CardWithCounters(Card("Amulet of Vigor")))
                 note_args += [
                     "\n",
-                    "sack ",
+                    "Sack ",
                     new_cwc.card,
                     ", grab ",
                     Card("Amulet of Vigor"),
