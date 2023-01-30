@@ -23,6 +23,7 @@ class OpenerDict(TypedDict):
 class GameSummaryDict(TypedDict):
     opener: OpenerDict
     notes: List[Note]
+    turn: int
 
 
 class GameStateUpdate(TypedDict):
@@ -77,6 +78,7 @@ class GameState(NamedTuple):
                 "library": list(self.opening_library),
                 "on_the_play": self.on_the_play,
             },
+            "turn": self.turn if self.is_done else -1,
         }
 
     def get_next_states(self, max_turn: int) -> Set["GameState"]:
