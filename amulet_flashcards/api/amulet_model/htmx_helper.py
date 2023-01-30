@@ -7,24 +7,36 @@ For more information on HTMX, see htmx.org
 import json
 from typing import Dict, List
 
+from .game_state import OpenerDict
 from .game_manager import ModelInputDict, ModelOutputDict, ModelOutputDict
-from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
 
 
 class Htmx(str):
-    pass
+    @classmethod
+    def join(cls, *args: str) -> "Htmx":
+        return Htmx("".join(args))
 
 
 class HtmxHelper:
     @classmethod
     def format_input(cls, mid: ModelInputDict) -> Htmx:
-        opener = mid["opener"]
+        refresh_button = cls._format_refresh_button()
+        play_button = cls._format_play_button(mid)
+        opener_tags = cls._format_opener(mid["opener"])
+        return Htmx.join(refresh_button, play_button, opener_tags)
+
+    @classmethod
+    def _format_opener(cls, opener: OpenerDict) -> Htmx:
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
         turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls._card_image(c) for c in opener["hand"]]
         cards_tag = cls._div("".join(card_tags), klass="opener-cards")
-        refresh_button = cls._tag(
+        return Htmx.join(turn_order_tag, cards_tag)
+
+    @classmethod
+    def _format_refresh_button(cls) -> Htmx:
+        return cls._tag(
             "button",
             inner_html="draw a new hand",
             **{
@@ -35,7 +47,10 @@ class HtmxHelper:
                 "hx-swap": "innerHTML",
             },
         )
-        play_button = cls._tag(
+
+    @classmethod
+    def _format_play_button(cls, mid: ModelInputDict) -> Htmx:
+        return cls._tag(
             "button",
             inner_html="play it out",
             **{
@@ -44,10 +59,9 @@ class HtmxHelper:
                 "hx-trigger": "click",
                 "hx-target": "#swap-target",
                 "hx-swap": "innerHTML",
-                "hx-vals": cls._serialize_opener_and_stats(opener, mid["stats"]),
+                "hx-vals": cls._serialize_payload(mid),
             },
         )
-        return Htmx(refresh_button + play_button + cards_tag + turn_order_tag)
 
     @classmethod
     def parse_payload(cls, payload: Dict[str, str]) -> ModelInputDict:
@@ -76,16 +90,15 @@ class HtmxHelper:
 
         htmx_stats = cls._div(str(mod["stats"]))
 
-        return Htmx(htmx_opener + htmx_notes + htmx_stats)
+        return Htmx.join(htmx_opener, htmx_notes, htmx_stats)
 
     @classmethod
-    def _serialize_opener_and_stats(
-        cls, opener: OpenerDict, stats: Dict[int, int]
-    ) -> str:
+    def _serialize_payload(cls, mid: ModelInputDict) -> str:
+        opener = mid["opener"]
         hand_serialized = cls._serialize_list_of_strings(opener["hand"])
         library_serialized = cls._serialize_list_of_strings(opener["library"])
         otp_serialized = cls._serialize_bool(opener["on_the_play"])
-        stats_serialized = cls._serialize_stats(stats)
+        stats_serialized = cls._serialize_stats(mid["stats"])
         return json.dumps(
             {
                 "hand": hand_serialized,
