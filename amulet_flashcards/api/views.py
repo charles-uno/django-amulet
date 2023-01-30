@@ -7,8 +7,8 @@ from .amulet_model import GameManager, HtmxHelper
 def e2e(request: HttpRequest) -> HttpResponse:
     deck_list = load_deck_list()
     opener = GameManager.get_opener_from_deck_list(deck_list)
-    summary = GameManager.run_from_opener(opener)
-    return HttpResponse(HtmxHelper.from_play_summary(summary))
+    play_output = GameManager.run_from_opener(opener)
+    return HttpResponse(HtmxHelper.from_play_output(play_output))
 
 
 def opener(request: HttpRequest) -> HttpResponse:
@@ -19,8 +19,8 @@ def opener(request: HttpRequest) -> HttpResponse:
 
 def play_it_out(request: HttpRequest) -> HttpResponse:
     opener = HtmxHelper.deserialize_opener_from_payload(request.GET)
-    summary = GameManager.run_from_opener(opener)
-    return HttpResponse(HtmxHelper.from_play_summary(summary))
+    play_output = GameManager.run_from_opener(opener)
+    return HttpResponse(HtmxHelper.from_play_output(play_output))
 
 
 def load_deck_list() -> List[str]:

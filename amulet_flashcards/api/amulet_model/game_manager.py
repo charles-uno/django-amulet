@@ -7,9 +7,14 @@ stats.
 
 import random
 import time
-from typing import List, Set
+from typing import List, Set, TypedDict
 
 from .game_state import GameState, GameSummaryDict, OpenerDict
+
+
+class PlayOutputDict(TypedDict):
+    opener: OpenerDict
+    summary: GameSummaryDict
 
 
 class GameManager:
@@ -26,7 +31,7 @@ class GameManager:
     @classmethod
     def run_from_opener(
         cls, opener: OpenerDict, max_turn: int = 4, max_wait_seconds: float = 3
-    ) -> GameSummaryDict:
+    ) -> PlayOutputDict:
         # Shuffle the every time so we can play through this hand repeatedly
         random.shuffle(opener["library"])
         max_time = time.time() + max_wait_seconds
@@ -36,7 +41,8 @@ class GameManager:
         )
         for _ in range(max_turn):
             states = cls._get_next_turn(states, max_turn=max_turn, max_time=max_time)
-        return states.pop().get_summary_from_completed_game()
+        summary = states.pop().get_summary_from_completed_game()
+        return {"opener": opener, "summary": summary}
 
     @classmethod
     def _get_next_turn(

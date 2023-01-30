@@ -21,7 +21,6 @@ class OpenerDict(TypedDict):
 
 
 class GameSummaryDict(TypedDict):
-    opener: OpenerDict
     notes: List[Note]
     turn: int
 
@@ -73,11 +72,6 @@ class GameState(NamedTuple):
             raise ValueError("This game is still in progress!")
         return {
             "notes": list(self.notes),
-            "opener": {
-                "hand": list(self.opening_hand),
-                "library": list(self.opening_library),
-                "on_the_play": self.on_the_play,
-            },
             "turn": self.turn if self.is_done else -1,
         }
 

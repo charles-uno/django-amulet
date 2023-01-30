@@ -5,6 +5,8 @@ For more information on HTMX, see htmx.org
 
 import json
 from typing import Dict, List
+
+from .game_manager import PlayOutputDict
 from .game_state import GameSummaryDict, OpenerDict
 from .note import Note, NoteType
 
@@ -85,13 +87,13 @@ class HtmxHelper:
         return "true" if b else "false"
 
     @classmethod
-    def from_play_summary(cls, summary: GameSummaryDict) -> Htmx:
+    def from_play_output(cls, pod: PlayOutputDict) -> Htmx:
         # We redraw everything, so gotta include the opener here
-        htmx_opener = cls.from_opener(summary["opener"])
+        htmx_opener = cls.from_opener(pod["opener"])
         # Our notes only identify the beginning of turns and lines. Tidy up the
         # end tag bookkeeping. FYI: even if we skip this step, Chrome still
         # figures it out
-        htmx_notes_raw = "".join(cls._from_note(n) for n in summary["notes"])
+        htmx_notes_raw = "".join(cls._from_note(n) for n in pod["summary"]["notes"])
         misplaced_tags = "</p></div>"
         htmx_notes = htmx_notes_raw[len(misplaced_tags) :] + misplaced_tags
 
