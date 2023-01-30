@@ -90,9 +90,7 @@ class HtmxHelper:
         # We redraw everything, so gotta include the opener here
         htmx_opener = cls.format_input({"opener": mod["opener"], "stats": mod["stats"]})
         htmx_summary = cls._format_summary(mod["summary"])
-
         htmx_stats = cls._format_stats(mod["stats"])
-
         return Htmx.join(htmx_opener, htmx_summary, htmx_stats)
 
     @classmethod
@@ -107,7 +105,7 @@ class HtmxHelper:
 
     @classmethod
     def _format_stats(cls, stats: Dict[int, int]) -> Htmx:
-        return cls._div(str(stats))
+        return cls._div(str(stats), klass="stats-wrap")
 
     @classmethod
     def _serialize_payload(cls, mid: ModelInputDict) -> str:
