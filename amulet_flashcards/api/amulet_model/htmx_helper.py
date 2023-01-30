@@ -15,9 +15,9 @@ class Htmx(str):
 class HtmxHelper:
     @classmethod
     def deserialize_opener_from_payload(cls, payload: Dict[str, str]) -> OpenerDict:
-        hand = cls.deserialize_list_of_strings(payload["hand"])
-        library = cls.deserialize_list_of_strings(payload["library"])
-        on_the_play = cls.deserialize_bool(payload["on_the_play"])
+        hand = cls._deserialize_list_of_strings(payload["hand"])
+        library = cls._deserialize_list_of_strings(payload["library"])
+        on_the_play = cls._deserialize_bool(payload["on_the_play"])
         return {
             "hand": hand,
             "library": library,
@@ -27,9 +27,9 @@ class HtmxHelper:
     @classmethod
     def from_opener(cls, opener: OpenerDict) -> Htmx:
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
-        turn_order_tag = cls.div(turn_order, klass="opener-turn-order")
+        turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls.card_image(c) for c in opener["hand"]]
-        cards_tag = cls.div("".join(card_tags), klass="opener-cards")
+        cards_tag = cls._div("".join(card_tags), klass="opener-cards")
         opener_serialized = cls.serialize_opener(opener)
         refresh_button = cls._tag(
             "button",
@@ -55,28 +55,28 @@ class HtmxHelper:
                 "hx-vals": opener_serialized,
             },
         )
-        play_target = cls.div("placeholder contents", id="play-target")
+        play_target = cls._div("placeholder contents", id="play-target")
         return Htmx(
             refresh_button + play_button + cards_tag + turn_order_tag + play_target
         )
 
     @classmethod
     def serialize_opener(cls, opener: OpenerDict) -> str:
-        hand_serialized = cls.serialize_list_of_strings(opener["hand"])
-        library_serialized = cls.serialize_list_of_strings(opener["library"])
-        otp_serialized = cls.serialize_bool(opener["on_the_play"])
+        hand_serialized = cls._serialize_list_of_strings(opener["hand"])
+        library_serialized = cls._serialize_list_of_strings(opener["library"])
+        otp_serialized = cls._serialize_bool(opener["on_the_play"])
         return f'"hand": "{hand_serialized}", "library": "{library_serialized}", "on_the_play": {otp_serialized}'
 
     @classmethod
-    def serialize_list_of_strings(cls, x: List[str]) -> str:
+    def _serialize_list_of_strings(cls, x: List[str]) -> str:
         return ";".join(x).replace("'", "&apos;")
 
     @classmethod
-    def deserialize_list_of_strings(cls, x: str) -> List[str]:
+    def _deserialize_list_of_strings(cls, x: str) -> List[str]:
         return x.replace("&apos;", "'").split(";")
 
     @classmethod
-    def deserialize_bool(cls, x: str) -> bool:
+    def _deserialize_bool(cls, x: str) -> bool:
         if x == "true":
             return True
         elif x == "false":
@@ -85,12 +85,12 @@ class HtmxHelper:
             raise ValueError(f"unable to get bool from {repr(x)}")
 
     @classmethod
-    def serialize_bool(cls, b: bool) -> str:
+    def _serialize_bool(cls, b: bool) -> str:
         return "true" if b else "false"
 
     @classmethod
     def from_play_summary(cls, summary: GameSummaryDict) -> Htmx:
-        htmx_summary_raw = "".join(cls.from_note(n) for n in summary["notes"])
+        htmx_summary_raw = "".join(cls._from_note(n) for n in summary["notes"])
         # Our notes only identify the beginning of turns and lines. Tidy up the
         # end tag bookkeeping. FYI: even if we skip this step, Chrome still
         # figures it out
@@ -99,23 +99,23 @@ class HtmxHelper:
         return Htmx(htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags)
 
     @classmethod
-    def from_note(cls, n: Note) -> Htmx:
+    def _from_note(cls, n: Note) -> Htmx:
         if n.type == NoteType.TEXT:
-            return cls.text(n.text)
+            return cls._text(n.text)
         elif n.type == NoteType.LINE_BREAK:
-            return cls.line_break()
+            return cls._line_break()
         elif n.type == NoteType.TURN_BREAK:
-            return cls.turn_break(n.text)
+            return cls._turn_break(n.text)
         elif n.type == NoteType.MANA:
             return cls.mana(n.text)
         elif n.type == NoteType.CARD:
             return cls.card_name(n.text)
         else:
-            return cls.alert(n.text)
+            return cls._alert(n.text)
 
     @classmethod
     def card_name(cls, card_name: str) -> Htmx:
-        return cls.span(
+        return cls._span(
             cls._quote_safe(card_name),
             klass="card-name",
             onclick=f'show_autocard("{cls._card_image_url(card_name)}")',
@@ -123,7 +123,7 @@ class HtmxHelper:
 
     @classmethod
     def card_image(cls, card_name: str) -> Htmx:
-        return cls.img(klass="card", src=cls._card_image_url(card_name))
+        return cls._img(klass="card", src=cls._card_image_url(card_name))
 
     @classmethod
     def _card_image_url(cls, card_name: str) -> str:
@@ -143,7 +143,7 @@ class HtmxHelper:
     @classmethod
     def mana(cls, expr: str) -> Htmx:
         urls = [cls.mana_symbol_url(x) for x in expr]
-        tags = [cls.img(klass="mana-symbol", src=url) for url in urls]
+        tags = [cls._img(klass="mana-symbol", src=url) for url in urls]
         return Htmx("".join(tags))
 
     @classmethod
@@ -151,34 +151,31 @@ class HtmxHelper:
         return f"https://gatherer.wizards.com/Handlers/Image.ashx?size=medium&type=symbol&name={c}"
 
     @classmethod
-    def text(cls, text: str) -> Htmx:
+    def _text(cls, text: str) -> Htmx:
         return Htmx(cls._quote_safe(text))
 
     @classmethod
-    def line_break(cls) -> Htmx:
+    def _line_break(cls) -> Htmx:
         return Htmx("</p><p class='summary-line'>")
 
     @classmethod
-    def turn_break(cls, text: str) -> Htmx:
-        return Htmx(
-            "</p></div><div class='summary-turn'><p class='summary-line'>"
-            + cls.text(text)
-        )
+    def _turn_break(cls, text: str) -> Htmx:
+        return Htmx("</p></div><div class='summary-turn'><p class='summary-line'>")
 
     @classmethod
-    def alert(cls, text: str) -> Htmx:
-        return cls.span(cls._quote_safe(text), klass="summary-alert")
+    def _alert(cls, text: str) -> Htmx:
+        return cls._span(cls._quote_safe(text), klass="summary-alert")
 
     @classmethod
-    def img(cls, **kwargs: str) -> Htmx:
+    def _img(cls, **kwargs: str) -> Htmx:
         return cls._tag("img", "", **kwargs)
 
     @classmethod
-    def span(cls, inner_html: str, **kwargs: str) -> Htmx:
+    def _span(cls, inner_html: str, **kwargs: str) -> Htmx:
         return cls._tag("span", inner_html, **kwargs)
 
     @classmethod
-    def div(cls, inner_html: str, **kwargs: str) -> Htmx:
+    def _div(cls, inner_html: str, **kwargs: str) -> Htmx:
         return cls._tag("div", inner_html, **kwargs)
 
     @classmethod

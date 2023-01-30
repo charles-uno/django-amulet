@@ -5,17 +5,13 @@ To be run with pytest
 from ..htmx_helper import HtmxHelper
 
 
-def test_br():
-    assert HtmxHelper.br() == "<br>"
-
-
 def test_img():
-    assert HtmxHelper.img(src="foo", klass="bar") == "<img src='foo' class='bar'>"
+    assert HtmxHelper._img(src="foo", klass="bar") == "<img src='foo' class='bar'>"
 
 
 def test_div():
     assert (
-        HtmxHelper.div("fizz", onclick="buzz()") == "<div onclick='buzz()'>fizz</div>"
+        HtmxHelper._div("fizz", onclick="buzz()") == "<div onclick='buzz()'>fizz</div>"
     )
 
 
