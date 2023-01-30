@@ -28,7 +28,7 @@ class HtmxHelper:
     def from_opener(cls, opener: OpenerDict) -> Htmx:
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
         turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
-        card_tags = [cls.card_image(c) for c in opener["hand"]]
+        card_tags = [cls._card_image(c) for c in opener["hand"]]
         cards_tag = cls._div("".join(card_tags), klass="opener-cards")
         opener_serialized = cls._serialize_opener(opener)
         refresh_button = cls._tag(
@@ -107,14 +107,14 @@ class HtmxHelper:
         elif n.type == NoteType.TURN_BREAK:
             return cls._turn_break(n.text)
         elif n.type == NoteType.MANA:
-            return cls.mana(n.text)
+            return cls._mana(n.text)
         elif n.type == NoteType.CARD:
-            return cls.card_name(n.text)
+            return cls._card_name(n.text)
         else:
             return cls._alert(n.text)
 
     @classmethod
-    def card_name(cls, card_name: str) -> Htmx:
+    def _card_name(cls, card_name: str) -> Htmx:
         return cls._span(
             cls._quote_safe(card_name),
             klass="card-name",
@@ -122,7 +122,7 @@ class HtmxHelper:
         )
 
     @classmethod
-    def card_image(cls, card_name: str) -> Htmx:
+    def _card_image(cls, card_name: str) -> Htmx:
         return cls._img(klass="card", src=cls._card_image_url(card_name))
 
     @classmethod
@@ -141,13 +141,13 @@ class HtmxHelper:
         return text.replace("'", "&apos;").replace('"', "&quot;").replace(" ", "%20")
 
     @classmethod
-    def mana(cls, expr: str) -> Htmx:
-        urls = [cls.mana_symbol_url(x) for x in expr]
+    def _mana(cls, expr: str) -> Htmx:
+        urls = [cls._mana_symbol_url(x) for x in expr]
         tags = [cls._img(klass="mana-symbol", src=url) for url in urls]
         return Htmx("".join(tags))
 
     @classmethod
-    def mana_symbol_url(cls, c: str) -> str:
+    def _mana_symbol_url(cls, c: str) -> str:
         return f"https://gatherer.wizards.com/Handlers/Image.ashx?size=medium&type=symbol&name={c}"
 
     @classmethod
