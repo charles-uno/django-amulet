@@ -91,7 +91,7 @@ class HtmxHelper:
         htmx_opener = cls.format_input({"opener": mod["opener"], "stats": mod["stats"]})
         htmx_summary = cls._format_summary(mod["summary"])
         htmx_stats = cls._format_stats(mod["stats"])
-        return Htmx.join(htmx_opener, htmx_summary, htmx_stats)
+        return Htmx.join(htmx_opener, htmx_stats, htmx_summary)
 
     @classmethod
     def _format_summary(cls, summary: GameSummaryDict) -> Htmx:
@@ -105,7 +105,10 @@ class HtmxHelper:
 
     @classmethod
     def _format_stats(cls, stats: Dict[int, int]) -> Htmx:
-        return cls._div(str(stats), klass="stats-wrap")
+        # We'll split these out on the client side
+        data_csv = ",".join(str(v) for k, v in sorted(stats.items()))
+        stats_chart = cls._div(data_csv, id="stats-target")
+        return cls._div(stats_chart, klass="stats-wrap")
 
     @classmethod
     def _serialize_payload(cls, mid: ModelInputDict) -> str:
