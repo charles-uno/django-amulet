@@ -71,7 +71,7 @@ img.card:not(:first-child) {
 border: 1px solid green;
 }
 
-#autocard-backdrop, #indicator-backdrop {
+#autocard-backdrop {
     position: fixed;
     /* Some wiggle room since things move when scrolling */
     top: -50%;
@@ -84,7 +84,7 @@ border: 1px solid green;
     text-align: center;
 }
 
-#autocard, #request-indicator {
+#autocard {
     color: #fff;
     z-index: 999;
     width: 500px;

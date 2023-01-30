@@ -36,6 +36,7 @@ class HtmxHelper:
             "button",
             inner_html="draw a new hand",
             **{
+                "id": "opener-button",
                 "hx-get": "/api/opener",
                 "hx-trigger": "click",
                 "hx-target": "#opener-target",
@@ -47,6 +48,7 @@ class HtmxHelper:
             "button",
             inner_html="play it out",
             **{
+                "id": "play-button",
                 "hx-get": "/api/play",
                 "hx-trigger": "click",
                 "hx-target": "#play-target",
