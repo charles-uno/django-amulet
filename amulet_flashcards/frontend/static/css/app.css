@@ -28,6 +28,10 @@ body {
     flex-shrink: 0;
 }
 
+.footer {
+    font-size: 10px;
+}
+
 .half-width {
     width: 50%;
     display: inline-block;
