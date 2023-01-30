@@ -1,5 +1,5 @@
 """
-Helpers for converting Python data structures into HTMX
+Helpers for converting between Python data structures and HTMX
 For more information on HTMX, see htmx.org
 """
 
@@ -30,7 +30,6 @@ class HtmxHelper:
         turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls._card_image(c) for c in opener["hand"]]
         cards_tag = cls._div("".join(card_tags), klass="opener-cards")
-        opener_serialized = cls._serialize_opener(opener)
         refresh_button = cls._tag(
             "button",
             inner_html="draw a new hand",
@@ -51,7 +50,7 @@ class HtmxHelper:
                 "hx-trigger": "click",
                 "hx-target": "#swap-target",
                 "hx-swap": "innerHTML",
-                "hx-vals": opener_serialized,
+                "hx-vals": cls._serialize_opener(opener),
             },
         )
         return Htmx(refresh_button + play_button + cards_tag + turn_order_tag)
@@ -61,7 +60,11 @@ class HtmxHelper:
         hand_serialized = cls._serialize_list_of_strings(opener["hand"])
         library_serialized = cls._serialize_list_of_strings(opener["library"])
         otp_serialized = cls._serialize_bool(opener["on_the_play"])
-        return f'"hand": "{hand_serialized}", "library": "{library_serialized}", "on_the_play": {otp_serialized}'
+        return (
+            "{"
+            + f'"hand": "{hand_serialized}", "library": "{library_serialized}", "on_the_play": {otp_serialized}'
+            + "}"
+        )
 
     @classmethod
     def _serialize_list_of_strings(cls, x: List[str]) -> str:
@@ -91,12 +94,11 @@ class HtmxHelper:
         # Our notes only identify the beginning of turns and lines. Tidy up the
         # end tag bookkeeping. FYI: even if we skip this step, Chrome still
         # figures it out
-        htmx_summary_raw = "".join(cls._from_note(n) for n in summary["notes"])
+        htmx_notes_raw = "".join(cls._from_note(n) for n in summary["notes"])
         misplaced_tags = "</p></div>"
-        print(htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags)
-        return Htmx(
-            htmx_opener + htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags
-        )
+        htmx_notes = htmx_notes_raw[len(misplaced_tags) :] + misplaced_tags
+
+        return Htmx(htmx_opener + htmx_notes)
 
     @classmethod
     def _from_note(cls, n: Note) -> Htmx:
