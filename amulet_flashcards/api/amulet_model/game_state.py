@@ -166,7 +166,7 @@ class GameState(NamedTuple):
         return mana_pool
 
     def handle_sagas(self) -> "GameState":
-        new_battlefield = []
+        new_battlefield: List[CardWithCounters] = []
         note_args = []
         for cwc in self.battlefield:
             if not cwc.card.is_saga:
