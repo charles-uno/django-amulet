@@ -7,7 +7,7 @@ For more information on HTMX, see htmx.org
 import json
 from typing import Dict, List
 
-from .game_state import OpenerDict
+from .game_state import GameSummaryDict, OpenerDict
 from .game_manager import ModelInputDict, ModelOutputDict, ModelOutputDict
 from .note import Note, NoteType
 
@@ -21,10 +21,9 @@ class Htmx(str):
 class HtmxHelper:
     @classmethod
     def format_input(cls, mid: ModelInputDict) -> Htmx:
-        refresh_button = cls._format_refresh_button()
-        play_button = cls._format_play_button(mid)
-        opener_tags = cls._format_opener(mid["opener"])
-        return Htmx.join(refresh_button, play_button, opener_tags)
+        buttons = cls._format_buttons(mid)
+        opener_htmx = cls._format_opener(mid["opener"])
+        return Htmx.join(buttons, opener_htmx)
 
     @classmethod
     def _format_opener(cls, opener: OpenerDict) -> Htmx:
@@ -32,7 +31,16 @@ class HtmxHelper:
         turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls._card_image(c) for c in opener["hand"]]
         cards_tag = cls._div("".join(card_tags), klass="opener-cards")
-        return Htmx.join(turn_order_tag, cards_tag)
+        return Htmx.join(cards_tag, turn_order_tag)
+
+    @classmethod
+    def _format_buttons(cls, mid: ModelInputDict) -> Htmx:
+        buttons = [cls._format_refresh_button(), cls._format_play_button(mid)]
+        wrapped_buttons = [
+            cls._div(cls._div(b, klass="button-wrap"), klass="half-width")
+            for b in buttons
+        ]
+        return cls._div(Htmx.join(*wrapped_buttons), klass="buttons-wrap")
 
     @classmethod
     def _format_refresh_button(cls) -> Htmx:
@@ -81,16 +89,25 @@ class HtmxHelper:
     def format_output(cls, mod: ModelOutputDict) -> Htmx:
         # We redraw everything, so gotta include the opener here
         htmx_opener = cls.format_input({"opener": mod["opener"], "stats": mod["stats"]})
+        htmx_summary = cls._format_summary(mod["summary"])
+
+        htmx_stats = cls._format_stats(mod["stats"])
+
+        return Htmx.join(htmx_opener, htmx_summary, htmx_stats)
+
+    @classmethod
+    def _format_summary(cls, summary: GameSummaryDict) -> Htmx:
         # Our notes only identify the beginning of turns and lines. Tidy up the
         # end tag bookkeeping. FYI: even if we skip this step, Chrome still
         # figures it out
-        htmx_notes_raw = "".join(cls._from_note(n) for n in mod["summary"]["notes"])
+        htmx_summary_raw = "".join(cls._from_note(n) for n in summary["notes"])
         misplaced_tags = "</p></div>"
-        htmx_notes = htmx_notes_raw[len(misplaced_tags) :] + misplaced_tags
+        htmx_summary = htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags
+        return cls._div(htmx_summary, klass="summary-wrap")
 
-        htmx_stats = cls._div(str(mod["stats"]))
-
-        return Htmx.join(htmx_opener, htmx_notes, htmx_stats)
+    @classmethod
+    def _format_stats(cls, stats: Dict[int, int]) -> Htmx:
+        return cls._div(str(stats))
 
     @classmethod
     def _serialize_payload(cls, mid: ModelInputDict) -> str:
