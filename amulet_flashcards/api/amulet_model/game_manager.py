@@ -7,18 +7,20 @@ stats.
 
 import random
 import time
-from typing import List, Set, TypedDict
+from typing import Dict, List, Set, TypedDict
 
 from .game_state import GameState, GameSummaryDict, OpenerDict
 
 
 class ModelInputDict(TypedDict):
     opener: OpenerDict
+    stats: Dict[int, int]
 
 
 class ModelOutputDict(TypedDict):
     opener: OpenerDict
     summary: GameSummaryDict
+    stats: Dict[int, int]
 
 
 class GameManager:
@@ -31,14 +33,16 @@ class GameManager:
                 "hand": deck_list[:7],
                 "library": deck_list[7:],
                 "on_the_play": on_the_play,
-            }
+            },
+            "stats": {i: 0 for i in range(1, 6)},
         }
 
     @classmethod
     def run(
-        cls, pid: ModelInputDict, max_turn: int = 4, max_wait_seconds: float = 3
+        cls, mid: ModelInputDict, max_turn: int = 4, max_wait_seconds: float = 3
     ) -> ModelOutputDict:
-        opener = pid["opener"]
+        opener = mid["opener"]
+        stats = mid["stats"]
         # Shuffle the every time so we can play through this hand repeatedly
         random.shuffle(opener["library"])
         max_time = time.time() + max_wait_seconds
@@ -49,7 +53,10 @@ class GameManager:
         for _ in range(max_turn):
             states = cls._get_next_turn(states, max_turn=max_turn, max_time=max_time)
         summary = states.pop().get_summary_from_completed_game()
-        return {"opener": opener, "summary": summary}
+        # Track failure to converge as turn 5+
+        turn = summary["turn"] if summary["turn"] > 0 else 5
+        stats[turn] += 1
+        return {"opener": opener, "summary": summary, "stats": stats}
 
     @classmethod
     def _get_next_turn(

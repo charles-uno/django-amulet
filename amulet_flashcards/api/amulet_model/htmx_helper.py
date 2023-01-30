@@ -44,7 +44,7 @@ class HtmxHelper:
                 "hx-trigger": "click",
                 "hx-target": "#swap-target",
                 "hx-swap": "innerHTML",
-                "hx-vals": cls._serialize_opener(opener),
+                "hx-vals": cls._serialize_opener_and_stats(opener, mid["stats"]),
             },
         )
         return Htmx(refresh_button + play_button + cards_tag + turn_order_tag)
@@ -59,13 +59,14 @@ class HtmxHelper:
                 "hand": hand,
                 "library": library,
                 "on_the_play": on_the_play,
-            }
+            },
+            "stats": cls._deserialize_stats(payload["stats"]),
         }
 
     @classmethod
     def format_output(cls, mod: ModelOutputDict) -> Htmx:
         # We redraw everything, so gotta include the opener here
-        htmx_opener = cls.format_input({"opener": mod["opener"]})
+        htmx_opener = cls.format_input({"opener": mod["opener"], "stats": mod["stats"]})
         # Our notes only identify the beginning of turns and lines. Tidy up the
         # end tag bookkeeping. FYI: even if we skip this step, Chrome still
         # figures it out
@@ -73,16 +74,26 @@ class HtmxHelper:
         misplaced_tags = "</p></div>"
         htmx_notes = htmx_notes_raw[len(misplaced_tags) :] + misplaced_tags
 
-        # TODO: handle stats
+        htmx_stats = cls._div(str(mod["stats"]))
 
-        return Htmx(htmx_opener + htmx_notes)
+        return Htmx(htmx_opener + htmx_notes + htmx_stats)
 
     @classmethod
-    def _serialize_opener(cls, opener: OpenerDict) -> str:
-        hand = cls._serialize_list_of_strings(opener["hand"])
-        library = cls._serialize_list_of_strings(opener["library"])
-        otp = cls._serialize_bool(opener["on_the_play"])
-        return json.dumps({"hand": hand, "library": library, "on_the_play": otp})
+    def _serialize_opener_and_stats(
+        cls, opener: OpenerDict, stats: Dict[int, int]
+    ) -> str:
+        hand_serialized = cls._serialize_list_of_strings(opener["hand"])
+        library_serialized = cls._serialize_list_of_strings(opener["library"])
+        otp_serialized = cls._serialize_bool(opener["on_the_play"])
+        stats_serialized = cls._serialize_stats(stats)
+        return json.dumps(
+            {
+                "hand": hand_serialized,
+                "library": library_serialized,
+                "on_the_play": otp_serialized,
+                "stats": stats_serialized,
+            }
+        )
 
     @classmethod
     def _serialize_list_of_strings(cls, x: List[str]) -> str:
@@ -91,6 +102,18 @@ class HtmxHelper:
     @classmethod
     def _deserialize_list_of_strings(cls, x: str) -> List[str]:
         return x.replace("&apos;", "'").split(";")
+
+    @classmethod
+    def _deserialize_stats(cls, x: str) -> Dict[int, int]:
+        # "2,5,7,6,3" -> {1:2, 2:5, 3:7, 4:6, 5:3}
+        vals = x.split(",")
+        if len(vals) != 5 or not all(v.isdigit() for v in vals):
+            raise ValueError(f"unable to deserialize stats from {repr(x)}")
+        return {i + 1: int(v) for i, v in enumerate(vals)}
+
+    @classmethod
+    def _serialize_stats(cls, x: Dict[int, int]) -> str:
+        return ",".join(str(v) for k, v in sorted(x.items()))
 
     @classmethod
     def _deserialize_bool(cls, x: str) -> bool:
