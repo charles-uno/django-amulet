@@ -30,7 +30,7 @@ class HtmxHelper:
         turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls.card_image(c) for c in opener["hand"]]
         cards_tag = cls._div("".join(card_tags), klass="opener-cards")
-        opener_serialized = cls.serialize_opener(opener)
+        opener_serialized = cls._serialize_opener(opener)
         refresh_button = cls._tag(
             "button",
             inner_html="draw a new hand",
@@ -38,11 +38,10 @@ class HtmxHelper:
                 "id": "opener-button",
                 "hx-get": "/api/opener",
                 "hx-trigger": "click",
-                "hx-target": "#opener-target",
+                "hx-target": "#swap-target",
                 "hx-swap": "innerHTML",
             },
         )
-
         play_button = cls._tag(
             "button",
             inner_html="play it out",
@@ -50,18 +49,15 @@ class HtmxHelper:
                 "id": "play-button",
                 "hx-get": "/api/play",
                 "hx-trigger": "click",
-                "hx-target": "#play-target",
+                "hx-target": "#swap-target",
                 "hx-swap": "innerHTML",
                 "hx-vals": opener_serialized,
             },
         )
-        play_target = cls._div("placeholder contents", id="play-target")
-        return Htmx(
-            refresh_button + play_button + cards_tag + turn_order_tag + play_target
-        )
+        return Htmx(refresh_button + play_button + cards_tag + turn_order_tag)
 
     @classmethod
-    def serialize_opener(cls, opener: OpenerDict) -> str:
+    def _serialize_opener(cls, opener: OpenerDict) -> str:
         hand_serialized = cls._serialize_list_of_strings(opener["hand"])
         library_serialized = cls._serialize_list_of_strings(opener["library"])
         otp_serialized = cls._serialize_bool(opener["on_the_play"])
@@ -90,13 +86,17 @@ class HtmxHelper:
 
     @classmethod
     def from_play_summary(cls, summary: GameSummaryDict) -> Htmx:
-        htmx_summary_raw = "".join(cls._from_note(n) for n in summary["notes"])
+        # We redraw everything, so gotta include the opener here
+        htmx_opener = cls.from_opener(summary["opener"])
         # Our notes only identify the beginning of turns and lines. Tidy up the
         # end tag bookkeeping. FYI: even if we skip this step, Chrome still
         # figures it out
+        htmx_summary_raw = "".join(cls._from_note(n) for n in summary["notes"])
         misplaced_tags = "</p></div>"
         print(htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags)
-        return Htmx(htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags)
+        return Htmx(
+            htmx_opener + htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags
+        )
 
     @classmethod
     def _from_note(cls, n: Note) -> Htmx:
