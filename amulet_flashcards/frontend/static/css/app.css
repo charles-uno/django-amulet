@@ -45,9 +45,17 @@ body {
     padding: 10px;
 }
 
-.opener-turn-order {
-    text-align: center;
-    font-size: 24px;
+.teaser-wrap, .opener-wrap, .summary-wrap, .button-wrap, .cards-wrap {
+    border: 1px solid brown;
+    padding: 10px;
+}
+
+.teaser {
+    font-size: 18px;
+}
+
+.teaser-turn-order {
+    font-weight: 900;
 }
 
 .opener-cards {

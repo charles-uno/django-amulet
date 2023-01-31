@@ -29,11 +29,13 @@ class HtmxHelper:
 
     @classmethod
     def _format_opener(cls, opener: OpenerDict) -> Htmx:
-        turn_order = "on the play" if opener["on_the_play"] else "on the draw"
-        htmx_turn_order = cls._div(turn_order, klass="opener-turn-order")
+        #        turn_order = "on the play" if opener["on_the_play"] else "on the draw"
+        #        htmx_turn_order = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls._card_image(c) for c in opener["hand"]]
-        htmx_cards = cls._div("".join(card_tags), klass="opener-cards")
-        return Htmx.join(htmx_cards, htmx_turn_order)
+        htmx_cards = cls._div(
+            cls._div("".join(card_tags), klass="opener-cards"), klass="cards-wrap"
+        )
+        return Htmx.join(htmx_cards)
 
     @classmethod
     def _format_buttons(cls, mid: ModelInputDict) -> Htmx:
@@ -108,22 +110,24 @@ class HtmxHelper:
     def _format_teaser(cls, mid: ModelInputDict) -> Htmx:
         pt = cls._card_name("Primeval Titan")
         if mid["opener"]["on_the_play"]:
-            turn_order = "play"
+            turn_order = cls._span("on the play", klass="teaser-turn-order")
             turn_3_odds = "32%"
         else:
-            turn_order = "draw"
+            turn_order = cls._span("on the draw", klass="teaser-turn-order")
             turn_3_odds = "45%"
-        avg_line = f"The average seven-card hand has a {turn_3_odds} chance to cast {pt} by turn three on the {turn_order}"
+        avg_line = f"The average seven-card hand has a {turn_3_odds} chance to cast {pt} by turn three {turn_order}. "
         n_success = mid["stats"][2] + mid["stats"][3]
         n_total = sum(mid["stats"].values())
-        if n_total:
-            r_max = 100.0 * min(1, (n_success + math.sqrt(n_total)) / n_total)
-            r_min = 100.0 * max(0, (n_success - math.sqrt(n_total)) / n_total)
-            data_line = f"This hand has a {r_min:.0f}% - {r_max:.0f}% chance (based on {n_total} samples)"
+        if n_total == 0:
+            data_line = "Play this hand out a few times to see how it compares!"
+        elif n_success == 0 or n_total < 2:
+            data_line = f"Keep playing to see how this hand compares ({n_success}/{n_total} samples)"
         else:
-            data_line = "Play it out a few times to see how this hand compares"
+            r_max = 100.0 * min(1, (n_success + math.sqrt(n_success)) / n_total)
+            r_min = 100.0 * max(0, (n_success - math.sqrt(n_success)) / n_total)
+            data_line = f"This hand has a {r_min:.0f}% to {r_max:.0f}% chance to do so ({n_success}/{n_total} samples)"
         return cls._div(
-            cls._div(avg_line, klass="teaser") + cls._div(data_line, klass="teaser"),
+            cls._div(avg_line + data_line, klass="teaser"),
             klass="teaser-wrap",
         )
 
