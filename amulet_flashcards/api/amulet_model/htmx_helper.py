@@ -22,17 +22,18 @@ class Htmx(str):
 class HtmxHelper:
     @classmethod
     def format_input(cls, mid: ModelInputDict) -> Htmx:
-        buttons = cls._format_buttons(mid)
-        opener_htmx = cls._format_opener(mid["opener"])
-        return Htmx.join(buttons, opener_htmx)
+        htmx_teaser = cls._format_teaser(mid)
+        htmx_buttons = cls._format_buttons(mid)
+        htmx_opener = cls._format_opener(mid["opener"])
+        return Htmx.join(htmx_teaser, htmx_buttons, htmx_opener)
 
     @classmethod
     def _format_opener(cls, opener: OpenerDict) -> Htmx:
         turn_order = "on the play" if opener["on_the_play"] else "on the draw"
-        turn_order_tag = cls._div(turn_order, klass="opener-turn-order")
+        htmx_turn_order = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls._card_image(c) for c in opener["hand"]]
-        cards_tag = cls._div("".join(card_tags), klass="opener-cards")
-        return Htmx.join(cards_tag, turn_order_tag)
+        htmx_cards = cls._div("".join(card_tags), klass="opener-cards")
+        return Htmx.join(htmx_cards, htmx_turn_order)
 
     @classmethod
     def _format_buttons(cls, mid: ModelInputDict) -> Htmx:
@@ -103,6 +104,32 @@ class HtmxHelper:
         misplaced_tags = "</p></div>"
         htmx_summary = htmx_summary_raw[len(misplaced_tags) :] + misplaced_tags
         return cls._div(htmx_summary, klass="summary-wrap")
+
+    @classmethod
+    def _format_teaser(cls, mid: ModelInputDict) -> Htmx:
+        pt = cls._card_name("Primeval Titan")
+        if mid["opener"]["on_the_play"]:
+            turn_order = "play"
+            turn_3_odds = "32%"
+        else:
+            turn_order = "draw"
+            turn_3_odds = "45%"
+        avg_line = f"The average seven-card hand has a {turn_3_odds} chance to cast {pt} by turn three on the {turn_order}"
+
+        n_success = mid["stats"][2] + mid["stats"][3]
+        n_total = sum(mid["stats"].values())
+        if n_total:
+            rate = "%.0f" % (n_success * 100.0 / n_total)
+            data_line = (
+                f"Based on {n_total} samples, this hand has a {rate}% success rate"
+            )
+        else:
+            data_line = "Play it out a few times to see how this hand compares"
+
+        return cls._div(
+            cls._div(avg_line, klass="teaser") + cls._div(data_line, klass="teaser"),
+            klass="teaser-wrap",
+        )
 
     @classmethod
     def _format_stats(cls, mod: ModelOutputDict) -> Htmx:

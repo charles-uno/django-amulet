@@ -39,7 +39,7 @@ class GameManager:
 
     @classmethod
     def run(
-        cls, mid: ModelInputDict, max_turn: int = 4, max_wait_seconds: float = 3
+        cls, mid: ModelInputDict, max_turn: int = 3, max_wait_seconds: float = 3
     ) -> ModelOutputDict:
         opener = mid["opener"]
         stats = mid["stats"]

@@ -31,7 +31,11 @@ function maybe_show_stats() {
     if (elt == null) {
         return;
     }
-    chart_config = JSON.parse(elt.innerHTML);
+    try {
+        chart_config = JSON.parse(elt.innerHTML);
+    } catch (Exception) {
+        return;
+    }
     var data = google.visualization.arrayToDataTable(chart_config["data_arr"]);
     var view = new google.visualization.DataView(data);
     var chart = new google.visualization.ColumnChart(elt);
