@@ -14,6 +14,13 @@ from .card import Card, CardWithCounters
 from .note import Note
 
 
+# Options are:
+# 0: no notes from adding or paying mana
+# 1: note mana pool any time it changes
+# 2: note amulet triggers when playing a land tapped
+_MANA_NOTE_STYLE = 2
+
+
 class OpenerDict(TypedDict):
     hand: List[str]
     library: List[str]
@@ -208,7 +215,10 @@ class GameState(NamedTuple):
         return self.copy_with_updates(mana_pool=self.mana_pool - m).note_mana_pool()
 
     def note_mana_pool(self) -> "GameState":
-        return self.add_notes(" (mana: ", self.mana_pool, ")")
+        if _MANA_NOTE_STYLE == 1:
+            return self.add_notes(" (mana: ", self.mana_pool, ")")
+        else:
+            return self
 
     def draw_a_card(self) -> "GameState":
         c = self.library[0]
@@ -233,10 +243,17 @@ class GameState(NamedTuple):
             ).put_land_onto_battlefield_untapped(c)
 
     def put_land_onto_battlefield_tapped(self, c: Card) -> Set["GameState"]:
-        m = c.taps_for * self._battlefield_count("Amulet of Vigor")
+        n_amulets = self._battlefield_count("Amulet of Vigor")
         state = self.move_from_hand_to_battlefield(
             c,
-        ).add_mana(m)
+        ).add_mana(c.taps_for * n_amulets)
+        if _MANA_NOTE_STYLE == 2:
+            if n_amulets == 1:
+                state = state.add_notes(f", trigger ", Card("Amulet of Vigor"))
+            elif n_amulets > 1:
+                state = state.add_notes(
+                    f", trigger {n_amulets}x ", Card("Amulet of Vigor")
+                )
         return getattr(state, "effect_for_" + c.slug)()
 
     def put_land_onto_battlefield_untapped(self, c: Card) -> Set["GameState"]:
