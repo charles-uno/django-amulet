@@ -1,5 +1,6 @@
 from typing import List
 from django.http import HttpRequest, HttpResponse
+import markdown
 
 from .amulet_model import GameManager, HtmxHelper
 
@@ -21,6 +22,21 @@ def play_it_out(request: HttpRequest) -> HttpResponse:
     model_input = HtmxHelper.parse_payload(request.GET)
     model_output = GameManager.run(model_input)
     return HttpResponse(HtmxHelper.format_output(model_output))
+
+
+def about(request: HttpRequest) -> HttpResponse:
+    with open("backend/static/about.md") as handle:
+        content = handle.read()
+
+    print(content)
+
+    html_content = markdown.markdown(content)
+
+    print(html_content)
+
+    # TODO: handle autocard brackets
+
+    return HttpResponse(html_content)
 
 
 def load_deck_list() -> List[str]:

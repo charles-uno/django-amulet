@@ -23,7 +23,7 @@ body {
     flex-direction: column;
 }
 
-.main-wrap, .footer-wrap {
+.main-wrap, .about-wrap, .footer-wrap {
     max-width: 800px;
     width: 100%;
     margin: 0 auto;
