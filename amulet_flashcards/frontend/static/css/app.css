@@ -1,9 +1,21 @@
 html, body {
     font-size: 16px;
-    background-color: #888;
+    background-color: #295;
     padding: 0;
     margin: 0;
     height: 100%;
+    font-family: 'Roboto', sans-serif;
+}
+
+a, a:visited, .card-name {
+    color: #295;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover, .card-name:hover {
+    color: #000;
+    text-decoration: none;
 }
 
 body {
@@ -17,6 +29,10 @@ body {
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
+}
+
+.footer-wrap {
+    padding-bottom: 10px;
 }
 
 .main-wrap {
@@ -46,7 +62,6 @@ body {
 }
 
 .teaser-wrap, .opener-wrap, .summary-wrap, .button-wrap, .cards-wrap {
-    border: 1px solid brown;
     padding: 10px;
 }
 
@@ -67,18 +82,12 @@ body {
     height: 16px;
 }
 
-.card-name {
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-div.summary-turn {
-    border: 1px solid red;
+.summary-turn {
+    margin: 8px 0;
 }
 
 p.summary-line {
-    border: 1px solid blue;
-    margin: 3px;
+    margin: 2px 0;
 }
 
 img.card {
@@ -89,10 +98,6 @@ img.card {
 
 img.card:not(:first-child) {
     margin-left:-5.5%;
-}
-
-#e2e-indicator, #opener-indicator {
-border: 1px solid green;
 }
 
 #autocard-backdrop {

@@ -122,12 +122,16 @@ class HtmxHelper:
             data_line = "Play this hand out a few times to see how it compares!"
         elif n_success == 0 or n_total < 2:
             data_line = f"Keep playing to see how this hand compares ({n_success}/{n_total} samples)"
+        elif n_success == 0 and n_total > 10:
+            data_line = (
+                f"This hand looks quite a bit worse ({n_success}/{n_total} samples)"
+            )
         else:
             r_max = 100.0 * min(1, (n_success + math.sqrt(n_success)) / n_total)
             r_min = 100.0 * max(0, (n_success - math.sqrt(n_success)) / n_total)
             data_line = f"This hand has a {r_min:.0f}% to {r_max:.0f}% chance to do so ({n_success}/{n_total} samples)"
         return cls._div(
-            cls._div(avg_line + data_line, klass="teaser"),
+            cls._div(avg_line, klass="teaser") + cls._div(data_line, klass="teaser"),
             klass="teaser-wrap",
         )
 
