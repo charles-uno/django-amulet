@@ -92,8 +92,8 @@ class HtmxHelper:
         # We redraw everything, so gotta include the opener here
         htmx_opener = cls.format_input({"opener": mod["opener"], "stats": mod["stats"]})
         htmx_summary = cls._format_summary(mod["summary"])
-        htmx_stats = cls._format_stats(mod)
-        return Htmx.join(htmx_opener, htmx_stats, htmx_summary)
+        #        htmx_stats = cls._format_stats(mod)
+        return Htmx.join(htmx_opener, htmx_summary)
 
     @classmethod
     def _format_summary(cls, summary: GameSummaryDict) -> Htmx:
@@ -118,11 +118,12 @@ class HtmxHelper:
 
         n_success = mid["stats"][2] + mid["stats"][3]
         n_total = sum(mid["stats"].values())
+
         if n_total:
-            rate = "%.0f" % (n_success * 100.0 / n_total)
-            data_line = (
-                f"Based on {n_total} samples, this hand has a {rate}% success rate"
-            )
+            r_max = 100.0 * min(1, (n_success + math.sqrt(n_total)) / n_total)
+            r_min = 100.0 * max(0, (n_success - math.sqrt(n_total)) / n_total)
+
+            data_line = f"This hand has a {r_min:.0f}% - {r_max:.0f}% chance (based on {n_total} samples)"
         else:
             data_line = "Play it out a few times to see how this hand compares"
 
