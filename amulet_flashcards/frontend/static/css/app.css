@@ -55,11 +55,6 @@ body {
     justify-content: space-between;
 }
 
-
-.stats-wrap {
-    border: 1px solid magenta;
-}
-
 .mana-symbol {
     height: 16px;
 }
