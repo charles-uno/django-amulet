@@ -5,7 +5,8 @@ For more information on HTMX, see htmx.org
 """
 
 import json
-from typing import Dict, List
+import math
+from typing import Any, Dict, List
 
 from .game_state import GameSummaryDict, OpenerDict
 from .game_manager import ModelInputDict, ModelOutputDict, ModelOutputDict
@@ -90,7 +91,7 @@ class HtmxHelper:
         # We redraw everything, so gotta include the opener here
         htmx_opener = cls.format_input({"opener": mod["opener"], "stats": mod["stats"]})
         htmx_summary = cls._format_summary(mod["summary"])
-        htmx_stats = cls._format_stats(mod["stats"])
+        htmx_stats = cls._format_stats(mod)
         return Htmx.join(htmx_opener, htmx_stats, htmx_summary)
 
     @classmethod
@@ -104,10 +105,58 @@ class HtmxHelper:
         return cls._div(htmx_summary, klass="summary-wrap")
 
     @classmethod
-    def _format_stats(cls, stats: Dict[int, int]) -> Htmx:
-        # We'll split these out on the client side
-        data_csv = ",".join(str(v) for k, v in sorted(stats.items()))
-        stats_chart = cls._div(data_csv, id="stats-target")
+    def _format_stats(cls, mod: ModelOutputDict) -> Htmx:
+        if mod["opener"]["on_the_play"]:
+            avg_vals = [0.0, 0.02, 0.30, 0.41, 0.27]
+            avg_title = "average on the play"
+        else:
+            avg_vals = [0.0, 0.04, 0.41, 0.38, 0.17]
+            avg_title = "average on the draw"
+
+        n_arr = [v for k, v in sorted(mod["stats"].items())]
+        n_total = sum(n_arr)
+        dn_arr = [math.sqrt(n) for n in n_arr]
+
+        rate_arr = [n / n_total for n in n_arr]
+        drate_arr = [dn / n_total for dn in dn_arr]
+
+        error_min_arr = [max(r - dr, 0) for r, dr in zip(rate_arr, drate_arr)]
+        error_max_arr = [min(r + dr, 1) for r, dr in zip(rate_arr, drate_arr)]
+
+        x_ticks = ["1", "2", "3", "4", "5+"]
+        columns = [x_ticks, rate_arr, error_min_arr, error_max_arr, avg_vals]
+
+        data_arr = [
+            [
+                "Turn",
+                "Completion Rate",
+                {"role": "interval"},
+                {"role": "interval"},
+                avg_title,
+            ],
+            [col[1] for col in columns],
+            [col[2] for col in columns],
+            [col[3] for col in columns],
+            [col[4] for col in columns],
+        ]
+
+        options = {
+            "chartType": "ComboChart",
+            "title": "How does this compare to an average hand?",
+            "vAxis": {"title": "Probability by Turn", "format": "percent"},
+            "width": "100%",
+            "height": 400,
+            "hAxis": {"title": "Turn"},
+            "seriesType": "bars",
+            "series": {1: {"type": "line"}},
+            "curveType": "function",
+            "legend": "none",
+            "bar": {"groupWidth": "90%"},
+            "colors": ["green", "black"],
+        }
+
+        payload = json.dumps({"data_arr": data_arr, "options": options})
+        stats_chart = cls._div(payload, id="stats-target")
         return cls._div(stats_chart, klass="stats-wrap")
 
     @classmethod
