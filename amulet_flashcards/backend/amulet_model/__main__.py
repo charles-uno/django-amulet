@@ -6,20 +6,20 @@ from .game_manager import GameManager
 from .game_state import GameSummaryDict
 
 
-# Root of the amulet_backend project
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Root of the backend app
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def main():
     deck_list = load_deck_list()
-    opener = GameManager.get_opener_from_deck_list(deck_list)
-    summary = GameManager.run_from_opener(opener)
-    print_pretty(summary)
+    model_input = GameManager.get_model_input_from_deck_list(deck_list)
+    model_output = GameManager.run(model_input)
+    print_pretty(model_output["summary"])
 
 
 def load_deck_list() -> List[str]:
     deck_list = []
-    with open(f"{BASE_DIR}/assets/deck-list.txt") as handle:
+    with open(f"{BASE_DIR}/static/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue

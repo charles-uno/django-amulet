@@ -25,7 +25,7 @@ def play_it_out(request: HttpRequest) -> HttpResponse:
 
 def load_deck_list() -> List[str]:
     deck_list = []
-    with open("assets/deck-list.txt") as handle:
+    with open("backend/static/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue

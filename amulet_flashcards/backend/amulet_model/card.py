@@ -11,9 +11,9 @@ _CARD_DATA = None
 def _get_card_data(card_name: str):
     global _CARD_DATA
     if _CARD_DATA is None:
-        # Root of the project
-        base_dir = Path(__file__).resolve().parent.parent.parent
-        with open(f"{base_dir}/assets/card-data.yaml") as handle:
+        # Root of the backend app
+        base_dir = Path(__file__).resolve().parent.parent
+        with open(f"{base_dir}/static/card-data.yaml") as handle:
             _CARD_DATA = yaml.safe_load(handle)
     try:
         return _CARD_DATA[card_name]
