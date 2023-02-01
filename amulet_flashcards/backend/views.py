@@ -36,11 +36,25 @@ def about(request: HttpRequest) -> HttpResponse:
 
     html_content = markdown.markdown(content)
 
-    html_content += "<p class='about-link'><a onclick='hide_blurb()'>read less</a></p>"
+    html_content = handle_autocard_macros(html_content)
 
     # TODO: handle autocard brackets
 
+    html_content += "<p class='about-link'><a onclick='hide_blurb()'>read less</a></p>"
+
     return HttpResponse(html_content)
+
+
+def handle_autocard_macros(text):
+    while "[[" in text:
+        text = handle_autocard_macro(text)
+    return text
+
+
+def handle_autocard_macro(text):
+    before, card_and_after = text.split("[[", 1)
+    card, after = card_and_after.split("]]", 1)
+    return before + HtmxHelper.card_name(card) + after
 
 
 def load_deck_list() -> List[str]:

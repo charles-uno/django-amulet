@@ -109,7 +109,7 @@ class HtmxHelper:
 
     @classmethod
     def _format_teaser(cls, mid: ModelInputDict) -> Htmx:
-        pt = cls._card_name("Primeval Titan")
+        pt = cls.card_name("Primeval Titan")
         if mid["opener"]["on_the_play"]:
             turn_order = cls._span("on the play", klass="teaser-turn-order")
             turn_3_odds = "32%"
@@ -196,12 +196,12 @@ class HtmxHelper:
         elif n.type == NoteType.MANA:
             return cls._mana(n.text)
         elif n.type == NoteType.CARD:
-            return cls._card_name(n.text)
+            return cls.card_name(n.text)
         else:
             return cls._alert(n.text)
 
     @classmethod
-    def _card_name(cls, card_name: str) -> Htmx:
+    def card_name(cls, card_name: str) -> Htmx:
         return cls._span(
             cls._quote_safe(card_name),
             klass="card-name",
