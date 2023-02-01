@@ -8,8 +8,12 @@
 4 Primeval Titan
 4 Summoner's Pact
 
-10 Simic Growth Chamber
-10 Forest
-5 Radiant Fountain
-4 Urza's Saga
+1 Boros Garrison
 4 Bojuka Bog
+1 Crumbling Vestige
+9 Forest
+1 Radiant Fountain
+1 Slayers' Stronghold
+1 Sunhome, Fortress of the Legion
+9 Simic Growth Chamber
+4 Urza's Saga

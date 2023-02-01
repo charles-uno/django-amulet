@@ -7,6 +7,7 @@ $accent-color: #295;
 
 $content-width: 45rem;
 $autocard-width: 30rem;
+$head-height: 4rem;
 
 $font-size-body: 1.0rem;
 $font-size-header: 1.2rem;
@@ -67,7 +68,7 @@ body {
 .head {
     display: flex;
     align-items: center;
-    height: 4rem;
+    height: $head-height;
 }
 
 .head-left, .head-right {
@@ -79,7 +80,7 @@ body {
 }
 
 .author-avatar {
-    height: 4rem;
+    height: $head-height;
     border-radius: 50%;
     overflow: hidden;
 }
@@ -133,7 +134,6 @@ h1, h2, h3 {
     padding: 0;
     border: 0;
 }
-
 
 #opener-button, #play-button, #about-button {
     width: 100%;

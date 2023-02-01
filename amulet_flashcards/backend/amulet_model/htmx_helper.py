@@ -141,7 +141,7 @@ class HtmxHelper:
             r_min = 100.0 * max(0, (n_success - math.sqrt(n_success)) / n_total)
             data_line = f"This hand has a {r_min:.0f}% to {r_max:.0f}% chance to do so ({n_success}/{n_total} samples)."
         return cls._div(
-            cls._div(avg_line + data_line, klass="teaser"),
+            cls._tag("p", avg_line + data_line, klass="teaser"),
             klass="teaser-wrap",
         )
 

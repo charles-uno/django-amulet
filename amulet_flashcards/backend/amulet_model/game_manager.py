@@ -26,6 +26,8 @@ class ModelOutputDict(TypedDict):
 class GameManager:
     @classmethod
     def get_model_input_from_deck_list(cls, deck_list: List[str]) -> ModelInputDict:
+        if len(deck_list) != 60:
+            raise ValueError(f"deck list must have 60 cards (got {len(deck_list)})")
         on_the_play = random.choice([True, False])
         random.shuffle(deck_list)
         return {

@@ -385,6 +385,9 @@ class GameState(NamedTuple):
     def effect_for_bojuka_bog(self) -> Set["GameState"]:
         return {self}
 
+    def effect_for_boros_garrison(self) -> Set["GameState"]:
+        return {self}
+
     def effect_for_forest(self) -> Set["GameState"]:
         return {self}
 
@@ -401,6 +404,15 @@ class GameState(NamedTuple):
                     )
                 )
         return states
+
+    def effect_for_slayers_stronghold(self) -> Set["GameState"]:
+        return {self}
+
+    def effect_for_sunhome_fortress_of_the_legion(self) -> Set["GameState"]:
+        return {self}
+
+    def effect_for_crumbling_vestige(self) -> Set["GameState"]:
+        return {self.add_mana(Mana.from_string("G"))}
 
     def effect_for_urzas_saga(self) -> Set["GameState"]:
         return {self}

@@ -60,9 +60,16 @@ Simic Growth Chamber:
   type: land
   taps_for: GU
   enters_tapped: true
+Slayers' Stronghold:
+  type: land
+  taps_for: "1"
 Summoner's Pact:
   type: instant
   mana_cost: "0"
+Sunhome, Fortress of the Legion:
+  type: land
+  taps_for: "1"
+  enters_tapped: false
 Valakut, the Molten Pinnacle:
   type: land
   taps_for: "R"

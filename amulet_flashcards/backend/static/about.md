@@ -13,14 +13,6 @@ Instead of worrying about strategy and synergy, the computer splits the game int
 The first chooses land, the second chooses nonland, and they proceed independently from there.
 If either copy ends up casting turn-three [[Primeval Titan]] down the line, it's pretty safe to say that a human player could have done so as well.
 
-Exhaustive search is straightforward and flexible, but also computationally demanding.
-Several approximations are made in the interest of performance.
-Oddball singletons like [[Boros Garrison]], [[Cavern of Souls]], and [[Vesuva]] are excluded.
-Only green mana is tracked, so there's no transmuting with [[Tolaria West]].
-There's no need to worry about the non-mana abilities on [[Slayers' Stronghold]] or [[Sunhome, Fortress of the Legion|Sunhome]], so those are represented by additional copies of [[Radiant Fountain]].
-Similarly, [[Bojuka Bog]] is used as a stand-in for any non-green land that enters the battlefield tapped, such as [[Valakut, the Molten Pinnacle|Valakut]].
-These approximations can make opening hands look a bit odd, but the resulting numbers turn out to be nearly identical.
-
 That said, please don't expect the computer to teach you good sequencing!
 If it's possible to cast [[Primeval Titan]] (or [[Cultivator Colossus]]) on turn three, this model is guaranteed to find a way to do so.
 But there are often several different ways to get there.
@@ -29,6 +21,23 @@ Several corrections are included to suppress non-human play patterns, but from t
 Consider it a starting point, not an authority.
 
 ## The Deck List
+
+The model uses a simplified decklist for the sake of performance (and convenience).
+
+
+
+Lands that behave the same in the early game are grouped together; 
+
+
+Oddball singletons like [[Cavern of Souls]] and [[Vesuva]] are excluded.
+And lands that behave the same prior to casting [[Primeval Titan]] are grouped together
+
+
+Only green mana is tracked, so there's no transmuting with [[Tolaria West]].
+There's no need to worry about the non-mana abilities on [[Slayers' Stronghold]] or [[Sunhome, Fortress of the Legion|Sunhome]], so those are represented by additional copies of [[Radiant Fountain]].
+Similarly, [[Bojuka Bog]] is used as a stand-in for any non-green land that enters the battlefield tapped, such as [[Valakut, the Molten Pinnacle|Valakut]].
+These approximations can make opening hands look a bit odd, but the resulting numbers turn out to be nearly identical.
+
 
 Below is the list used by this app. Don't worry too much about a difference here or there. 
 Considering similar cards together helps the model run faster. Numbers look pretty much the same if (for example) we swap out an [[Explore]] for an extra [[Azusa, Lost but Seeking|Azusa]].
@@ -44,9 +53,11 @@ Considering similar cards together helps the model run faster. Numbers look pret
 <tr><td>4</td><td>[[Primeval Titan]]</td></tr>
 <tr><td>4</td><td>[[Summoner's Pact]]</td></tr>
 <tr><td>6</td><td>[[Bojuka Bog]]/[[Tolaria West]]/etc</td></tr>
-<tr><td>10</td><td>[[Forest]]/[[Boseiju, Who Endures]]/etc</td></tr>
+<tr><td>1</td><td>[[Boros Garisson]]</td></tr>
+<tr><td>1</td><td>[[Crumbling Vestige]]</td></tr>
+<tr><td>9</td><td>[[Forest]]/[[Boseiju, Who Endures]]/etc</td></tr>
 <tr><td>5</td><td>[[Radiant Fountain]]/[[Slayers' Stronghold]]/etc</td></tr>
-<tr><td>10</td><td>[[Simic Growth Chamber]]/[[Selesnya Sanctuary]]/etc</td></tr>
+<tr><td>9</td><td>[[Simic Growth Chamber]]/[[Selesnya Sanctuary]]/etc</td></tr>
 <tr><td>4</td><td>[[Urza's Saga]]</td></tr>
 </table>
 
