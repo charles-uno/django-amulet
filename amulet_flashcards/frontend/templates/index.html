@@ -27,13 +27,9 @@
   </div>
 
   <div id="main-wrap">
-    <div class="main" id="swap-target" hx-get="/api/opener" hx-trigger="load" hx-target="#swap-target"
-      hx-swap="innerHTML">
+    <div id="main" hx-get="/api/opener" hx-trigger="load" hx-swap="innerHTML">
     </div>
-  </div>
-
-  <div id="about-wrap">
-    <div class="about" hx-get="/api/about" hx-trigger="load" hx-swap="innerHTML">
+    <div id="about" hx-get="/api/about" hx-trigger="load" hx-swap="innerHTML">
     </div>
   </div>
 

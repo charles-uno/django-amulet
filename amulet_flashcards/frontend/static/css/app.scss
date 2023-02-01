@@ -55,7 +55,7 @@ body {
     flex-direction: column;
 }
 
-#main-wrap, #about-wrap, #footer-wrap {
+#main-wrap, #footer-wrap {
     max-width: $content-width;
     width: 100%;
     margin: 0 auto;
@@ -63,13 +63,14 @@ body {
     background-color: $paper-color;
 }
 
-#about-wrap {
+#about {
     display: none;
 }
 
 h2 {
     font-family: $head-font;
     text-transform: lowercase;
+    font-size: 1.5
 }
 
 #footer-wrap {

@@ -56,7 +56,7 @@ class HtmxHelper:
                 "id": "opener-button",
                 "hx-get": "/api/opener",
                 "hx-trigger": "click",
-                "hx-target": "#swap-target",
+                "hx-target": "#main",
                 "hx-swap": "innerHTML",
             },
         )
@@ -70,7 +70,7 @@ class HtmxHelper:
                 "id": "play-button",
                 "hx-get": "/api/play",
                 "hx-trigger": "click",
-                "hx-target": "#swap-target",
+                "hx-target": "#main",
                 "hx-swap": "innerHTML",
                 "hx-vals": cls._serialize_payload(mid),
             },

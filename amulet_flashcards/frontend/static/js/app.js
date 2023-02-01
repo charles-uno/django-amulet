@@ -12,13 +12,13 @@ function hide_autocard() {
 /* "About this page" blurb covers cards */
 
 function show_blurb() {
-    document.getElementById("main-wrap").style.display = "none";
-    document.getElementById("about-wrap").style.display = "block";
+    document.getElementById("main").style.display = "none";
+    document.getElementById("about").style.display = "block";
 }
 
 function hide_blurb() {
-    document.getElementById("main-wrap").style.display = "block";
-    document.getElementById("about-wrap").style.display = "none";
+    document.getElementById("main").style.display = "block";
+    document.getElementById("about").style.display = "none";
 }
 
 /* Disable the buttons while working on a request */
