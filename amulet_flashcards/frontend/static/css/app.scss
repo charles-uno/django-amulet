@@ -11,6 +11,7 @@ $autocard-width: 30rem;
 $font-size-body: 1.0rem;
 $font-size-header: 1.2rem;
 $font-size-footer: 0.7rem;
+$font-size-button: 1.3rem;
 
 $full-pad: 1.0rem;
 $half-pad: 0.5rem;
@@ -104,16 +105,14 @@ h1, h2, h3 {
 
 #footer-wrap {
     padding-bottom: $half-pad;
+    text-align: center;
+    flex-shrink: 0;
 }
 
 #main-wrap, #about-wrap {
     flex: 1 0 auto;
 }
 
-#footer-wrap {
-    text-align: center;
-    flex-shrink: 0;
-}
 
 .footer {
     font-size: $font-size-footer;
@@ -127,9 +126,19 @@ h1, h2, h3 {
     border: 0;
 }
 
-#opener-button, #play-button {
+.third-width {
+    width: 33.33%;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+
+#opener-button, #play-button, #about-button {
     width: 100%;
     padding: $half-pad;
+    font-size: $font-size-button;
 }
 
 .teaser-wrap, .opener-wrap, .summary-wrap, .button-wrap, .cards-wrap {

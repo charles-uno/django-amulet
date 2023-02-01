@@ -11,12 +11,19 @@ function hide_autocard() {
 
 /* "About this page" blurb covers cards */
 
-function show_blurb() {
+function show_about() {
     document.getElementById("main").style.display = "none";
     document.getElementById("about").style.display = "block";
 }
 
-function hide_blurb() {
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    if (evt.key == "Escape" || evt.key == "Esc") {
+        hide_about()
+    }
+};
+
+function hide_about() {
     document.getElementById("main").style.display = "block";
     document.getElementById("about").style.display = "none";
 }

@@ -22,13 +22,10 @@ class Htmx(str):
 class HtmxHelper:
     @classmethod
     def format_input(cls, mid: ModelInputDict) -> Htmx:
-
-        htmx_about = "<p class='about-link'><a onclick='show_blurb()'>read more</a></p>"
-
         htmx_teaser = cls._format_teaser(mid)
         htmx_buttons = cls._format_buttons(mid)
         htmx_opener = cls._format_opener(mid["opener"])
-        return Htmx.join(htmx_about, htmx_teaser, htmx_buttons, htmx_opener)
+        return Htmx.join(htmx_teaser, htmx_buttons, htmx_opener)
 
     @classmethod
     def _format_opener(cls, opener: OpenerDict) -> Htmx:
@@ -40,12 +37,25 @@ class HtmxHelper:
 
     @classmethod
     def _format_buttons(cls, mid: ModelInputDict) -> Htmx:
-        buttons = [cls._format_refresh_button(), cls._format_play_button(mid)]
+        buttons = [
+            cls._format_refresh_button(),
+            cls._format_play_button(mid),
+            cls._format_read_more(),
+        ]
         wrapped_buttons = [
-            cls._div(cls._div(b, klass="button-wrap"), klass="half-width")
+            cls._div(cls._div(b, klass="button-wrap"), klass="third-width")
             for b in buttons
         ]
         return cls._div(Htmx.join(*wrapped_buttons), klass="buttons-wrap")
+
+    @classmethod
+    def _format_read_more(cls) -> Htmx:
+        return cls._tag(
+            "button",
+            inner_html="read more...",
+            onclick="show_about()",
+            id="about-button",
+        )
 
     @classmethod
     def _format_refresh_button(cls) -> Htmx:
@@ -131,7 +141,7 @@ class HtmxHelper:
             r_min = 100.0 * max(0, (n_success - math.sqrt(n_success)) / n_total)
             data_line = f"This hand has a {r_min:.0f}% to {r_max:.0f}% chance to do so ({n_success}/{n_total} samples)."
         return cls._div(
-            cls._div(avg_line, klass="teaser") + cls._div(data_line, klass="teaser"),
+            cls._div(avg_line + data_line, klass="teaser"),
             klass="teaser-wrap",
         )
 

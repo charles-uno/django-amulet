@@ -25,7 +25,7 @@ pip3 install -r requirements.txt
 
 ## To Do
 
-- Add an "about" blurb
+- support for activating expedition map
 - HTTPS
 - License
 - Deploy to AWS via GitHub Actions
