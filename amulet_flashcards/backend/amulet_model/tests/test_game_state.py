@@ -87,3 +87,17 @@ def test_land_plays_for_new_turn():
         state = GameState(battlefield=battlefield, library=(Card("Forest"),))
         next_state = state.pass_turn(99).pop()
         assert next_state.land_plays_remaining == land_plays
+
+
+def test_sack_duplicate_legendary():
+    c = Card("Boseiju, Who Endures")
+    state = GameState(
+        hand=(c,),
+        battlefield=(CardWithCounters(c),),
+        mana_pool=Mana.from_string(""),
+        land_plays_remaining=1,
+    )
+    # We should keep the untapped copy
+    next_state = state.maybe_play_land(c).pop()
+    assert next_state.mana_pool == Mana.from_string("G")
+    assert next_state.battlefield == (CardWithCounters(c),)
