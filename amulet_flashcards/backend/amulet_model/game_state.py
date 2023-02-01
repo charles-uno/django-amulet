@@ -106,7 +106,7 @@ class GameState(NamedTuple):
         # tombstone on it so we can still look
         if self.turn == max_turn:
             return {self.with_tombstone(f"no solution within {max_turn} turns")}
-        return {
+        return (
             self.copy_with_updates(
                 notes=self.notes
                 + (
@@ -121,7 +121,7 @@ class GameState(NamedTuple):
             .pay_mana_debt()
             .draw_for_turn()
             .handle_sagas()
-        }
+        )
 
     def draw_for_turn(self) -> "GameState":
         if self.turn == 1 and self.on_the_play:
@@ -180,26 +180,30 @@ class GameState(NamedTuple):
                 mana_pool += cwc.card.taps_for
         return mana_pool
 
-    def handle_sagas(self) -> "GameState":
+    def handle_sagas(self) -> Set["GameState"]:
+        states = set()
         new_battlefield = tuple(cwc.plus_counter_if_saga() for cwc in self.battlefield)
         saga_going_off = CardWithCounters(Card("Urza's Saga"), 3)
+        targets = [c for c in set(self.library) if c.is_saga_target]
         # Note: we only go out to turn 3 so only one saga can go off at a time
         assert new_battlefield.count(saga_going_off) < 2
         if saga_going_off in new_battlefield:
-            return (
-                self.copy_with_updates(battlefield=new_battlefield)
-                .add_notes(
-                    "\n",
-                    "Sack ",
-                    saga_going_off.card,
-                    ", grab ",
-                    Card("Amulet of Vigor"),
+            for target in targets:
+                states.add(
+                    self.copy_with_updates(battlefield=new_battlefield)
+                    .add_notes(
+                        "\n",
+                        "Sack ",
+                        saga_going_off.card,
+                        ", grab ",
+                        target,
+                    )
+                    .remove_from_battlefield(saga_going_off)
+                    .add_to_battlefield(target)
                 )
-                .remove_from_battlefield(saga_going_off)
-                .add_to_battlefield(Card("Amulet of Vigor"))
-            )
+            return states
         else:
-            return self.copy_with_updates(battlefield=new_battlefield)
+            return {self.copy_with_updates(battlefield=new_battlefield)}
 
     def add_mana(self, m: Mana) -> "GameState":
         if not m:
