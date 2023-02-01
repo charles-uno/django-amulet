@@ -32,3 +32,30 @@ def test_cast_spell():
         assert next_state.hand == ()
         assert next_state.battlefield == (CardWithCounters(c),)
         assert next_state.mana_pool == Mana.from_string("")
+
+
+def test_pass_turn_payable_mana_debt():
+    state = GameState(
+        battlefield=tuple(CardWithCounters(Card("Forest")) for _ in range(4)),
+        mana_debt=Mana.from_string("2GG"),
+    )
+    next_state = state.pass_turn(99).pop()
+    assert next_state.mana_pool == Mana.from_string("")
+
+
+def test_pass_turn_unpayable_mana_debt():
+    state = GameState(
+        battlefield=(),
+        mana_debt=Mana.from_string("2GG"),
+    )
+    assert not state.pass_turn(99)
+
+
+def pass_turn_sack_saga():
+    state = GameState(battlefield=(CardWithCounters(Card("Urza's Saga"), 2),))
+    next_states = state.pass_turn(99)
+    assert len(next_states) == 2
+    assert [len(x.battlefield) == 1 for x in next_states]
+
+    fetched_cards = [x.battlefield[0].card for x in next_states]
+    assert sorted(fetched_cards) == [Card("Amulet of Vigor"), Card("Expedition Map")]
