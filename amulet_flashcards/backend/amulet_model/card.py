@@ -71,5 +71,7 @@ class CardWithCounters(NamedTuple):
     card: Card
     n_counters: int = 0
 
-    def plus_counter(self) -> "CardWithCounters":
+    def plus_counter_if_saga(self) -> "CardWithCounters":
+        if not self.card.is_saga:
+            return self
         return CardWithCounters(card=self.card, n_counters=self.n_counters + 1)

@@ -187,7 +187,7 @@ class GameState(NamedTuple):
             if not cwc.card.is_saga:
                 new_battlefield.append(cwc)
                 continue
-            new_cwc = cwc.plus_counter()
+            new_cwc = cwc.plus_counter_if_saga()
             # Always get Amulet
             if new_cwc.n_counters == 3:
                 new_battlefield.append(CardWithCounters(Card("Amulet of Vigor")))
@@ -274,13 +274,10 @@ class GameState(NamedTuple):
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
         i = self.hand.index(c)
-        # When playing a saga, tick up to one counter
-        c_new = CardWithCounters(c)
-        if c.is_saga:
-            c_new = c_new.plus_counter()
+        cwc = CardWithCounters(c)
         return self.copy_with_updates(
             hand=self.hand[:i] + self.hand[i + 1 :],
-            battlefield=self.battlefield + (c_new,),
+            battlefield=self.battlefield + (cwc.plus_counter_if_saga(),),
         )
 
     def _battlefield_count(self, card_name: str) -> int:
