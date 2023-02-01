@@ -6,8 +6,7 @@ from .game_manager import GameManager
 from .game_state import GameSummaryDict
 
 
-# Root of the backend app
-BASE_DIR = Path(__file__).resolve().parent.parent
+_BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 
 def main():
@@ -19,7 +18,7 @@ def main():
 
 def load_deck_list() -> List[str]:
     deck_list = []
-    with open(f"{BASE_DIR}/static/deck-list.txt") as handle:
+    with open(f"{_BACKEND_DIR}/static/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue

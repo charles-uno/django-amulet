@@ -20,6 +20,6 @@ python3 -m amulet_flashcards.api.amulet_model
 - pytest
 - typing_extensions
 - django-cors-headers
-
+- markdown
 
 htmx. you can import it as a script but better practice is to download it and host it locally

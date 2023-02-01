@@ -13,15 +13,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import sys
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+_PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-secret_key_path = f"{BASE_DIR}/assets/django-secret-key.txt"
+secret_key_path = f"{_PROJECT_DIR}/assets/django-secret-key.txt"
 try:
     with open(secret_key_path) as handle:
         SECRET_KEY = handle.read().strip()
@@ -86,7 +85,7 @@ WSGI_APPLICATION = "amulet_flashcards.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": f"{_PROJECT_DIR}/db.sqlite3",
     }
 }
 

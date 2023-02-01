@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 from django.http import HttpRequest, HttpResponse
 import markdown
@@ -24,8 +25,11 @@ def play_it_out(request: HttpRequest) -> HttpResponse:
     return HttpResponse(HtmxHelper.format_output(model_output))
 
 
+_BACKEND_DIR = Path(__file__).resolve().parent
+
+
 def about(request: HttpRequest) -> HttpResponse:
-    with open("backend/static/about.md") as handle:
+    with open(f"{_BACKEND_DIR}/static/about.md") as handle:
         content = handle.read()
 
     print(content)
@@ -41,7 +45,7 @@ def about(request: HttpRequest) -> HttpResponse:
 
 def load_deck_list() -> List[str]:
     deck_list = []
-    with open("backend/static/deck-list.txt") as handle:
+    with open(f"{_BACKEND_DIR}/static/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue
