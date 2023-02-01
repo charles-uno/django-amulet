@@ -6,7 +6,7 @@ For more information on HTMX, see htmx.org
 
 import json
 import math
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .game_state import GameSummaryDict, OpenerDict
 from .game_manager import ModelInputDict, ModelOutputDict, ModelOutputDict
@@ -201,9 +201,9 @@ class HtmxHelper:
             return cls._alert(n.text)
 
     @classmethod
-    def card_name(cls, card_name: str) -> Htmx:
+    def card_name(cls, card_name: str, display: Optional[str] = None) -> Htmx:
         return cls._span(
-            cls._quote_safe(card_name),
+            cls._quote_safe(display or card_name),
             klass="card-name",
             onclick=f'show_autocard("{cls._card_image_url(card_name)}")',
         )

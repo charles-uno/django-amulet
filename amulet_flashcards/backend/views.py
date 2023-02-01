@@ -36,7 +36,7 @@ def about(request: HttpRequest) -> HttpResponse:
 
     html_content = markdown.markdown(content)
 
-    html_content = handle_autocard_macros(html_content)
+    html_content = _handle_autocard_macros(html_content)
 
     # TODO: handle autocard brackets
 
@@ -45,16 +45,19 @@ def about(request: HttpRequest) -> HttpResponse:
     return HttpResponse(html_content)
 
 
-def handle_autocard_macros(text):
+def _handle_autocard_macros(text):
     while "[[" in text:
-        text = handle_autocard_macro(text)
+        text = _handle_autocard_macro(text)
     return text
 
 
-def handle_autocard_macro(text):
+def _handle_autocard_macro(text):
     before, card_and_after = text.split("[[", 1)
-    card, after = card_and_after.split("]]", 1)
-    return before + HtmxHelper.card_name(card) + after
+    card_name, after = card_and_after.split("]]", 1)
+    display = None
+    if "|" in card_name:
+        card_name, display = card_name.split("|", 1)
+    return before + HtmxHelper.card_name(card_name, display) + after
 
 
 def load_deck_list() -> List[str]:
