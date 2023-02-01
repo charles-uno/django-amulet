@@ -10,9 +10,9 @@
 
 1 Bojuka Bog
 1 Boros Garrison
-3 Boseiju, Who Endures
+9 Boseiju, Who Endures
 1 Crumbling Vestige
-6 Forest
+0 Forest
 1 Radiant Fountain
 1 Slayers' Stronghold
 1 Sunhome, Fortress of the Legion

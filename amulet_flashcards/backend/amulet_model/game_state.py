@@ -247,7 +247,9 @@ class GameState(NamedTuple):
             if not cwc.card.is_legendary_land:
                 continue
             if self.battlefield.count(cwc) > 1:
-                return self.add_notes(", sack duplicate ", cwc.card)
+                return self.remove_from_battlefield(cwc).add_notes(
+                    ", sack duplicate ", cwc.card
+                )
         return self
 
     def put_land_onto_battlefield_tapped(self, c: Card) -> Set["GameState"]:
