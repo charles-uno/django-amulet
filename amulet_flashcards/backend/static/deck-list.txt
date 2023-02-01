@@ -8,12 +8,17 @@
 4 Primeval Titan
 4 Summoner's Pact
 
+1 Bojuka Bog
 1 Boros Garrison
-4 Bojuka Bog
+3 Boseiju, Who Endures
 1 Crumbling Vestige
-9 Forest
+6 Forest
 1 Radiant Fountain
 1 Slayers' Stronghold
 1 Sunhome, Fortress of the Legion
-9 Simic Growth Chamber
+4 Simic Growth Chamber
+3 Selesnya Sanctuary
+3 Gruul Turf
+2 Tolaria West
 4 Urza's Saga
+2 Valakut, the Molten Pinnacle

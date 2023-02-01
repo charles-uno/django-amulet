@@ -241,11 +241,24 @@ class GameState(NamedTuple):
                 c
             )
 
+    def sack_duplicate_legendary_land_if_any(self) -> "GameState":
+        # Note: this is called after every update, so there can be at most one
+        for cwc in set(self.battlefield):
+            if not cwc.card.is_legendary_land:
+                continue
+            if self.battlefield.count(cwc) > 1:
+                return self.add_notes(", sack duplicate ", cwc.card)
+        return self
+
     def put_land_onto_battlefield_tapped(self, c: Card) -> Set["GameState"]:
         n_amulets = self._battlefield_count("Amulet of Vigor")
-        state = self.move_from_hand_to_battlefield(
-            c,
-        ).add_mana(c.taps_for * n_amulets)
+        state = (
+            self.move_from_hand_to_battlefield(
+                c,
+            )
+            .add_mana(c.taps_for * n_amulets)
+            .sack_duplicate_legendary_land_if_any()
+        )
         if _MANA_NOTE_STYLE == 2:
             if n_amulets == 1:
                 state = state.add_notes(f" tapped, trigger ", Card("Amulet of Vigor"))
@@ -256,9 +269,13 @@ class GameState(NamedTuple):
         return getattr(state, "effect_for_" + c.slug)()
 
     def put_land_onto_battlefield_untapped(self, c: Card) -> Set["GameState"]:
-        state = self.move_from_hand_to_battlefield(
-            c,
-        ).add_mana(c.taps_for)
+        state = (
+            self.move_from_hand_to_battlefield(
+                c,
+            )
+            .add_mana(c.taps_for)
+            .sack_duplicate_legendary_land_if_any()
+        )
         return getattr(state, "effect_for_" + c.slug)()
 
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
@@ -385,6 +402,9 @@ class GameState(NamedTuple):
     def effect_for_bojuka_bog(self) -> Set["GameState"]:
         return {self}
 
+    def effect_for_boseiju_who_endures(self) -> Set["GameState"]:
+        return {self}
+
     def effect_for_boros_garrison(self) -> Set["GameState"]:
         return {self}
 
@@ -394,7 +414,22 @@ class GameState(NamedTuple):
     def effect_for_radiant_fountain(self) -> Set["GameState"]:
         return {self}
 
+    def effect_for_tolaria_west(self) -> Set["GameState"]:
+        return {self}
+
+    def effect_for_valakut_the_molten_pinnacle(self) -> Set["GameState"]:
+        return {self}
+
     def effect_for_simic_growth_chamber(self) -> Set["GameState"]:
+        return self.bounce_land()
+
+    def effect_for_selesnya_sanctuary(self) -> Set["GameState"]:
+        return self.bounce_land()
+
+    def effect_for_gruul_turf(self) -> Set["GameState"]:
+        return self.bounce_land()
+
+    def bounce_land(self) -> Set["GameState"]:
         states = set()
         for cwc in set(self.battlefield):
             if cwc.card.is_land:

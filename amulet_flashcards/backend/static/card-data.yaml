@@ -16,6 +16,10 @@ Bojuka Bog:
   type: land
   taps_for: "1"
   enters_tapped: true
+Boseiju, Who Endures:
+  type: legendary,land
+  taps_for: "G"
+  enters_tapped: false
 Boros Garrison:
   enters_tapped: true
   taps_for: "WR"
@@ -43,6 +47,10 @@ Forest:
   taps_for: G
   enters_tapped: false
   never_defer: true
+Gruul Turf:
+  type: land
+  enters_tapped: true
+  taps_for: "RG"
 Primeval Titan:
   mana_cost: 4GG
   type: creature
@@ -70,6 +78,10 @@ Sunhome, Fortress of the Legion:
   type: land
   taps_for: "1"
   enters_tapped: false
+Tolaria West:
+  type: land
+  taps_for: "U"
+  enters_tapped: true
 Valakut, the Molten Pinnacle:
   type: land
   taps_for: "R"
