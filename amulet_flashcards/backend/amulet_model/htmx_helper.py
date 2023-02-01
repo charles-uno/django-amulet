@@ -240,11 +240,10 @@ class HtmxHelper:
         try:
             return Card(card_name).image_url
         except KeyError:
-            cls._warn_skip_duplicates(f"WARNING: no image found for {card_name}")
-        return (
-            "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
-            + cls._url_escape(card_name)
-        )
+            return (
+                "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
+                + cls._url_escape(card_name)
+            )
 
     @classmethod
     def _quote_safe(cls, text: str) -> str:
@@ -303,9 +302,3 @@ class HtmxHelper:
         if tag_name != "img":
             expr += f"{inner_html}</{tag_name}>"
         return Htmx(expr)
-
-    @classmethod
-    def _warn_skip_duplicates(cls, text) -> None:
-        if text in cls._warnings:
-            return
-        print(text)

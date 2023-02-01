@@ -43,6 +43,7 @@ Crumbling Vestige:
   type: land
   taps_for: "1"
   enters_tapped: true
+  image_url: "https://cards.scryfall.io/normal/front/d/4/d491c13c-43e3-4ca3-b888-4edd34dfe14a.jpg?1562937635"
 Cultivator Colossus:
   type: creature
   mana_cost: "4GGG"
@@ -52,9 +53,11 @@ Dryad of the Ilysian Grove:
   type: creature
   mana_cost: "2G"
   never_defer: true
+  image_url: "https://cards.scryfall.io/normal/front/6/d/6d964876-194b-49f1-8e74-cfe9269f2c62.jpg?1584114361"
 Expedition Map:
   mana_cost: "1"
   type: artifact
+  image_url: "https://cards.scryfall.io/normal/front/5/5/551c0a45-9515-4e51-84e5-79703832a661.jpg?1646666270"
 Explore:
   mana_cost: "1G"
   type: sorcery
@@ -64,6 +67,7 @@ Forest:
   taps_for: G
   enters_tapped: false
   never_defer: true
+  image_url: "https://cards.scryfall.io/normal/front/3/2/32af9f41-89e2-4e7a-9fec-fffe79cae077.jpg?1641306082"
 Gruul Turf:
   type: land
   enters_tapped: true
