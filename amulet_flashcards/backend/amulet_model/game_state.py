@@ -164,7 +164,9 @@ class GameState(NamedTuple):
             return self
         if self.mana_pool >= self.mana_debt:
             return self.add_notes(", pay for pact").pay_mana(self.mana_debt)
-        raise RuntimeError(f"attempting to pay {self.mana_debt} with {self.mana_pool}")
+        raise GameStateException(
+            f"attempting to pay {self.mana_debt} with {self.mana_pool}"
+        )
 
     def get_land_plays_for_new_turn(self) -> int:
         return (
@@ -222,6 +224,8 @@ class GameState(NamedTuple):
             return self
 
     def draw_a_card(self) -> "GameState":
+        if not self.library:
+            raise GameStateException("Trying to draw from an empty library")
         c = self.library[0]
         return self.copy_with_updates(
             hand=self.hand + (c,),
@@ -503,3 +507,7 @@ class GameState(NamedTuple):
             else:
                 raise ValueError(f"unable to create Note from {arg}")
         return self.copy_with_updates(notes=self.notes + tuple(notes))
+
+
+class GameStateException(RuntimeError):
+    pass

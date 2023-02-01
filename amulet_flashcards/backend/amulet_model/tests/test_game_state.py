@@ -38,6 +38,8 @@ def test_pass_turn_payable_mana_debt():
     state = GameState(
         battlefield=tuple(CardWithCounters(Card("Forest")) for _ in range(4)),
         mana_debt=Mana.from_string("2GG"),
+        # So we don't fail to draw
+        library=(Card("Forest"),),
     )
     next_state = state.pass_turn(99).pop()
     assert next_state.mana_pool == Mana.from_string("")
@@ -46,13 +48,24 @@ def test_pass_turn_payable_mana_debt():
 def test_pass_turn_unpayable_mana_debt():
     state = GameState(
         battlefield=(),
+        # So we don't fail to draw
+        library=(Card("Forest"),),
         mana_debt=Mana.from_string("2GG"),
     )
     assert not state.pass_turn(99)
 
 
 def pass_turn_sack_saga():
-    state = GameState(battlefield=(CardWithCounters(Card("Urza's Saga"), 2),))
+    state = GameState(
+        battlefield=(CardWithCounters(Card("Urza's Saga"), 2),),
+        # Need two of each in our library because we draw before we search
+        library=(
+            Card("Amulet of Vigor"),
+            Card("Amulet of Vigor"),
+            Card("Expedition Map"),
+            Card("Expedition Map"),
+        ),
+    )
     next_states = state.pass_turn(99)
     assert len(next_states) == 2
     assert [len(x.battlefield) == 1 for x in next_states]
