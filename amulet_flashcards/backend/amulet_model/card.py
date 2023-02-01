@@ -74,6 +74,10 @@ class Card(str):
     def is_saga(self) -> bool:
         return "saga" in self.types
 
+    @property
+    def image_url(self) -> str:
+        return _get_card_data(self)["image_url"]
+
 
 class CardWithCounters(NamedTuple):
     card: Card

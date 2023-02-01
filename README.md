@@ -37,4 +37,4 @@ pip3 install -r requirements.txt
 
 - htmx.org
 - Django SASS Compiler: https://pypi.org/project/django-sass-compiler
-
+- Scryfall (image URLs scraped from API)

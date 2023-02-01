@@ -6,11 +6,14 @@ For more information on HTMX, see htmx.org
 
 import json
 import math
-from typing import Dict, List, Optional
+from typing import ClassVar, Dict, List, Optional, Set
 
+from .card import Card
 from .game_state import GameSummaryDict, OpenerDict
 from .game_manager import ModelInputDict, ModelOutputDict, ModelOutputDict
 from .note import Note, NoteType
+
+_CARD_IMAGE_URLs = None
 
 
 class Htmx(str):
@@ -20,6 +23,9 @@ class Htmx(str):
 
 
 class HtmxHelper:
+
+    _warnings: ClassVar[Set[str]] = set()
+
     @classmethod
     def format_input(cls, mid: ModelInputDict) -> Htmx:
         htmx_teaser = cls._format_teaser(mid)
@@ -29,7 +35,7 @@ class HtmxHelper:
 
     @classmethod
     def _format_opener(cls, opener: OpenerDict) -> Htmx:
-        card_tags = [cls._card_image(c) for c in opener["hand"]]
+        card_tags = [cls._card_image_with_autocard(c) for c in opener["hand"]]
         htmx_cards = cls._div(
             cls._div("".join(card_tags), klass="opener-cards"), klass="cards-wrap"
         )
@@ -222,7 +228,19 @@ class HtmxHelper:
         return cls._img(klass="card", src=cls._card_image_url(card_name))
 
     @classmethod
+    def _card_image_with_autocard(cls, card_name: str) -> Htmx:
+        return cls._img(
+            klass="card",
+            src=cls._card_image_url(card_name),
+            onclick=f'show_autocard("{cls._card_image_url(card_name)}")',
+        )
+
+    @classmethod
     def _card_image_url(cls, card_name: str) -> str:
+        try:
+            return Card(card_name).image_url
+        except KeyError:
+            cls._warn_skip_duplicates(f"WARNING: no image found for {card_name}")
         return (
             "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name="
             + cls._url_escape(card_name)
@@ -285,3 +303,9 @@ class HtmxHelper:
         if tag_name != "img":
             expr += f"{inner_html}</{tag_name}>"
         return Htmx(expr)
+
+    @classmethod
+    def _warn_skip_duplicates(cls, text) -> None:
+        if text in cls._warnings:
+            return
+        print(text)

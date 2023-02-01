@@ -2,6 +2,7 @@
 To be run with pytest
 """
 
+from ..card import Card
 from ..htmx_helper import HtmxHelper
 
 
@@ -17,7 +18,9 @@ def test_div():
 
 def test_card_name():
     # Gotta worry about escaping quotes and URL safety
+    url = Card("Urza's Saga").image_url
+
     assert (
         HtmxHelper.card_name("Urza's Saga")
-        == "<span class='card-name' onclick='show_autocard(\"https://gatherer.wizards.com/Handlers/Image.ashx?type=card&name=Urza&apos;s%20Saga\")'>Urza&apos;s Saga</span>"
+        == f"<span class='card-name' onclick='show_autocard(\"{url}\")'>Urza&apos;s Saga</span>"
     )

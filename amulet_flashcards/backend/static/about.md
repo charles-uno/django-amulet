@@ -53,7 +53,7 @@ Considering similar cards together helps the model run faster. Numbers look pret
 <tr><td>4</td><td>[[Primeval Titan]]</td></tr>
 <tr><td>4</td><td>[[Summoner's Pact]]</td></tr>
 <tr><td>6</td><td>[[Bojuka Bog]]/[[Tolaria West]]/etc</td></tr>
-<tr><td>1</td><td>[[Boros Garisson]]</td></tr>
+<tr><td>1</td><td>[[Boros Garrison]]</td></tr>
 <tr><td>1</td><td>[[Crumbling Vestige]]</td></tr>
 <tr><td>9</td><td>[[Forest]]/[[Boseiju, Who Endures]]/etc</td></tr>
 <tr><td>5</td><td>[[Radiant Fountain]]/[[Slayers' Stronghold]]/etc</td></tr>
