@@ -10,3 +10,4 @@ __pycache__
 db.sqlite3
 media
 django-secret-key.txt
+*.css

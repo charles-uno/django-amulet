@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "frontend",
+    "django_sass_compiler",
 ]
 
 MIDDLEWARE = [
