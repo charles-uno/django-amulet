@@ -32,6 +32,10 @@ Dryad of the Ilysian Grove:
   type: creature
   mana_cost: "2G"
   never_defer: true
+# TODO: implement this
+Expedition Map:
+  mana_cost: "9GGG"
+  type: artifact
 Explore:
   mana_cost: "1G"
   type: sorcery

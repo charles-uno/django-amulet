@@ -22,7 +22,7 @@ Similarly, [[Bojuka Bog]] is used as a stand-in for any non-green land that ente
 These approximations can make opening hands look a bit odd, but the resulting numbers turn out to be nearly identical.
 
 That said, please don't expect the computer to teach you good sequencing!
-If it's possible to cast [[Primeval Titan]] on turn three, this model is guaranteed to find a way to do so.
+If it's possible to cast [[Primeval Titan]] (or [[Cultivator Colossus]]) on turn three, this model is guaranteed to find a way to do so.
 But there are often several different ways to get there.
 There's no guarantee the computer will pick the best one.
 Several corrections are included to suppress non-human play patterns, but from time to time it'll still choose a "solution" that's needlessly bizarre or reckless.
@@ -31,7 +31,27 @@ Consider it a starting point, not an authority.
 ## The Deck List
 
 Below is the list used by this app. Don't worry too much about a difference here or there. 
-Considering similar cards together helps the model run faster. Numbers look pretty much the same if (for example) we swap out an [[Explore]] for an [[Azusa, Lost but Seeking|Azusa]].
+Considering similar cards together helps the model run faster. Numbers look pretty much the same if (for example) we swap out an [[Explore]] for an extra [[Azusa, Lost but Seeking|Azusa]].
+
+<table class="deck-list">
+<tr><td>4</td><td>[[Amulet of Vigor]]</td></tr>
+<tr><td>4</td><td>[[Arboreal Grazer]]</td></tr>
+<tr><td>1</td><td>[[Azusa, Lost but Seeking]]</td></tr>
+<tr><td>1</td><td>[[Cultivator Colossus]]</td></tr>
+<tr><td>4</td><td>[[Dryad of the Ilysian Grove]]</td></tr>
+<tr><td>4</td><td>[[Explore]]</td></tr>
+<tr><td>1</td><td>[[Expedition Map]]</td></tr>
+<tr><td>4</td><td>[[Primeval Titan]]</td></tr>
+<tr><td>4</td><td>[[Summoner's Pact]]</td></tr>
+<tr><td>6</td><td>[[Bojuka Bog]]/[[Tolaria West]]/etc</td></tr>
+<tr><td>10</td><td>[[Forest]]/[[Boseiju, Who Endures]]/etc</td></tr>
+<tr><td>5</td><td>[[Radiant Fountain]]/[[Slayers' Stronghold]]/etc</td></tr>
+<tr><td>10</td><td>[[Simic Growth Chamber]]/[[Selesnya Sanctuary]]/etc</td></tr>
+<tr><td>4</td><td>[[Urza's Saga]]</td></tr>
+</table>
+
+
+
 
 TODO: import decklist?
 

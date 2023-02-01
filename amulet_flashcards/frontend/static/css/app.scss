@@ -91,6 +91,12 @@ body {
     display: none;
 }
 
+.deck-list {
+    td:first-child {
+        text-align: right;
+    }
+}
+
 h1, h2, h3 {
     font-family: $head-font;
     text-transform: lowercase;

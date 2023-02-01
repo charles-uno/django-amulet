@@ -3,12 +3,13 @@
 1 Azusa, Lost but Seeking
 1 Cultivator Colossus
 4 Dryad of the Ilysian Grove
+1 Expedition Map
 4 Explore
 4 Primeval Titan
 4 Summoner's Pact
 
 10 Simic Growth Chamber
 10 Forest
-6 Radiant Fountain
+5 Radiant Fountain
 4 Urza's Saga
 4 Bojuka Bog
