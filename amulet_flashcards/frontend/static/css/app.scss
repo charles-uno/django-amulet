@@ -1,4 +1,5 @@
 $base-font: 'Roboto', sans-serif;
+$head-font: 'Alata', 'Outfit', sans-serif;
 
 $text-color: #222;
 $paper-color: #eee;
@@ -62,9 +63,13 @@ body {
     background-color: $paper-color;
 }
 
-
 #about-wrap {
     display: none;
+}
+
+h2 {
+    font-family: $head-font;
+    text-transform: lowercase;
 }
 
 #footer-wrap {
