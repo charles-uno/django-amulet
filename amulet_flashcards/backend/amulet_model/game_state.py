@@ -181,28 +181,25 @@ class GameState(NamedTuple):
         return mana_pool
 
     def handle_sagas(self) -> "GameState":
-        new_battlefield: List[CardWithCounters] = []
-        note_args = []
-        for cwc in self.battlefield:
-            if not cwc.card.is_saga:
-                new_battlefield.append(cwc)
-                continue
-            new_cwc = cwc.plus_counter_if_saga()
-            # Always get Amulet
-            if new_cwc.n_counters == 3:
-                new_battlefield.append(CardWithCounters(Card("Amulet of Vigor")))
-                note_args += [
+        new_battlefield = tuple(cwc.plus_counter_if_saga() for cwc in self.battlefield)
+        saga_going_off = CardWithCounters(Card("Urza's Saga"), 3)
+        # Note: we only go out to turn 3 so only one saga can go off at a time
+        assert new_battlefield.count(saga_going_off) < 2
+        if saga_going_off in new_battlefield:
+            return (
+                self.copy_with_updates(battlefield=new_battlefield)
+                .add_notes(
                     "\n",
                     "Sack ",
-                    new_cwc.card,
+                    saga_going_off.card,
                     ", grab ",
                     Card("Amulet of Vigor"),
-                ]
-            else:
-                new_battlefield.append(new_cwc)
-        return self.copy_with_updates(battlefield=tuple(new_battlefield)).add_notes(
-            *note_args
-        )
+                )
+                .remove_from_battlefield(saga_going_off)
+                .add_to_battlefield(Card("Amulet of Vigor"))
+            )
+        else:
+            return self.copy_with_updates(battlefield=new_battlefield)
 
     def add_mana(self, m: Mana) -> "GameState":
         if not m:
@@ -234,13 +231,11 @@ class GameState(NamedTuple):
             -1,
         )
         if c.enters_tapped:
-            return state.add_notes(
-                "\n", "Play ", c, " tapped"
-            ).put_land_onto_battlefield_tapped(c)
+            return state.add_notes("\n", "Play ", c).put_land_onto_battlefield_tapped(c)
         else:
-            return state.add_notes(
-                "\n", "Play ", c, " untapped"
-            ).put_land_onto_battlefield_untapped(c)
+            return state.add_notes("\n", "Play ", c).put_land_onto_battlefield_untapped(
+                c
+            )
 
     def put_land_onto_battlefield_tapped(self, c: Card) -> Set["GameState"]:
         n_amulets = self._battlefield_count("Amulet of Vigor")
@@ -249,7 +244,7 @@ class GameState(NamedTuple):
         ).add_mana(c.taps_for * n_amulets)
         if _MANA_NOTE_STYLE == 2:
             if n_amulets == 1:
-                state = state.add_notes(f", trigger ", Card("Amulet of Vigor"))
+                state = state.add_notes(f" tapped, trigger ", Card("Amulet of Vigor"))
             elif n_amulets > 1:
                 state = state.add_notes(
                     f", trigger {n_amulets}x ", Card("Amulet of Vigor")
@@ -273,22 +268,35 @@ class GameState(NamedTuple):
         return getattr(state, "effect_for_" + c.slug)()
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
+        return self.remove_from_hand(c).add_to_battlefield(c)
+
+    def move_from_battlefield_to_hand(self, cwc: CardWithCounters) -> "GameState":
+        i = self.battlefield.index(cwc)
+        return self.remove_from_battlefield(cwc).add_to_hand(cwc.card)
+
+    def add_to_hand(self, c: Card) -> "GameState":
+        return self.copy_with_updates(hand=self.hand + (c,))
+
+    def remove_from_hand(self, c: Card) -> "GameState":
         i = self.hand.index(c)
-        cwc = CardWithCounters(c)
         return self.copy_with_updates(
             hand=self.hand[:i] + self.hand[i + 1 :],
-            battlefield=self.battlefield + (cwc.plus_counter_if_saga(),),
+        )
+
+    def add_to_battlefield(self, c: Card) -> "GameState":
+        return self.copy_with_updates(
+            battlefield=self.battlefield
+            + (CardWithCounters(c).plus_counter_if_saga(),),
+        )
+
+    def remove_from_battlefield(self, cwc: CardWithCounters) -> "GameState":
+        i = self.battlefield.index(cwc)
+        return self.copy_with_updates(
+            battlefield=self.battlefield[:i] + self.battlefield[i + 1 :],
         )
 
     def _battlefield_count(self, card_name: str) -> int:
         return self.battlefield.count(CardWithCounters(Card(card_name)))
-
-    def move_from_battlefield_to_hand(self, cwc: CardWithCounters) -> "GameState":
-        i = self.battlefield.index(cwc)
-        return self.copy_with_updates(
-            hand=self.hand + (cwc.card,),
-            battlefield=self.battlefield[:i] + self.battlefield[i + 1 :],
-        )
 
     def add_land_plays(self, n: int) -> "GameState":
         return self.copy_with_updates(
