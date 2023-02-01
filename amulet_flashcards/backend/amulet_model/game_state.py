@@ -332,6 +332,9 @@ class GameState(NamedTuple):
     ) -> Set["GameState"]:
         return {self.add_land_plays(1)}
 
+    def effect_for_expedition_map(self) -> Set["GameState"]:
+        return {self}
+
     def effect_for_explore(
         self,
     ) -> Set["GameState"]:
