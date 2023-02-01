@@ -2,7 +2,7 @@
 
 The MTG deck [Amulet Titan][mtggoldfish] is known for its complex play patterns. 
 This app presents users with sample opening hands, then shuffles the deck and solves for a sequence of plays to cast the titular [[Primeval Titan|Titan]] as quickly as possible. 
-Think of it like mulligan flashcards: decide for yourself whether you would keep the hand, then play it out a few times to see what the numbers say!
+Think of it like flashcards: decide for yourself whether you would keep the hand, then play it out a few times to see what the numbers say!
 
 [mtggoldfish]: https://www.mtggoldfish.com/archetype/amulet-titan
 

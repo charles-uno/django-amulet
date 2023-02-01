@@ -27,6 +27,18 @@
   </div>
 
   <div id="main-wrap">
+    <div class="head">
+      <div class="head-left">
+        <img class="author-avatar" src="/static/images/charles-hair.png">
+      </div>
+      <div class="head-right">
+        <h1 class="title">Amulet Flashcards</h1>
+        <div class="subtitle">
+          by <a class="author-name" href="https://charles.uno">Charles Fyfe</a>
+        </div>
+      </div>
+    </div>
+
     <div id="main" hx-get="/api/opener" hx-trigger="load" hx-swap="innerHTML">
     </div>
     <div id="about" hx-get="/api/about" hx-trigger="load" hx-swap="innerHTML">
