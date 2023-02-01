@@ -26,7 +26,6 @@ pip3 install -r requirements.txt
 ## To Do
 
 - Add an "about" blurb
-- SCSS
 - HTTPS
 - License
 - Deploy to AWS via GitHub Actions

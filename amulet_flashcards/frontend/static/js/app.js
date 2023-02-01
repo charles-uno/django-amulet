@@ -9,6 +9,18 @@ function hide_autocard() {
     document.getElementById("autocard-backdrop").style.display = "none";
 }
 
+/* "About this page" blurb covers cards */
+
+function show_blurb() {
+    document.getElementById("main-wrap").style.display = "none";
+    document.getElementById("about-wrap").style.display = "block";
+}
+
+function hide_blurb() {
+    document.getElementById("main-wrap").style.display = "block";
+    document.getElementById("about-wrap").style.display = "none";
+}
+
 /* Disable the buttons while working on a request */
 
 htmx.on('htmx:beforeRequest', function(evt) {

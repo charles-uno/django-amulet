@@ -22,15 +22,16 @@ class Htmx(str):
 class HtmxHelper:
     @classmethod
     def format_input(cls, mid: ModelInputDict) -> Htmx:
+
+        htmx_about = "<p class='about-link'><a onclick='show_blurb()'>read more</a></p>"
+
         htmx_teaser = cls._format_teaser(mid)
         htmx_buttons = cls._format_buttons(mid)
         htmx_opener = cls._format_opener(mid["opener"])
-        return Htmx.join(htmx_teaser, htmx_buttons, htmx_opener)
+        return Htmx.join(htmx_about, htmx_teaser, htmx_buttons, htmx_opener)
 
     @classmethod
     def _format_opener(cls, opener: OpenerDict) -> Htmx:
-        #        turn_order = "on the play" if opener["on_the_play"] else "on the draw"
-        #        htmx_turn_order = cls._div(turn_order, klass="opener-turn-order")
         card_tags = [cls._card_image(c) for c in opener["hand"]]
         htmx_cards = cls._div(
             cls._div("".join(card_tags), klass="opener-cards"), klass="cards-wrap"

@@ -36,7 +36,7 @@ def about(request: HttpRequest) -> HttpResponse:
 
     html_content = markdown.markdown(content)
 
-    print(html_content)
+    html_content += "<p class='about-link'><a onclick='hide_blurb()'>read less</a></p>"
 
     # TODO: handle autocard brackets
 

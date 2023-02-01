@@ -54,7 +54,7 @@ body {
     flex-direction: column;
 }
 
-.main-wrap, .about-wrap, .footer-wrap {
+#main-wrap, #about-wrap, #footer-wrap {
     max-width: $content-width;
     width: 100%;
     margin: 0 auto;
@@ -62,15 +62,20 @@ body {
     background-color: $paper-color;
 }
 
-.footer-wrap {
+
+#about-wrap {
+    display: none;
+}
+
+#footer-wrap {
     padding-bottom: $half-pad;
 }
 
-.main-wrap {
+#main-wrap, #about-wrap {
     flex: 1 0 auto;
 }
 
-.footer-wrap {
+#footer-wrap {
     text-align: center;
     flex-shrink: 0;
 }
