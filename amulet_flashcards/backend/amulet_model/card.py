@@ -37,8 +37,12 @@ class Card(str):
         return "land" in self.types
 
     @property
+    def is_legendary(self) -> bool:
+        return "legendary" in self.types
+
+    @property
     def is_legendary_land(self) -> bool:
-        return "land" in self.types and "legendary" in self.types
+        return self.is_land and self.is_legendary
 
     @property
     def is_spell(self) -> bool:

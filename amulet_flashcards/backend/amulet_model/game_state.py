@@ -283,6 +283,8 @@ class GameState(NamedTuple):
     def maybe_cast_spell(self, c: Card) -> Set["GameState"]:
         if not (c in self.hand and c.is_spell and c.mana_cost <= self.mana_pool):
             return set()
+        if c.is_legendary and self._battlefield_count(c):
+            return set()
         state = (
             self.move_from_hand_to_battlefield(c)
             .add_notes("\n", "Cast ", c)

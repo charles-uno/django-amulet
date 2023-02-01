@@ -18,7 +18,7 @@ Arboreal Grazer:
   image_url: "https://cards.scryfall.io/normal/front/c/4/c4a5f86f-44a8-4735-909a-770586d33a15.jpg?1586962989"
 Azusa, Lost but Seeking:
   mana_cost: "2G"
-  type: creature
+  type: legendary,creature
   never_defer: true
   image_url: "https://cards.scryfall.io/normal/front/0/b/0b8aff2c-1f7b-4507-b914-53f8c4706b3d.jpg?1596259277"
 Bojuka Bog:
