@@ -1,12 +1,34 @@
+$base-font: 'Roboto', sans-serif;
+$text-color: #222;
 $accent-color: #295;
+$paper-color: #eee;
+$content-width: 45rem;
+
+$font-size-caption: 0.8rem;
+
+
+html {
+    font-family: $base-font;
+    color: $text-color;
+    line-height: 1.6;
+    font-size: 14px;
+}
+@media (min-width: 40em) {
+    html { font-size: 16px; }
+}
+@media (min-width: 55em) {
+    html { font-size: 18px; }
+}
+@media (min-width: 70em) {
+    html { font-size: 20px; }
+}
+
 
 html, body {
-    font-size: 16px;
     background-color: $accent-color;
     padding: 0;
     margin: 0;
     height: 100%;
-    font-family: 'Roboto', sans-serif;
 }
 
 a, a:visited, .card-name {
@@ -26,11 +48,11 @@ body {
 }
 
 .main-wrap, .about-wrap, .footer-wrap {
-    max-width: 800px;
+    max-width: $content-width;
     width: 100%;
     margin: 0 auto;
     padding: 20px;
-    background-color: #fff;
+    background-color: $paper-color;
 }
 
 .footer-wrap {
@@ -47,7 +69,7 @@ body {
 }
 
 .footer {
-    font-size: 10px;
+    font-size: $font-size-caption;
 }
 
 .half-width {

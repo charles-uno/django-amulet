@@ -37,4 +37,5 @@ pip3 install -r requirements.txt
 ## For Reference
 
 - htmx.org
+- Django SASS Compiler: https://pypi.org/project/django-sass-compiler
 
