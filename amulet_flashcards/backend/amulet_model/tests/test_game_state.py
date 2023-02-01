@@ -56,19 +56,14 @@ def test_pass_turn_unpayable_mana_debt():
 
 
 def pass_turn_sack_saga():
+    targets = (Card("Amulet of Vigor"), Card("Expedition Map"))
     state = GameState(
         battlefield=(CardWithCounters(Card("Urza's Saga"), 2),),
         # Need two of each in our library because we draw before we search
-        library=(
-            Card("Amulet of Vigor"),
-            Card("Amulet of Vigor"),
-            Card("Expedition Map"),
-            Card("Expedition Map"),
-        ),
+        library=targets + targets,
     )
     next_states = state.pass_turn(99)
     assert len(next_states) == 2
     assert [len(x.battlefield) == 1 for x in next_states]
-
     fetched_cards = [x.battlefield[0].card for x in next_states]
-    assert sorted(fetched_cards) == [Card("Amulet of Vigor"), Card("Expedition Map")]
+    assert sorted(fetched_cards) == sorted(targets)
