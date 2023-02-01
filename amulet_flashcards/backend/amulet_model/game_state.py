@@ -172,7 +172,7 @@ class GameState(NamedTuple):
         return (
             1
             + self._battlefield_count("Dryad of the Ilysian Grove")
-            + 2 * self._battlefield_count("Azusa, Lost but Seeking")
+            + 2 * min(1, self._battlefield_count("Azusa, Lost but Seeking"))
         )
 
     def get_mana_pool_for_new_turn(self) -> Mana:
