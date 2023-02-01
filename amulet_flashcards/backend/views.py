@@ -31,14 +31,8 @@ _BACKEND_DIR = Path(__file__).resolve().parent
 def about(request: HttpRequest) -> HttpResponse:
     with open(f"{_BACKEND_DIR}/static/about.md") as handle:
         content = handle.read()
-
-    print(content)
-
     html_content = markdown.markdown(content)
-
     html_content = _handle_autocard_macros(html_content)
-
-    # TODO: handle autocard brackets
 
     html_content += "<p class='about-link'><a onclick='hide_blurb()'>read less</a></p>"
 
