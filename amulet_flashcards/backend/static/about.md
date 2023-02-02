@@ -33,14 +33,14 @@ The numbers and play patterns are still pretty much the same.
 
 $DECKLIST
 
-TODO: [[Radiant Fountain]], [[Slayers' Stronghold]] and [[Sunhome, Fortress of the Legion|Sunhome]] are all just [[Wastes]] as far as the computer is concerned. Also no difference between [[Bojuka Bog]], [[Tolaria West]], and [[Valakut, the Molten Pinnacle]].
+TODO: [[Radiant Fountain]], [[Slayers' Stronghold]] and [[Sunhome, Fortress of the Legion|Sunhome]] are all just [[Wastes]] as far as the computer is concerned. Also no difference between [[Bojuka Bog]], [[Tolaria West]], and [[Valakut, the Molten Pinnacle|Valakut]].
 
 
 ## Implementation
 
-This app is written in Python, using the [Django][django] framework.
+This app is written in Python using the [Django][django] framework.
 There's also a bit of HTML, SCSS, and JS to make it look presentable.
-Content is rendered on the server side then swapped in using [HTMX][htmx]. 
+Content is rendered on the server side then swapped in using [htmx][htmx]. 
 You can peruse the source code yourself [on GitHub][github]. 
 
 TODO: AWS, Docker, GitHub actions
@@ -49,19 +49,3 @@ TODO: AWS, Docker, GitHub actions
 [github]: https://github.com/charles-uno/django-amulet
 [blog]: https://charles.uno/amulet-simulation
 [htmx]: https://htpx.org
-
-
-
-The model is a simplified version of the one from my previous work [here][blog]
-
-
-## Fine Print
-
-Privacy policy: I don't store user data. But I do use some third-party stuff like htmx and Google Fonts
-
-This page &copy; Charles Fyfe 2023
-
-Unofficial [fan content][fan_content_policy]. Not affiliated or endorsed
-
-[fan_content_policy]: https://company.wizards.com/en/legal/fancontentpolicy
-
