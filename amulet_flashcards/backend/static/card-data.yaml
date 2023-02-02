@@ -126,3 +126,7 @@ Valakut, the Molten Pinnacle:
   taps_for: "R"
   enters_tapped: true
   image_url: "https://cards.scryfall.io/normal/front/3/7/37bce60d-2cb0-4772-9f5c-122a7ed426a0.jpg?1562611305"
+Wastes:
+  type: land
+  taps_for: "1"
+  image_url: "https://cards.scryfall.io/normal/front/5/6/56ef693d-7c48-46cb-8f52-abc660a2736e.jpg?1673727537"

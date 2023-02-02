@@ -13,6 +13,13 @@ Instead of worrying about strategy and synergy, the computer splits the game int
 The first chooses land, the second chooses nonland, and they proceed independently from there.
 If either copy ends up casting turn-three [[Primeval Titan]] down the line, it's pretty safe to say that a human player could have done so as well.
 
+Exhaustive search is straightforward and reliable, but also computationally expensive.
+A few simplifications are made in the interest of performance.
+Blue mana isn't tracked, so the model never transmutes [[Tolaria West]].
+The color-fixing ability on [[Dryad of the Ilysian Grove]] is ignored.
+And [[Cavern of Souls]] and [[Vesuva]] are swapped for less-complex lands.
+These changes have minimal impact on the model's play patterns and numbers.
+
 That said, please don't expect this model to teach you good sequencing!
 If it's possible to cast [[Primeval Titan]] (or [[Cultivator Colossus]]) by turn three, it's guaranteed to find a way to do so.
 But in a real game, you also need to worry about developing your mana, playing around interaction, and paying for your [[Summoner's Pact|Pact]] on turn four.
@@ -21,38 +28,32 @@ Consider this a starting point, not an authority.
 ## The Deck List
 
 The model uses the list below. 
-Note that [[Cavern of Souls]] and [[Vesuva]] have been swapped out due to complexity.
-Don't worry too much about it. 
+As mentioned above, [[Cavern of Souls]] and [[Vesuva]] are omitted out due to complexity.
 The numbers and play patterns are still pretty much the same.
 
 $DECKLIST
 
-
-
-
-
-no blue so all the bounce lands are the same
-
-
-[[Radiant Fountain]], 
-[[Slayers' Stronghold]] and [[Sunhome, Fortress of the Legion|Sunhome]] are included to make things look nice.
-As far as the computer is concerned, they behave just 
+TODO: [[Radiant Fountain]], [[Slayers' Stronghold]] and [[Sunhome, Fortress of the Legion|Sunhome]] are all just [[Wastes]] as far as the computer is concerned. Also no difference between [[Bojuka Bog]], [[Tolaria West]], and [[Valakut, the Molten Pinnacle]].
 
 
 ## Implementation
 
-- Python/Django
-- A sprinkling of HTML, CSS and JS to make it presentable
-- AJAX requests to the backend use HTMX
-- Docker
-- TODO: AWS, GitHub Actions
+This app is written in Python, using the [Django][django] framework.
+There's also a bit of HTML, SCSS, and JS to make it look presentable.
+Content is rendered on the server side then swapped in using [HTMX][htmx]. 
+You can peruse the source code yourself [on GitHub][github]. 
 
-You can check out the source [on GitHub][source]
+TODO: AWS, Docker, GitHub actions
+
+[django]: https://www.djangoproject.com/
+[github]: https://github.com/charles-uno/django-amulet
+[blog]: https://charles.uno/amulet-simulation
+[htmx]: https://htpx.org
+
+
 
 The model is a simplified version of the one from my previous work [here][blog]
 
-[source]: https://github.com/charles-uno/django-amulet
-[blog]: https://charles.uno/amulet-simulation
 
 ## Fine Print
 
