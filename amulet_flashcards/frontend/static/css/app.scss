@@ -35,10 +35,42 @@ html {
 }
 
 
-html, body {
+html {
     background-color: $accent-color;
     margin: 0;
     height: 100%;
+    body {
+        margin: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        #main-wrap, #footer-wrap {
+            max-width: $content-width;
+            width: 100%;
+            margin: 0 auto;
+            padding: $full-pad;
+            background-color: $paper-color;
+        }
+        #main-wrap, #about-wrap {
+            flex: 1 0 auto;
+        }
+        #footer-wrap {
+            padding-bottom: $half-pad;
+            text-align: center;
+            flex-shrink: 0;
+            .footer {
+                font-size: $font-size-footer;
+            }
+        }
+    }
+}
+
+.half-width {
+    width: 50%;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
 a, a:visited, .card-name {
@@ -52,17 +84,9 @@ a:hover, .card-name:hover {
     text-decoration: none;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-}
-
-#main-wrap, #footer-wrap {
-    max-width: $content-width;
-    width: 100%;
-    margin: 0 auto;
-    padding: $full-pad;
-    background-color: $paper-color;
+h1, h2, h3 {
+    font-family: $head-font;
+    text-transform: lowercase;
 }
 
 .head {
@@ -108,71 +132,41 @@ body {
 
 #about {
     display: none;
-}
-
-.deck-list {
-    td:first-child {
-        text-align: right;
+    .deck-list {
+        width: 60%;
+        margin: auto auto;
+        list-style-type: none;
+        padding: 0;
     }
 }
 
-h1, h2, h3 {
-    font-family: $head-font;
-    text-transform: lowercase;
-}
-
-#footer-wrap {
-    padding-bottom: $half-pad;
-    text-align: center;
-    flex-shrink: 0;
-}
-
-#main-wrap, #about-wrap {
-    flex: 1 0 auto;
-}
-
-
-.footer {
-    font-size: $font-size-footer;
-}
-
-.half-width {
-    width: 50%;
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-
-.third-width {
-    width: 33.33%;
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-
-#opener-button, #play-button, #about-button {
-    width: 100%;
-    padding: $half-pad;
-    font-size: $font-size-button;
-}
-
-.teaser-wrap, .opener-wrap, .summary-wrap, .button-wrap, .cards-wrap {
-    padding: $half-pad;
-}
-
-.teaser {
-    font-size: $font-size-header;
-}
-
-.teaser-turn-order {
-    font-weight: 900;
-}
-
-.opener-cards {
-    display: flex;
-    justify-content: space-between;
+#main {
+    .teaser-wrap, .opener-wrap, .summary-wrap, .button-wrap, .cards-wrap {
+        padding: $half-pad;
+    }
+    .teaser {
+        font-size: $font-size-header;
+        .turn-order {
+            font-weight: 900;
+        }
+    }
+    #opener-button, #play-button {
+        width: 100%;
+        padding: $half-pad;
+        font-size: $font-size-button;
+    }
+    .opener-cards {
+        display: flex;
+        justify-content: space-between;
+        img.card {
+            border-radius: 5%;
+            overflow: hidden;
+            width: 19%;
+        }
+        img.card:not(:first-child) {
+            margin-left:-5.5%;
+        }
+    }
 }
 
 .mana-symbol {
@@ -187,16 +181,6 @@ p.summary-line {
     margin: 0;
 }
 
-img.card {
-    border-radius: 5%;
-    overflow: hidden;
-    width: 19%;
-}
-
-img.card:not(:first-child) {
-    margin-left:-5.5%;
-}
-
 #autocard-backdrop {
     position: fixed;
     /* Some wiggle room since things move when scrolling */
@@ -209,23 +193,15 @@ img.card:not(:first-child) {
     display: none;
     flex-direction: column;
     justify-content: center;
+    #autocard {
+        color: #fff;
+        z-index: 999;
+        width: $autocard-width;
+        max-width: 50%;
+        border-radius: 5%;
+        overflow: hidden;
+        margin: 0 auto;
+    }
 }
 
-#autocard {
-    color: #fff;
-    z-index: 999;
-    width: $autocard-width;
-    max-width: 50%;
-    border-radius: 5%;
-    overflow: hidden;
-    margin: 0 auto;
-}
 
-.deck-list {
-    width: 60%;
-    margin: auto auto;
-    border-collapse: collapse;
-    border: 1px solid red;
-    list-style-type: none;
-    padding: 0;
-}

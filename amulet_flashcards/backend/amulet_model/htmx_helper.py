@@ -126,10 +126,10 @@ class HtmxHelper:
     def _format_teaser(cls, mid: ModelInputDict) -> Htmx:
         pt = cls.card_name("Primeval Titan")
         if mid["opener"]["on_the_play"]:
-            turn_order = cls._span("on the play", klass="teaser-turn-order")
+            turn_order = cls._span("on the play", klass="turn-order")
             turn_3_odds = "32%"
         else:
-            turn_order = cls._span("on the draw", klass="teaser-turn-order")
+            turn_order = cls._span("on the draw", klass="turn-order")
             turn_3_odds = "45%"
         avg_line = f"The average seven-card hand has a {turn_3_odds} chance to cast {pt} by turn three {turn_order}. "
         n_success = mid["stats"][2] + mid["stats"][3]
