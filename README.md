@@ -7,10 +7,7 @@ Think of it like flashcards: decide for yourself whether you would keep the hand
 The entire app is written in Python (using [Django][django]) for the sake of legibility and convenience.
 There's also a bit of SCSS and JS to make things look presentable.
 Content is mostly rendered on the server side and swapped onto the page via [htmx][htmx]. 
-
-Requirements are handled using [Docker][docker]. 
-This is a matter of personal preference. 
-You could just as easily use `pipenv` or `virtualenv`. 
+Requirements are handled by wrapping the app in a [Docker][docker] image (though `pipenv` or `virtualenv` would work too). 
 
 This repo is a work in progress. 
 
