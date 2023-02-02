@@ -71,44 +71,40 @@ body {
     flex-direction: row;
     justify-content: space-between;
     height: $head-height;
-}
-
-.head-left, .head-right {
-    display: inline-block;
-}
-
-.head-avatar {
-    line-height: 0;
-    display: inline-block;
-    img {
-        height: $head-height;
-        border-radius: 50%;
-        overflow: hidden;
+    .avatar-wrap, .title-wrap, .toggle-wrap {
+        display: inline-block;
+    }
+    .avatar-wrap {
+        line-height: 0;
+        img {
+            height: $head-height;
+            border-radius: 50%;
+            overflow: hidden;
         }
+    }
+    .title-wrap {
+        flex-grow: 1;
+        .title, .subtitle {
+            margin: 0;
+        }        
+    }
+    .toggle-wrap {
+        #hide-about {
+            display: none;
+        }
+        #show-about, #hide-about {
+            cursor: pointer;
+            height: $head-height;
+            width: $head-height;
+            border: 0.2rem solid $text-color;
+            border-radius: 50%;
+            overflow: hidden;
+            text-align: center;
+            font-size: 2rem;
+        }
+    }
 }
 
-.head-title {
-    display: inline-block;
-}
-
-#show-about, #hide-about {
-    cursor: pointer;
-    height: $head-height;
-    width: $head-height;
-    border: 0.2rem solid $text-color;
-    border-radius: 50%;
-    overflow: hidden;
-    text-align: center;
-    font-size: 2rem;
-}
-
-#hide-about {
-    display: none;
-}
-
-.title, .subtitle {
-    margin: 0;
-}
 
 #about {
     display: none;

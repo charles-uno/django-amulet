@@ -46,10 +46,9 @@ class HtmxHelper:
         buttons = [
             cls._format_refresh_button(),
             cls._format_play_button(mid),
-            cls._format_read_more(),
         ]
         wrapped_buttons = [
-            cls._div(cls._div(b, klass="button-wrap"), klass="third-width")
+            cls._div(cls._div(b, klass="button-wrap"), klass="half-width")
             for b in buttons
         ]
         return cls._div(Htmx.join(*wrapped_buttons), klass="buttons-wrap")
