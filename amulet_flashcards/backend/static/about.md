@@ -21,11 +21,22 @@ Consider this a starting point, not an authority.
 ## The Deck List
 
 The model uses the list below. 
-You may notice that [[Cavern of Souls]] and [[Vesuva]] have been swapped out due to complexity.
+Note that [[Cavern of Souls]] and [[Vesuva]] have been swapped out due to complexity.
 Don't worry too much about it. 
 The numbers and play patterns are still pretty much the same.
 
 $DECKLIST
+
+
+
+
+
+no blue so all the bounce lands are the same
+
+
+[[Radiant Fountain]], 
+[[Slayers' Stronghold]] and [[Sunhome, Fortress of the Legion|Sunhome]] are included to make things look nice.
+As far as the computer is concerned, they behave just 
 
 
 ## Implementation

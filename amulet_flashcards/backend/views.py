@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse
 import markdown
 
 from .amulet_model import GameManager, HtmxHelper
+from .amulet_model.card import Card
 
 
 def e2e(request: HttpRequest) -> HttpResponse:
@@ -39,12 +40,22 @@ def about(request: HttpRequest) -> HttpResponse:
     html_content = markdown.markdown(content)
     html_content = _handle_autocard_macros(html_content)
 
-    decklist = '<ul class="deck-list">'
+    lands, nonlands = [], []
     for n, card_name in load_deck_list_counts():
-        decklist += (
-            f'<li class="deck-list-line">{n} {HtmxHelper.card_name(card_name)}</li>'
-        )
-    decklist += "</ul>"
+        if Card(card_name).is_land:
+            lands.append([card_name, n])
+        else:
+            nonlands.append([card_name, n])
+
+    decklist = '<div class="deck-list">'
+    for section_data in [nonlands, lands]:
+        decklist += '<ul class="deck-section">'
+        for card_name, n in sorted(section_data):
+            decklist += (
+                f'<li class="deck-line">{n} {HtmxHelper.card_name(card_name)}</li>'
+            )
+        decklist += "</ul>"
+    decklist += "</div>"
 
     html_content = html_content.replace("$DECKLIST", decklist)
 

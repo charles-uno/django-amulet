@@ -133,10 +133,18 @@ h1, h2, h3 {
 #about {
     display: none;
     .deck-list {
-        width: 60%;
-        margin: auto auto;
-        list-style-type: none;
-        padding: 0;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        .deck-section {
+            .deck-line {
+                white-space: nowrap;
+                list-style-type: none;
+                padding: 0;
+            }
+        }
     }
 }
 
