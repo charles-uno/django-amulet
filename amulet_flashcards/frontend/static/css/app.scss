@@ -68,6 +68,8 @@ body {
 .head {
     display: flex;
     align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
     height: $head-height;
 }
 
@@ -75,14 +77,33 @@ body {
     display: inline-block;
 }
 
-.head-left {
+.head-avatar {
     line-height: 0;
+    display: inline-block;
+    img {
+        height: $head-height;
+        border-radius: 50%;
+        overflow: hidden;
+        }
 }
 
-.author-avatar {
+.head-title {
+    display: inline-block;
+}
+
+#show-about, #hide-about {
+    cursor: pointer;
     height: $head-height;
+    width: $head-height;
+    border: 0.2rem solid $text-color;
     border-radius: 50%;
     overflow: hidden;
+    text-align: center;
+    font-size: 2rem;
+}
+
+#hide-about {
+    display: none;
 }
 
 .title, .subtitle {
@@ -190,6 +211,10 @@ img.card:not(:first-child) {
     z-index: 998;
     background-color: rgba(0, 0, 0, 0.8);
     display: none;
+
+
+
+
     text-align: center;
 }
 
@@ -200,10 +225,6 @@ img.card:not(:first-child) {
     max-width: 50%;
     border-radius: 5%;
     overflow: hidden;
-    position: relative;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
 }
 
 .deck-list {
@@ -215,3 +236,9 @@ img.card:not(:first-child) {
     padding: 0;
 }
 
+.center {
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}

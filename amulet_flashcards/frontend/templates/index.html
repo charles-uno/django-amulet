@@ -23,20 +23,30 @@
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
   <div id="autocard-backdrop" onclick="hide_autocard()">
-    <img id="autocard">
+    <img id="autocard" class="center">
   </div>
 
   <div id="main-wrap">
+
     <div class="head">
+
       <div class="head-left">
-        <img class="author-avatar" src="/static/images/charles-hair.png">
-      </div>
-      <div class="head-right">
-        <h1 class="title">Amulet Flashcards</h1>
-        <div class="subtitle">
-          by <a class="author-name" href="https://charles.uno">Charles Fyfe</a>
+        <div class="head-avatar">
+          <img class="author-avatar" src="/static/images/charles-hair.png">
+        </div>
+        <div class="head-title">
+          <h1 class="title">Amulet Flashcards</h1>
+          <div class="subtitle">
+            by <a class="author-name" href="https://charles.uno">Charles Fyfe</a>
+          </div>
         </div>
       </div>
+
+      <div class="head-right">
+        <div id="show-about" onclick="show_about()"><span class="about-toggle center">?</span></div>
+        <div id="hide-about" onclick="hide_about()"><span class="about-toggle center">X</span></div>
+      </div>
+
     </div>
 
     <div id="main" hx-get="/api/opener" hx-trigger="load" hx-swap="innerHTML">
