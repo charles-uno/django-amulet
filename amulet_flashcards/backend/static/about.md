@@ -13,8 +13,23 @@ Instead of worrying about strategy and synergy, the computer splits the game int
 The first chooses land, the second chooses nonland, and they proceed independently from there.
 If either copy ends up casting turn-three [[Primeval Titan]] down the line, it's pretty safe to say that a human player could have done so as well.
 
-That said, please don't expect the computer to teach you good sequencing!
-If it's possible to cast [[Primeval Titan]] (or [[Cultivator Colossus]]) on turn three, this model is guaranteed to find a way to do so.
+Exhaustive search is straightforward and flexible, but also computationally demanding.
+Several approximations are made in the interest of performance:
+
+- [[Cavern of Souls]] and [[Vesuva]] are swapped out for other lands.
+- Only green mana is tracked, so the model never transmutes [[Tolaria West]]. 
+- [[Cultivator Colossus]] triggers are not handled. If we cast it at all, that counts as a win.
+
+These approximations have a minimal impact on the numbers.
+
+
+
+If it's possible to cast [[Primeval Titan]] (or [[Cultivator Colossus]]) by turn three, this model is guaranteed to find a way to do so.
+That said, please don't expect it to teach you good sequencing!
+There are often a few different ways to get there, and there's no guarantee that the computer will pick the best one.
+
+
+
 But there are often several different ways to get there.
 There's no guarantee the computer will pick the best one.
 Several corrections are included to suppress non-human play patterns, but from time to time it'll still choose a "solution" that's needlessly bizarre or reckless.
@@ -22,15 +37,23 @@ Consider it a starting point, not an authority.
 
 ## The Deck List
 
-The model uses a simplified decklist for the sake of performance (and convenience).
+The model uses the list below. 
+Notably, 
+
+
+Don't worry if it's a bit different from yours. 
 
 
 
-Lands that behave the same in the early game are grouped together; 
+Numbers look pretty much the same if (for example) you swap out an [[Explore]] for an extra [[Azusa, Lost but Seeking|Azusa]].
 
 
-Oddball singletons like [[Cavern of Souls]] and [[Vesuva]] are excluded.
-And lands that behave the same prior to casting [[Primeval Titan]] are grouped together
+The model uses a simplified decklist for the sake of performance (and convenience). 
+In particular:
+
+- [[Cavern of Souls]] and [[Vesuva]] are excluded. 
+- Only green mana is tracked, which means we don't ever transmute [[Tolaria West]].
+- [[Cultivator Colossus]] triggers are not handled. If we cast it at all, that counts as a win.
 
 
 Only green mana is tracked, so there's no transmuting with [[Tolaria West]].
@@ -40,7 +63,7 @@ These approximations can make opening hands look a bit odd, but the resulting nu
 
 
 Below is the list used by this app. Don't worry too much about a difference here or there. 
-Considering similar cards together helps the model run faster. Numbers look pretty much the same if (for example) we swap out an [[Explore]] for an extra [[Azusa, Lost but Seeking|Azusa]].
+Numbers look pretty much the same if (for example) we swap out an [[Explore]] for an extra [[Azusa, Lost but Seeking|Azusa]].
 
 <table class="deck-list">
 <tr><td>4</td><td>[[Amulet of Vigor]]</td></tr>
