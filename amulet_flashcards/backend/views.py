@@ -33,10 +33,6 @@ def about(request: HttpRequest) -> HttpResponse:
     with open(f"{_BACKEND_DIR}/static/about.md") as handle:
         content = handle.read()
 
-    read_less = (
-        "<p class='about-link'><a onclick='hide_about()'>back to the cards</a></p>"
-    )
-
     html_content = markdown.markdown(content)
     html_content = _handle_autocard_macros(html_content)
 
@@ -59,7 +55,7 @@ def about(request: HttpRequest) -> HttpResponse:
 
     html_content = html_content.replace("$DECKLIST", decklist)
 
-    return HttpResponse(read_less + html_content + read_less)
+    return HttpResponse(html_content)
 
 
 def _handle_autocard_macros(text):

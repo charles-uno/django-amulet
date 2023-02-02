@@ -27,7 +27,7 @@ function hide_autocard() {
 function show_about() {
     document.getElementById("main").style.display = "none";
     document.getElementById("about").style.display = "block";
-    document.getElementById("hide-about").style.display = "block";
+    document.getElementById("hide-about").style.display = "flex";
     document.getElementById("show-about").style.display = "none";
 }
 
@@ -35,7 +35,7 @@ function hide_about() {
     document.getElementById("main").style.display = "block";
     document.getElementById("about").style.display = "none";
     document.getElementById("hide-about").style.display = "none";
-    document.getElementById("show-about").style.display = "block";
+    document.getElementById("show-about").style.display = "flex";
 }
 
 /* If the user is mashing buttons, close everything */

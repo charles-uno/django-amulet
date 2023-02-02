@@ -8,6 +8,7 @@ $accent-color: #295;
 $content-width: 45rem;
 $autocard-width: 30rem;
 $head-height: 4rem;
+$toggle-height: 2.5rem;
 
 $font-size-body: 1.0rem;
 $font-size-header: 1.2rem;
@@ -90,6 +91,7 @@ h1, h2, h3 {
 }
 
 .head {
+    position: relative;
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -113,18 +115,27 @@ h1, h2, h3 {
         }        
     }
     .toggle-wrap {
-        #hide-about {
-            display: none;
-        }
-        #show-about, #hide-about {
-            cursor: pointer;
-            height: $head-height;
-            width: $head-height;
-            border: 0.2rem solid $text-color;
+        height: $toggle-height;
+        width: $toggle-height;
+        border: 0.2rem solid $text-color;
+        border-radius: 50%;
+        overflow: hidden;
+
+        .toggle {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
             border-radius: 50%;
             overflow: hidden;
-            text-align: center;
+            cursor: pointer;
             font-size: 2rem;
+            .toggle-text {
+                margin: 0 auto;
+            }
+        }
+        #hide-about {
+            display: none;
         }
     }
 }
