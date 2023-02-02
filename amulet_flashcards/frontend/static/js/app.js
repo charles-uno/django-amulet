@@ -15,7 +15,7 @@ htmx.on('htmx:afterRequest', function(evt) {
 
 function show_autocard(card_image_url) {
     document.getElementById("autocard").src = card_image_url;
-    document.getElementById("autocard-backdrop").style.display = "block";
+    document.getElementById("autocard-backdrop").style.display = "flex";
 }
 
 function hide_autocard() {

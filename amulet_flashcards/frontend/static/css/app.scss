@@ -211,11 +211,8 @@ img.card:not(:first-child) {
     z-index: 998;
     background-color: rgba(0, 0, 0, 0.8);
     display: none;
-
-
-
-
-    text-align: center;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #autocard {
@@ -225,6 +222,7 @@ img.card:not(:first-child) {
     max-width: 50%;
     border-radius: 5%;
     overflow: hidden;
+    margin: 0 auto;
 }
 
 .deck-list {
@@ -234,11 +232,4 @@ img.card:not(:first-child) {
     border: 1px solid red;
     list-style-type: none;
     padding: 0;
-}
-
-.center {
-    position: relative;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
 }
