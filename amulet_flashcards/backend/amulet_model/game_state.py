@@ -267,7 +267,7 @@ class GameState(NamedTuple):
         )
         if _MANA_NOTE_STYLE == 2:
             if n_amulets == 1:
-                state = state.add_notes(f" tapped, trigger ", Card("Amulet of Vigor"))
+                state = state.add_notes(f", trigger ", Card("Amulet of Vigor"))
             elif n_amulets > 1:
                 state = state.add_notes(
                     f", trigger {n_amulets}x ", Card("Amulet of Vigor")
