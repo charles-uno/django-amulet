@@ -205,3 +205,13 @@ img.card:not(:first-child) {
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
 }
+
+.deck-list {
+    width: 60%;
+    margin: auto auto;
+    border-collapse: collapse;
+    border: 1px solid red;
+    list-style-type: none;
+    padding: 0;
+}
+

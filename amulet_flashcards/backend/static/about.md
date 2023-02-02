@@ -13,81 +13,20 @@ Instead of worrying about strategy and synergy, the computer splits the game int
 The first chooses land, the second chooses nonland, and they proceed independently from there.
 If either copy ends up casting turn-three [[Primeval Titan]] down the line, it's pretty safe to say that a human player could have done so as well.
 
-Exhaustive search is straightforward and flexible, but also computationally demanding.
-Several approximations are made in the interest of performance:
-
-- [[Cavern of Souls]] and [[Vesuva]] are swapped out for other lands.
-- Only green mana is tracked, so the model never transmutes [[Tolaria West]]. 
-- [[Cultivator Colossus]] triggers are not handled. If we cast it at all, that counts as a win.
-
-These approximations have a minimal impact on the numbers.
-
-
-
-If it's possible to cast [[Primeval Titan]] (or [[Cultivator Colossus]]) by turn three, this model is guaranteed to find a way to do so.
-That said, please don't expect it to teach you good sequencing!
-There are often a few different ways to get there, and there's no guarantee that the computer will pick the best one.
-
-
-
-But there are often several different ways to get there.
-There's no guarantee the computer will pick the best one.
-Several corrections are included to suppress non-human play patterns, but from time to time it'll still choose a "solution" that's needlessly bizarre or reckless.
-Consider it a starting point, not an authority.
+That said, please don't expect this model to teach you good sequencing!
+If it's possible to cast [[Primeval Titan]] (or [[Cultivator Colossus]]) by turn three, it's guaranteed to find a way to do so.
+But in a real game, you also need to worry about developing your mana, playing around interaction, and paying for your [[Summoner's Pact|Pact]] on turn four.
+Consider this a starting point, not an authority.
 
 ## The Deck List
 
 The model uses the list below. 
-Notably, 
+You may notice that [[Cavern of Souls]] and [[Vesuva]] have been swapped out due to complexity.
+Don't worry too much about it. 
+The numbers and play patterns are still pretty much the same.
 
+$DECKLIST
 
-Don't worry if it's a bit different from yours. 
-
-
-
-Numbers look pretty much the same if (for example) you swap out an [[Explore]] for an extra [[Azusa, Lost but Seeking|Azusa]].
-
-
-The model uses a simplified decklist for the sake of performance (and convenience). 
-In particular:
-
-- [[Cavern of Souls]] and [[Vesuva]] are excluded. 
-- Only green mana is tracked, which means we don't ever transmute [[Tolaria West]].
-- [[Cultivator Colossus]] triggers are not handled. If we cast it at all, that counts as a win.
-
-
-Only green mana is tracked, so there's no transmuting with [[Tolaria West]].
-There's no need to worry about the non-mana abilities on [[Slayers' Stronghold]] or [[Sunhome, Fortress of the Legion|Sunhome]], so those are represented by additional copies of [[Radiant Fountain]].
-Similarly, [[Bojuka Bog]] is used as a stand-in for any non-green land that enters the battlefield tapped, such as [[Valakut, the Molten Pinnacle|Valakut]].
-These approximations can make opening hands look a bit odd, but the resulting numbers turn out to be nearly identical.
-
-
-Below is the list used by this app. Don't worry too much about a difference here or there. 
-Numbers look pretty much the same if (for example) we swap out an [[Explore]] for an extra [[Azusa, Lost but Seeking|Azusa]].
-
-<table class="deck-list">
-<tr><td>4</td><td>[[Amulet of Vigor]]</td></tr>
-<tr><td>4</td><td>[[Arboreal Grazer]]</td></tr>
-<tr><td>1</td><td>[[Azusa, Lost but Seeking]]</td></tr>
-<tr><td>1</td><td>[[Cultivator Colossus]]</td></tr>
-<tr><td>4</td><td>[[Dryad of the Ilysian Grove]]</td></tr>
-<tr><td>4</td><td>[[Explore]]</td></tr>
-<tr><td>1</td><td>[[Expedition Map]]</td></tr>
-<tr><td>4</td><td>[[Primeval Titan]]</td></tr>
-<tr><td>4</td><td>[[Summoner's Pact]]</td></tr>
-<tr><td>6</td><td>[[Bojuka Bog]]/[[Tolaria West]]/etc</td></tr>
-<tr><td>1</td><td>[[Boros Garrison]]</td></tr>
-<tr><td>1</td><td>[[Crumbling Vestige]]</td></tr>
-<tr><td>9</td><td>[[Forest]]/[[Boseiju, Who Endures]]/etc</td></tr>
-<tr><td>5</td><td>[[Radiant Fountain]]/[[Slayers' Stronghold]]/etc</td></tr>
-<tr><td>9</td><td>[[Simic Growth Chamber]]/[[Selesnya Sanctuary]]/etc</td></tr>
-<tr><td>4</td><td>[[Urza's Saga]]</td></tr>
-</table>
-
-
-
-
-TODO: import decklist?
 
 ## Implementation
 

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import Generator, List, Tuple
 from django.http import HttpRequest, HttpResponse
 import markdown
 
@@ -39,6 +39,15 @@ def about(request: HttpRequest) -> HttpResponse:
     html_content = markdown.markdown(content)
     html_content = _handle_autocard_macros(html_content)
 
+    decklist = '<ul class="deck-list">'
+    for n, card_name in load_deck_list_counts():
+        decklist += (
+            f'<li class="deck-list-line">{n} {HtmxHelper.card_name(card_name)}</li>'
+        )
+    decklist += "</ul>"
+
+    html_content = html_content.replace("$DECKLIST", decklist)
+
     return HttpResponse(read_less + html_content + read_less)
 
 
@@ -59,10 +68,15 @@ def _handle_autocard_macro(text):
 
 def load_deck_list() -> List[str]:
     deck_list = []
+    for n, card_name in load_deck_list_counts():
+        deck_list += [card_name] * int(n)
+    return deck_list
+
+
+def load_deck_list_counts() -> Generator[Tuple[str, str], None, None]:
+    ret = []
     with open(f"{_BACKEND_DIR}/static/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue
-            n, card_name = line.rstrip().split(None, 1)
-            deck_list += [card_name] * int(n)
-    return deck_list
+            yield tuple(line.rstrip().split(None, 1))
