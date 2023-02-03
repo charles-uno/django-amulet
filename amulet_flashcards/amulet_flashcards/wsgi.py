@@ -15,7 +15,7 @@ from django.contrib.staticfiles.handlers import StaticFilesHandler
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "amulet_flashcards.settings")
 
-
+# TODO: this is a hack until we get nginx running
 if settings.DEBUG:
     application = StaticFilesHandler(get_wsgi_application())
 else:
