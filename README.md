@@ -54,6 +54,7 @@ amulet_flashcards/backend/amulet_model/tests
 
 ## Ongoing Work
 
+- Add WSGI and nginx
 - Implement game actions for Expedition Map
 - Deploy to AWS via GitHub Actions
 - Handle HTTPS

@@ -7,6 +7,11 @@ build:
 	docker build -f Dockerfile -t $(TAG) .
 
 
+# Interactive session in the image to poke around
+debug: build
+	docker run -it $(TAG) /bin/sh
+
+
 # Launch the Django app
 run:  build
 	docker run -p $(HOST_PORT):8000 $(TAG)

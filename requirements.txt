@@ -1,6 +1,7 @@
 Django==4.1.5
 django-cors-headers==3.13.0
 django-sass-compiler==1.1.0
+gunicorn==20.1.0
 Markdown==3.4.1
 pytest==7.2.1
 PyYAML==6.0
