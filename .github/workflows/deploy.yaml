@@ -37,7 +37,7 @@ jobs:
       - name: add django secret key
         uses: fifsky/ssh-action@master
         with:
-          command: cat ${{ secrets.DJANGO_KEY }} > ~/workdir/amulet_flashcards/assets/django-secret-key.txt
+          command: cat "${{ secrets.DJANGO_KEY }}" > ~/workdir/amulet_flashcards/assets/django-secret-key.txt
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
