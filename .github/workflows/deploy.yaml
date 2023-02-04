@@ -3,11 +3,11 @@ name: deploy
 on: [push, pull_request]
 
 jobs:
-  - name: sanity check
-    run: echo "logging in as $AWS_USERNAME@$AWS_ADDRESS"
   copy_files:
     runs-on: ubuntu-latest
     steps:
+    - name: sanity check
+      run: echo "logging in as $AWS_USERNAME@$AWS_ADDRESS"
     - name: repo checkout
       uses: actions/checkout@v2
     - name: clean up previous workdir
