@@ -23,7 +23,9 @@ jobs:
       - name: clean up previous workdir
         uses: fifsky/ssh-action@master
         with:
-          command: 'rm -rf ~/workdir ||: ; mkdir -p ~//workdir'
+          command: |
+            rm -rf ~/workdir
+            mkdir -p ~//workdir
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
@@ -40,8 +42,8 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            mkdir -p ~/workdir/amulet_flashcards/assets/ && \
-            cat "${{ secrets.DJANGO_KEY }}" > ~/workdir/amulet_flashcards/assets/django-secret-key.txt
+            mkdir -p ~/workdir/amulet_flashcards/assets/ 
+            echo "${{ secrets.DJANGO_KEY }}" > ~/workdir/amulet_flashcards/assets/django-secret-key.txt
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
