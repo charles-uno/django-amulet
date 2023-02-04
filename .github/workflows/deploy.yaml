@@ -5,11 +5,11 @@ on: [push, pull_request]
 # NOTE: the key is stored as a secret on GitHub. the address is not sensitive
 env:
   AWS_USERNAME: ec2-user
-  DAY_OF_WEEK: Monday
+  AWS_ADDRESS: "3.99.187.151"
 
 jobs:
-  greeting_job:
+  sanity_check:
     runs-on: ubuntu-latest
     steps:
       - name: "hello world"
-        run: echo "Today is $DAY_OF_WEEK! and you are $AWS_USERNAME"
+        run: echo "we are going to log in as $AWS_USERNAME@$AWS_ADDRESS"
