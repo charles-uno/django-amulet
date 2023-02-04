@@ -1,5 +1,9 @@
 name: deploy
 
+# NOTE: the key is stored as a secret on GitHub. the address is not sensitive
+env:
+  AWS_USERNAME: ec2-user
+
 on: [push, pull_request]
 
 jobs:
@@ -7,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: sanity check
-      run: echo "logging in as ${{ env.AWS_USERNAME }}@${{ env.AWS_ADDRESS }}"
+      run: echo "logging in as $AWS_USERNAME at ${{ env.AWS_ADDRESS }}"
     - name: repo checkout
       uses: actions/checkout@v2
     - name: clean up previous workdir
