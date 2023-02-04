@@ -1,25 +1,17 @@
 name: deploy
 
+on: [push, pull_request]
+
 # NOTE: the key is stored as a secret on GitHub. the address is not sensitive
 env:
   AWS_USERNAME: ec2-user
 
-on: [push, pull_request]
+env:
+  DAY_OF_WEEK: Monday
 
 jobs:
-  copy_files:
+  greeting_job:
     runs-on: ubuntu-latest
     steps:
-    - name: sanity check
-      run: echo "logging in as $AWS_USERNAME at ${{ env.AWS_ADDRESS }}"
-    - name: repo checkout
-      uses: actions/checkout@v2
-    - name: clean up previous workdir
-      uses: fifsky/ssh-action@master
-      with:
-        command: |
-          rm -rf ~/workdir
-          mkdir -p ~/workdir
-        host: ${{ env.AWS_ADDRESS }}
-        user: ${{ env.AWS_USERNAME }}
-        key: ${{ secrets.AWS_KEY }}
+      - name: "hello world"
+        run: echo "Today is $DAY_OF_WEEK! and you are $AWS_USERNAME"
