@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: sanity check
-      run: echo "logging in as $AWS_USERNAME@$AWS_ADDRESS"
+      run: echo "logging in as ${{ env.AWS_USERNAME }}@${{ env.AWS_ADDRESS }}"
     - name: repo checkout
       uses: actions/checkout@v2
     - name: clean up previous workdir
@@ -16,6 +16,6 @@ jobs:
         command: |
           rm -rf ~/workdir
           mkdir -p ~/workdir
-        host: $AWS_ADDRESS
-        user: $AWS_USERNAME
-        key: ${{secrets.AWS_KEY}}
+        host: ${{ env.AWS_ADDRESS }}
+        user: ${{ env.AWS_USERNAME }}
+        key: ${{ secrets.AWS_KEY }}
