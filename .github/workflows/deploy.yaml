@@ -28,5 +28,7 @@ jobs:
           host: ${{secrets.AWS_ADDRESS}}
           username: $AWS_USERNAME
           key: ${{secrets.AWS_KEY}}
-          source: "amulet_flashcards,requirements.txt,Dockerfile,Makefile"
+          source: "requirements.txt"
           target: "~/workdir/"
+          port: 22
+
