@@ -13,14 +13,14 @@ jobs:
     steps:
       - name: "hello world"
         run: echo "we are going to log in as $AWS_USERNAME@$AWS_ADDRESS"
-    - name: repo checkout
-      uses: actions/checkout@v2
-    - name: clean up previous workdir
-      uses: fifsky/ssh-action@master
-      with:
-        command: |
-          rm -rf ~/workdir ||:
-          mkdir -p ~//workdir
-        host: $AWS_ADDRESS
-        user: $AWS_USERNAME
-        key: ${{secrets.AWS_KEY}}
+      - name: repo checkout
+        uses: actions/checkout@v2
+      - name: clean up previous workdir
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            rm -rf ~/workdir ||:
+            mkdir -p ~//workdir
+          host: $AWS_ADDRESS
+          user: $AWS_USERNAME
+          key: ${{secrets.AWS_KEY}}
