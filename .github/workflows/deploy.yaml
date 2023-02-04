@@ -23,6 +23,15 @@ jobs:
           user: $AWS_USERNAME
           key: ${{secrets.AWS_KEY}}
 
+      - name: ssh sanity check
+        uses: fifsky/ssh-action@master
+        with:
+          command: echo hello
+          host: ${{secrets.AWS_ADDRESS}}
+          user: $AWS_USERNAME
+          key: ${{secrets.AWS_KEY}}
+
+
       # NOTE: https://github.com/appleboy/ssh-action/issues/80
       - name: copy files over to aws
         uses: appleboy/scp-action@master
