@@ -8,11 +8,9 @@ env:
   AWS_ADDRESS: "3.99.187.151"
 
 jobs:
-  sanity_check:
+  update_files:
     runs-on: ubuntu-latest
     steps:
-      - name: "hello world"
-        run: echo "we are going to log in as $AWS_USERNAME@$AWS_ADDRESS"
       - name: repo checkout
         uses: actions/checkout@v2
       - name: clean up previous workdir
@@ -24,3 +22,11 @@ jobs:
           host: $AWS_ADDRESS
           user: $AWS_USERNAME
           key: ${{secrets.AWS_KEY}}
+      - name: copy files over to aws
+        uses: appleboy/scp-action@master
+        with:
+          host: $AWS_ADDRESS
+          username: $AWS_USERNAME
+          key: ${{secrets.AWS_KEY}}
+          source: "amulet_flashcards,requirements.txt,Dockerfile,Makefile"
+          target: "~/workdir/"
