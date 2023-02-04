@@ -1,0 +1,19 @@
+name: deploy
+
+on: [push, pull_request]
+
+jobs:
+  copy_files:
+    runs-on: ubuntu-latest
+    steps:
+    - name: repo checkout
+      uses: actions/checkout@v2
+    - name: clean up previous workdir
+      uses: fifsky/ssh-action@master
+      with:
+        command: |
+          rm -rf ~/workdir
+          mkdir -p ~/workdir
+        host: $AWS_ADDRESS
+        user: $AWS_USER
+        key: ${{secrets.AWS_KEY}}
