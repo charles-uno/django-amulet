@@ -37,7 +37,7 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{secrets.AWS_ADDRESS}}
-          username: ec2-user
+          username: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
           source: "requirements.txt"
           target: "~/workdir/"
