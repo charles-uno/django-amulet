@@ -3,6 +3,8 @@ name: deploy
 on: [push, pull_request]
 
 jobs:
+  - name: sanity check
+    run: echo "logging in as $AWS_USERNAME@$AWS_ADDRESS"
   copy_files:
     runs-on: ubuntu-latest
     steps:
@@ -15,5 +17,5 @@ jobs:
           rm -rf ~/workdir
           mkdir -p ~/workdir
         host: $AWS_ADDRESS
-        user: $AWS_USER
+        user: $AWS_USERNAME
         key: ${{secrets.AWS_KEY}}
