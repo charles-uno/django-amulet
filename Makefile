@@ -1,5 +1,6 @@
 TAG = django-amulet-image
-HOST_PORT = 8000
+# TODO: put nginx on port 80
+HOST_PORT = 8001
 
 
 # Build the Docker image that all subsequent recipes use. Only takes a minute

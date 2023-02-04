@@ -20,7 +20,8 @@ jobs:
       - name: confirm docker install
         uses: fifsky/ssh-action@master
         with:
-          command: docker --version
+          command: |
+            docker --version
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
@@ -33,5 +34,13 @@ jobs:
           key: ${{secrets.AWS_KEY}}
           source: "amulet_flashcards,requirements.txt,Makefile,Dockerfile"
           target: "~/workdir/"
+      - name: add django secret key
+        uses: fifsky/ssh-action@master
+        with:
+          command: cat ${{ secrets.DJANGO_KEY }} > ~/workdir/amulet_flashcards/assets/django-secret-key.txt
+          host: ${{secrets.AWS_ADDRESS}}
+          user: ${{secrets.AWS_USERNAME}}
+          key: ${{secrets.AWS_KEY}}
+
 
 
