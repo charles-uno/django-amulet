@@ -26,11 +26,10 @@ jobs:
       # NOTE: https://github.com/appleboy/ssh-action/issues/80
       - name: copy files over to aws
         uses: appleboy/scp-action@master
-        env:
-          KEY: ${{ secrets.AWS_KEY }}
-          HOST: ${{ secrets.AWS_ADDRESS }}
-          USERNAME: $AWS_USERNAME
-      with:
+        with:
+          host: ${{secrets.AWS_ADDRESS}}
+          username: ec2-user
+          key: ${{secrets.AWS_KEY}}
           source: "requirements.txt"
           target: "~/workdir/"
 
