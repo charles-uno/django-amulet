@@ -6,11 +6,18 @@ jobs:
   system_check:
     runs-on: ubuntu-latest
     steps:
-      - name: confirm docker install
+      - name: confirm docker install and permission
         uses: fifsky/ssh-action@master
         with:
           command: |
-            docker --version
+            docker --version && groups | grep docker
+          host: ${{secrets.AWS_ADDRESS}}
+          user: ${{secrets.AWS_USERNAME}}
+          key: ${{secrets.AWS_KEY}}
+      - name: confirm make install
+        uses: fifsky/ssh-action@master
+        with:
+          command: make --help
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
