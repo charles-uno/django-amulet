@@ -23,7 +23,7 @@ jobs:
       - name: clean up previous workdir
         uses: fifsky/ssh-action@master
         with:
-          command: rm -rf ~/workdir ||: ; mkdir -p ~//workdir
+          command: 'rm -rf ~/workdir ||: ; mkdir -p ~//workdir'
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
