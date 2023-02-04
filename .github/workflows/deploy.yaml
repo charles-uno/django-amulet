@@ -5,8 +5,6 @@ on: [push, pull_request]
 # NOTE: the key is stored as a secret on GitHub. the address is not sensitive
 env:
   AWS_USERNAME: ec2-user
-
-env:
   DAY_OF_WEEK: Monday
 
 jobs:
