@@ -28,7 +28,7 @@ except FileNotFoundError:
     print(f"please add {secret_key_path}")
     sys.exit(-1)
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# TODO: get nginx up and running so we can toggle this
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
