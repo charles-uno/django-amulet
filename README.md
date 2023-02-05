@@ -5,43 +5,19 @@ This app presents users with sample opening hands, then shuffles the deck and so
 Think of it like flashcards: decide for yourself whether you would keep the hand, then play it out a few times to see what the numbers say!
 
 The app is written in Python using [Django][django] and [Gunicorn][gunicorn]. 
-There's also a bit of SCSS and JS to make things look presentable.
-Content is mostly rendered on the server side and swapped onto the page via [htmx][htmx]. 
+Content is rendered on the server side and swapped onto the page via [htmx][htmx]. 
+There's also a bit of CSS and JS to make things look presentable.
 
-Deployment uses [Docker][docker] and [GitHub Actions][github_actions]. 
+Deployment is handled by [GitHub Actions][github_actions].
+On commit, content is built into a [Docker][docker] container, copied over to [AWS][aws], and launched along with an Nginx proxy.
 
-NOTE: This repo is a work in progress
+NOTE: This repo is a work in progress!
 
 ## Running in Docker (Recommendeed)
 
 Build the app into a Docker container and launch on `localhost:8001`:
 ```
 ./scripts/launch-app.sh
-```
-
-## Running Locally
-
-If you have Python 3.10 installed locally, you can run this code locally.
-
-Install requirements:
-```
-pip3 install -r app/requirements.txt
-```
-
-To launch the app on `localhost:8000` use:
-```
-python3 app/manage.py sass-compiler
-python3 app/manage.py runserver
-```
-
-To run the model on its own as a sanity check, without launching a web server:
-```
-python3 -m app.backend.amulet_model
-```
-
-To run the unit tests:
-```
-pytest app/backend/amulet_model/tests
 ```
 
 ## TODO
@@ -54,11 +30,12 @@ pytest app/backend/amulet_model/tests
 - Add a license (respecting WOTC fan content policy)
 - Write up a blog post
 
-[docker]: https://www.docker.com/
-[gunicorn]: https://gunicorn.org/
-[github_actions]: https://docs.github.com/en/actions
-[mtggoldfish]: https://www.mtggoldfish.com/archetype/amulet-titan
-[django]: https://www.djangoproject.com/
-[github]: https://github.com/charles-uno/django-amulet
+[aws]: https://aws.amazon.com/lightsail/
 [blog]: https://charles.uno/amulet-simulation
+[django]: https://www.djangoproject.com/
+[docker]: https://www.docker.com/
+[github_actions]: https://docs.github.com/en/actions
+[github_source]: https://github.com/charles-uno/django-amulet
+[gunicorn]: https://gunicorn.org/
 [htmx]: https://htpx.org
+[mtggoldfish]: https://www.mtggoldfish.com/archetype/amulet-titan
