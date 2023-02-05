@@ -25,8 +25,8 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            rm -rf ~/workdir
-            mkdir -p ~//workdir
+            rm -rf ~/${{ github.event.repository.name }}
+            mkdir -p ~/${{ github.event.repository.name }}
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
@@ -38,13 +38,13 @@ jobs:
           username: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
           source: "app,Dockerfile,scripts"
-          target: "~/workdir/"
+          target: "~/${{ github.event.repository.name }}/"
       - name: add django secret key
         uses: fifsky/ssh-action@master
         with:
           command: |
-            mkdir -p ~/workdir/amulet_flashcards/assets/ 
-            echo "${{ secrets.DJANGO_KEY }}" > ~/workdir/amulet_flashcards/assets/django-secret-key.txt
+            mkdir -p ~/${{ github.event.repository.name }}/app/assets/ 
+            echo "${{ secrets.DJANGO_KEY }}" > ~/${{ github.event.repository.name }}/app/assets/django-secret-key.txt
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
@@ -56,7 +56,7 @@ jobs:
       - name: launch app
         uses: fifsky/ssh-action@master
         with:
-          command: ~/workdir/scripts/run-app.sh -b -f
+          command: ~/${{ github.event.repository.name }}/scripts/run-app.sh -b -f
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
