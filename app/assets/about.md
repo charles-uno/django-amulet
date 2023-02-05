@@ -33,25 +33,24 @@ The numbers and play patterns are still pretty much the same.
 
 $DECKLIST
 
-TODO: [[Radiant Fountain]], [[Slayers' Stronghold]] and [[Sunhome, Fortress of the Legion|Sunhome]] are all just [[Wastes]] as far as the computer is concerned. Also no difference between [[Bojuka Bog]], [[Tolaria West]], and [[Valakut, the Molten Pinnacle|Valakut]].
-
 
 ## Implementation
 
-This app is written in Python using the [Django][django] framework.
-There's also a bit of HTML, SCSS, and JS to make it look presentable.
+This app is written in Python using [Django][django] and [Gunicorn][gunicorn].
 Content is rendered on the server side then swapped in using [htmx][htmx]. 
+There's also a bit of SCSS and JS to make it look presentable.
+
+Code is deployed to [AWS][aws] via [GitHub Actions][github_actions], where it runs in [Docker][docker] behind an [Nginx][nginx] proxy.
+
 You can peruse the source code yourself [on GitHub][github]. 
 
-Dependencies are managed using Docker.
-This is a matter of personal preference.
-It also works fine with `pipenv`, `virtualenv`, or just installing from `requirements.txt` and running locally.
-
-
-TODO: AWS, GitHub actions
-
-[mtggoldfish]: https://www.mtggoldfish.com/archetype/amulet-titan
-[django]: https://www.djangoproject.com/
-[github]: https://github.com/charles-uno/django-amulet
+[aws]: https://aws.amazon.com/lightsail/
 [blog]: https://charles.uno/amulet-simulation
-[htmx]: https://htmx.org
+[django]: https://www.djangoproject.com/
+[docker]: https://www.docker.com/
+[github_actions]: https://docs.github.com/en/actions
+[github_source]: https://github.com/charles-uno/django-amulet
+[gunicorn]: https://gunicorn.org/
+[htmx]: https://htpx.org
+[mtggoldfish]: https://www.mtggoldfish.com/archetype/amulet-titan
+[nginx]: https://www.nginx.com/
