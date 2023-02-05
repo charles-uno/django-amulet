@@ -54,4 +54,4 @@ TODO: AWS, GitHub actions
 [django]: https://www.djangoproject.com/
 [github]: https://github.com/charles-uno/django-amulet
 [blog]: https://charles.uno/amulet-simulation
-[htmx]: https://htpx.org
+[htmx]: https://htmx.org
