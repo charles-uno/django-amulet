@@ -31,7 +31,7 @@ except FileNotFoundError:
 # TODO: get nginx up and running so we can toggle this
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "3.96.204.46", "172.17.0.1"]
 
 
 # Application definition
