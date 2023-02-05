@@ -26,11 +26,11 @@ def play_it_out(request: HttpRequest) -> HttpResponse:
     return HttpResponse(HtmxHelper.format_output(model_output))
 
 
-_BACKEND_DIR = Path(__file__).resolve().parent
+_APP_DIR = Path(__file__).resolve().parent.parent
 
 
 def about(request: HttpRequest) -> HttpResponse:
-    with open(f"{_BACKEND_DIR}/static/about.md") as handle:
+    with open(f"{_APP_DIR}/assets/about.md") as handle:
         content = handle.read()
 
     html_content = markdown.markdown(content)
@@ -82,7 +82,7 @@ def load_deck_list() -> List[str]:
 
 def load_deck_list_counts() -> Generator[Tuple[str, str], None, None]:
     ret = []
-    with open(f"{_BACKEND_DIR}/static/deck-list.txt") as handle:
+    with open(f"{_APP_DIR}/assets/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue
