@@ -16,7 +16,7 @@ NOTE: This repo is a work in progress
 
 To build and launch the app on `localhost:8001`, use:
 ```
-./scripts/run-app.sh
+./scripts/launch-app.sh
 ```
 
 Note that unit tests run automatically at build time.

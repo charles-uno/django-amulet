@@ -1,4 +1,5 @@
 FROM python:3.10-slim
+# Note: call docker build from the root of the repo (one level up)
 COPY app /app
 WORKDIR /app
 RUN pip3 install -r requirements.txt

@@ -28,7 +28,7 @@ if [[ "$CONFLICTING_CONTAINER" != "" ]]; then
     fi
 fi
 
-docker build -f "$ROOT_DIR/Dockerfile" -t "$IMAGE_TAG" "$ROOT_DIR"
+docker build -f "$ROOT_DIR/app/Dockerfile" -t "$IMAGE_TAG" "$ROOT_DIR"
 
 if [[ "$RUN_IN_BACKGROUND" == "true" ]]; then
     docker run -d --name "$CONTAINER_NAME" -p "$HOST_PORT:$CONTAINER_PORT" "$IMAGE_TAG"
