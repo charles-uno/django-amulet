@@ -14,12 +14,10 @@ NOTE: This repo is a work in progress
 
 ## Running in Docker (Recommendeed)
 
-To build and launch the app on `localhost:8001`, use:
+Build the app into a Docker container and launch on `localhost:8001`:
 ```
 ./scripts/launch-app.sh
 ```
-
-Note that unit tests run automatically at build time.
 
 ## Running Locally
 
@@ -48,10 +46,10 @@ pytest app/backend/amulet_model/tests
 
 ## Ongoing Work
 
-- Add nginx
 - Implement game actions for Expedition Map
 - Handle HTTPS
 - Add a license (respecting WOTC fan content policy)
+- Put this on a real URL
 - Write up a blog post
 
 [docker]: https://www.docker.com/
