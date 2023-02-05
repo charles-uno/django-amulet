@@ -49,8 +49,7 @@ jobs:
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
 
-
-  update_files:
+  launch_app:
     runs-on: ubuntu-latest
     needs: update_files
     steps:
