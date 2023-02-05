@@ -7,7 +7,6 @@ ROOT_DIR=$(realpath $0 | xargs dirname | xargs dirname)
 
 RUN_IN_BACKGROUND=false
 OVERRIDE_CONFLICTS=false
-
 for ARG in $@; do
     if [[ "$ARG" == "-b" || "$ARG" == "--background" ]]; then
         RUN_IN_BACKGROUND=true
@@ -17,7 +16,7 @@ for ARG in $@; do
     fi
 done
 
-CONFLICTING_CONTAINER=$(docker ps | grep "0.0.0.0:$HOST_PORT" | awk '{print $1}')
+CONFLICTING_CONTAINER=$(docker ps | grep "0.0.0.0:$HOST_PORT->" | awk '{print $1}')
 if [[ "$CONFLICTING_CONTAINER" != "" ]]; then
     if [[ "$OVERRIDE_CONFLICTS" == "true" ]]; then
         echo "killing conflicting container $CONFLICTING_CONTAINER"
