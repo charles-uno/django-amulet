@@ -3,7 +3,7 @@ from typing import List
 
 from .note import Note, NoteType
 from .game_manager import GameManager
-from .game_state import GameSummaryDict
+from .game_state import GameSummaryDict, OpenerDict
 
 
 _BACKEND_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +13,8 @@ def main():
     deck_list = load_deck_list()
     model_input = GameManager.get_model_input_from_deck_list(deck_list)
     model_output = GameManager.run(model_input)
-    print_pretty(model_output["summary"])
+    print_pretty_opener(model_input["opener"])
+    print_pretty_summary(model_output["summary"])
 
 
 def load_deck_list() -> List[str]:
@@ -27,8 +28,15 @@ def load_deck_list() -> List[str]:
     return deck_list
 
 
-def print_pretty(summary: GameSummaryDict) -> None:
-    print("".join(note_to_str(n) for n in summary["notes"]))
+def print_pretty_opener(opener: OpenerDict) -> None:
+    print("On the play" if opener["on_the_play"] else "On the draw")
+    cards = [pretty_card(c) for c in opener["hand"]]
+    print("Opening hand:", *cards)
+
+
+def print_pretty_summary(summary: GameSummaryDict) -> None:
+    pretty_summary = "".join(note_to_str(n) for n in summary["notes"])
+    print(pretty_summary.lstrip())
 
 
 def note_to_str(n: Note) -> str:
@@ -39,13 +47,17 @@ def note_to_str(n: Note) -> str:
     elif n.type == NoteType.TURN_BREAK:
         return f"\n---- " + n.text
     elif n.type == NoteType.CARD:
-        return highlight(squish(n.text), "green")
+        return pretty_card(n.text)
     elif n.type == NoteType.MANA:
         return highlight(n.text, "magenta")
     elif n.type == NoteType.ALERT:
         return highlight(n.text, "red")
     else:
         raise ValueError(f"unexpected note type: {n.type}")
+
+
+def pretty_card(card_name: str) -> str:
+    return highlight(squish(card_name), "green")
 
 
 def squish(text: str) -> str:
