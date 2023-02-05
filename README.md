@@ -44,13 +44,14 @@ To run the unit tests:
 pytest app/backend/amulet_model/tests
 ```
 
-## Ongoing Work
+## TODO
 
-- Turn off debug mode (and get nginx to serve static content)
+- Get nginx to serve static content so we can turn off Django debug mode
+- Get the deck list to show up nicely on narrow screens
 - Implement game actions for Expedition Map
 - Handle HTTPS
+- Handle the deck list on the front end? Currently using a sketchy `$DECKLIST` substitution instead of the template syntax
 - Add a license (respecting WOTC fan content policy)
-- Put this on a real URL
 - Write up a blog post
 
 [docker]: https://www.docker.com/

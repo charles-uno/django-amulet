@@ -57,7 +57,7 @@ jobs:
       - name: launch app
         uses: fifsky/ssh-action@master
         with:
-          command: ~/${{ github.event.repository.name }}/scripts/launch-app.sh -b -f
+          command: ~/${{ github.event.repository.name }}/scripts/launch-app.sh -f
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
@@ -70,7 +70,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           # For the moment, refresh every time
-          command: ~/${{ github.event.repository.name }}/scripts/launch-nginx.sh -b -f
+          command: ~/${{ github.event.repository.name }}/scripts/launch-nginx.sh -f
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
