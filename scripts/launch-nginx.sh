@@ -25,6 +25,7 @@ if [[ "$CONFLICTING_CONTAINER" != "" ]]; then
         docker stop "$CONFLICTING_CONTAINER"
     else
         echo "nginx already deployed, use --force to kill and restart"
+        exit 0
     fi
 fi
 
