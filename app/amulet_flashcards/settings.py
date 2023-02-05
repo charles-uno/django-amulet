@@ -43,7 +43,14 @@ except (KeyError, FileNotFoundError):
 # TODO: get nginx up and running so we can toggle this
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "172.17.0.1", hostname]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "172.17.0.1",
+    "flashcards.charles.uno",
+    hostname,
+]
 
 
 # Application definition
