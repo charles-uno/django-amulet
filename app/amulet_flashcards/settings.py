@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import sys
+import yaml
 
 _PROJECT_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,10 +29,21 @@ except FileNotFoundError:
     print(f"please add {secret_key_path}")
     sys.exit(-1)
 
+
+deploy_yaml_path = f"{_PROJECT_DIR}/assets/deploy.yaml"
+try:
+    with open(deploy_yaml_path) as handle:
+        deploy_vars = yaml.safe_load(handle)
+    hostname = deploy_vars["hostname"]
+except (KeyError, FileNotFoundError):
+    print(f"please add or populate {deploy_yaml_path}")
+    sys.exit(-1)
+
+
 # TODO: get nginx up and running so we can toggle this
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "3.96.204.46", "172.17.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "172.17.0.1", hostname]
 
 
 # Application definition

@@ -14,3 +14,4 @@ django-secret-key.txt
 # store scss, generate css on the fly
 *.css
 *.pem
+deploy.yaml

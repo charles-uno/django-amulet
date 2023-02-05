@@ -39,12 +39,13 @@ jobs:
           key: ${{secrets.AWS_KEY}}
           source: "app,nginx,scripts"
           target: "~/${{ github.event.repository.name }}/"
-      - name: add django secret key
+      - name: populate environment
         uses: fifsky/ssh-action@master
         with:
           command: |
             mkdir -p ~/${{ github.event.repository.name }}/app/assets/ 
             echo "${{ secrets.DJANGO_KEY }}" > ~/${{ github.event.repository.name }}/app/assets/django-secret-key.txt
+            echo "hostname: \"${{ secrets.AWS_ADDRESS }}\"" >> ~/${{ github.event.repository.name }}/app/assets/deploy.yaml
           host: ${{secrets.AWS_ADDRESS}}
           user: ${{secrets.AWS_USERNAME}}
           key: ${{secrets.AWS_KEY}}
