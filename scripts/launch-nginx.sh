@@ -30,8 +30,8 @@ if [[ "$CONFLICTING_CONTAINER" != "" ]]; then
 fi
 
 if [[ "$RUN_IN_BACKGROUND" == "true" ]]; then
-    docker run -d -p 80:80 --mount type=bind,source="$ROOT_DIR/nginx/nginx.conf",target=/etc/nginx/conf.d/default.conf:ro nginx:latest
+    docker run -d -p 80:80 --mount type=bind,source="$ROOT_DIR/nginx/nginx.conf",target=/etc/nginx/conf.d/default.conf,readonly nginx:latest
 else
-    docker run -p 80:80 --mount type=bind,source="$ROOT_DIR/nginx/nginx.conf",target=/etc/nginx/conf.d/default.conf:ro nginx:latest
+    docker run -p 80:80 --mount type=bind,source="$ROOT_DIR/nginx/nginx.conf",target=/etc/nginx/conf.d/default.conf,readonly nginx:latest
 fi
 
