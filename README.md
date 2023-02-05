@@ -46,6 +46,7 @@ pytest app/backend/amulet_model/tests
 
 ## Ongoing Work
 
+- Turn off debug mode (and get nginx to serve static content)
 - Implement game actions for Expedition Map
 - Handle HTTPS
 - Add a license (respecting WOTC fan content policy)
