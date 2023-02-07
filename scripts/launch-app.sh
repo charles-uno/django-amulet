@@ -7,7 +7,7 @@ ROOT_DIR=$(realpath $0 | xargs dirname | xargs dirname)
 
 # Container is launched in the background by default. Debug means launch it in
 # the foreground so we can see the output
-DEBUG=true
+DEBUG=false
 FORCE=false
 for ARG in $@; do
     if [[ "$ARG" == "-d" || "$ARG" == "--debug" ]]; then
