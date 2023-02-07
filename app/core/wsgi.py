@@ -13,7 +13,7 @@ from django.core.wsgi import get_wsgi_application
 from django.conf import settings
 from django.contrib.staticfiles.handlers import StaticFilesHandler
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "amulet_flashcards.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
 # TODO: this is a hack until we get nginx running
 if settings.DEBUG:

@@ -22,7 +22,7 @@ Build the app into a Docker container and launch on `localhost:8001`:
 
 ## TODO
 
-- Get nginx to serve static content so we can turn off Django debug mode
+- fix slight zoom on mobile
 - Get the deck list to show up nicely on narrow screens
 - Implement game actions for Expedition Map
 - Handle HTTPS

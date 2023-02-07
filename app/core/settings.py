@@ -79,7 +79,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 ]
 
-ROOT_URLCONF = "amulet_flashcards.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -97,7 +97,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "amulet_flashcards.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Database
