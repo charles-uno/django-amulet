@@ -18,6 +18,8 @@ for ARG in $@; do
     fi
 done
 
+docker build -f "$ROOT_DIR/app/Dockerfile" -t "$IMAGE_TAG" "$ROOT_DIR"
+
 CONFLICTING_CONTAINER=$(docker ps | grep "0.0.0.0:$HOST_PORT->" | awk '{print $1}')
 if [[ "$CONFLICTING_CONTAINER" != "" ]]; then
     if [[ "$FORCE" == "true" ]]; then
@@ -28,8 +30,6 @@ if [[ "$CONFLICTING_CONTAINER" != "" ]]; then
         exit 1
     fi
 fi
-
-docker build -f "$ROOT_DIR/app/Dockerfile" -t "$IMAGE_TAG" "$ROOT_DIR"
 
 # Need to have static CSS sitting on the host machine so nginx can serve it
 docker run -v "$ROOT_DIR/app/:/app/" "$IMAGE_TAG" python3 manage.py sass-compiler
