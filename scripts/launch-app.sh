@@ -32,7 +32,7 @@ fi
 docker build -f "$ROOT_DIR/app/Dockerfile" -t "$IMAGE_TAG" "$ROOT_DIR"
 
 # Need to have static CSS sitting on the host machine so nginx can serve it
-docker run -it -v "$ROOT_DIR/app/:/app/" "$IMAGE_TAG" python3 manage.py sass-compiler
+docker run -v "$ROOT_DIR/app/:/app/" "$IMAGE_TAG" python3 manage.py sass-compiler
 
 if [[ "$DEBUG" == "true" ]]; then
     docker run -p "$HOST_PORT:$CONTAINER_PORT" "$IMAGE_TAG"
