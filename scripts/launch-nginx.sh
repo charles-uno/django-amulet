@@ -28,13 +28,6 @@ if [[ "$CONFLICTING_CONTAINER" != "" ]]; then
     fi
 fi
 
-# Static content is served by nginx directly. Gotta mount it in
-
-
-
-
-
-
 if [[ "$DEBUG" == "true" ]]; then
     docker run \
         -p 80:80 \
