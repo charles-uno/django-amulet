@@ -41,7 +41,7 @@ except (KeyError, FileNotFoundError):
 
 
 # TODO: get nginx up and running so we can toggle this
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "localhost",
