@@ -22,6 +22,7 @@ Build the app into a Docker container and launch on `localhost:8001`:
 
 ## TODO
 
+- Get real average numbers (the current ones are from an old list with cantrips)
 - fix slight zoom on mobile
 - Get the deck list to show up nicely on narrow screens
 - Implement game actions for Expedition Map

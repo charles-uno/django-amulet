@@ -153,7 +153,11 @@ h1, h2, h3 {
         flex-wrap: wrap;
         justify-content: center;
         .deck-section {
+            padding: 0;
+            margin: 0;
             .deck-line {
+                width: 15rem;
+                overflow: hidden;
                 white-space: nowrap;
                 list-style-type: none;
                 padding: 0;
