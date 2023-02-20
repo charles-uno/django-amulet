@@ -1,25 +1,36 @@
 from pathlib import Path
+import sys
 from typing import List
 
 from .note import Note, NoteType
-from .game_manager import GameManager
+from .game_manager import GameManager, ModelOutputDict
 from .game_state import GameSummaryDict, OpenerDict
 
 
-_BACKEND_DIR = Path(__file__).resolve().parent.parent
+_PROJECT_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 def main():
     deck_list = load_deck_list()
     model_input = GameManager.get_model_input_from_deck_list(deck_list)
     model_output = GameManager.run(model_input)
-    print_pretty_opener(model_input["opener"])
-    print_pretty_summary(model_output["summary"])
+    if "-b" in sys.argv:
+        print_brief(model_output)
+    else:
+        print_pretty_opener(model_input["opener"])
+        print_pretty_summary(model_output["summary"])
+
+
+def print_brief(mod: ModelOutputDict) -> None:
+    if mod["opener"]["on_the_play"]:
+        print("play", mod["summary"]["turn"])
+    else:
+        print("draw", mod["summary"]["turn"])
 
 
 def load_deck_list() -> List[str]:
     deck_list = []
-    with open(f"{_BACKEND_DIR}/static/deck-list.txt") as handle:
+    with open(f"{_PROJECT_DIR}/assets/deck-list.txt") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
                 continue

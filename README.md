@@ -22,9 +22,9 @@ Build the app into a Docker container and launch on `localhost:8001`:
 
 ## TODO
 
-- Get real average numbers (the current ones are from an old list with cantrips)
+- Implement blue/green deployment
 - fix slight zoom on mobile
-- Get the deck list to show up nicely on narrow screens
+- Implement Mycosynth Gardens (oof)
 - Implement game actions for Expedition Map
 - Handle HTTPS
 - Handle the deck list on the front end? Currently using a sketchy `$DECKLIST` substitution instead of the template syntax
