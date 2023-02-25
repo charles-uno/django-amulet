@@ -50,14 +50,20 @@ class Card(str):
 
     @property
     def is_green_creature(self):
-        return "creature" in self.types and self.mana_cost >= Mana.from_string("G")
+        return "creature" in self.types and self.casting_cost >= Mana.from_string("G")
 
     @property
     def is_saga_target(self) -> bool:
-        return "artifact" in self.types and self.mana_cost.total < 2
+        return "artifact" in self.types and self.casting_cost.total < 2
 
     @property
-    def mana_cost(self) -> Mana:
+    def casting_cost(self) -> Mana:
+        m = _get_card_data(self).get("mana_cost")
+        assert m is not None
+        return Mana.from_string(m)
+
+    @property
+    def activation_cost(self) -> Mana:
         m = _get_card_data(self).get("mana_cost")
         assert m is not None
         return Mana.from_string(m)

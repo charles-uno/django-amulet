@@ -56,6 +56,7 @@ Dryad of the Ilysian Grove:
   image_url: "https://cards.scryfall.io/normal/front/6/d/6d964876-194b-49f1-8e74-cfe9269f2c62.jpg?1584114361"
 Expedition Map:
   mana_cost: "1"
+  activation_cost: "2"
   type: artifact
   image_url: "https://cards.scryfall.io/normal/front/5/5/551c0a45-9515-4e51-84e5-79703832a661.jpg?1646666270"
 Explore:
