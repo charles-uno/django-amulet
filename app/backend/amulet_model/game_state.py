@@ -187,7 +187,7 @@ class GameState(NamedTuple):
     def handle_sagas(self) -> Set["GameState"]:
         states = set()
         new_battlefield = tuple(cwm.plus_counter_if_saga() for cwm in self.battlefield)
-        saga_going_off = CardWithMetadata(Card("Urza's Saga"), 3)
+        saga_going_off = Card("Urza's Saga").with_metadata(n_counters=3)
         targets = [c for c in set(self.library) if c.is_saga_target]
         # Note: we only go out to turn 3 so only one saga can go off at a time
         assert new_battlefield.count(saga_going_off) < 2
@@ -327,8 +327,7 @@ class GameState(NamedTuple):
 
     def add_to_battlefield(self, c: Card) -> "GameState":
         return self.copy_with_updates(
-            battlefield=self.battlefield
-            + (CardWithMetadata(c).plus_counter_if_saga(),),
+            battlefield=self.battlefield + (c.with_metadata().plus_counter_if_saga(),),
         )
 
     def remove_from_battlefield(self, cwm: CardWithMetadata) -> "GameState":
@@ -338,7 +337,7 @@ class GameState(NamedTuple):
         )
 
     def _battlefield_count(self, card_name: str) -> int:
-        return self.battlefield.count(CardWithMetadata(Card(card_name)))
+        return self.battlefield.count(Card(card_name).with_metadata())
 
     def add_land_plays(self, n: int) -> "GameState":
         return self.copy_with_updates(
@@ -400,7 +399,7 @@ class GameState(NamedTuple):
         states = set()
         for c in [Card("Simic Growth Chamber")]:
             states.add(
-                self.remove_from_battlefield(CardWithMetadata(Card("Expedition Map")))
+                self.remove_from_battlefield(Card("Expedition Map").with_metadata())
                 .add_to_hand(c)
                 .add_notes("grabbing", c)
             )

@@ -87,6 +87,9 @@ class Card(str):
     def image_url(self) -> str:
         return _get_card_data(self)["image_url"]
 
+    def with_metadata(self, n_counters=0) -> "CardWithMetadata":
+        return CardWithMetadata(self, n_counters=n_counters)
+
 
 class CardWithMetadata(NamedTuple):
     card: Card

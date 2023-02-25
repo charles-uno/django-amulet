@@ -4,7 +4,7 @@ To be run with pytest
 
 from typing import Set
 from ..game_state import GameState
-from ..card import Card, CardWithMetadata
+from ..card import Card
 from ..mana import Mana
 
 
@@ -13,7 +13,7 @@ def test_play_land():
         c = Card(card_name)
         state = GameState(hand=(c,), battlefield=(), land_plays_remaining=1)
         next_state = state.maybe_play_land(c).pop()
-        assert next_state.battlefield == (CardWithMetadata(c, 0),)
+        assert next_state.battlefield == (c.with_metadata(),)
         assert next_state.hand == ()
 
 
@@ -31,13 +31,13 @@ def test_cast_spell():
         )
         next_state = state.maybe_cast_spell(c).pop()
         assert next_state.hand == ()
-        assert next_state.battlefield == (CardWithMetadata(c),)
+        assert next_state.battlefield == (c.with_metadata(),)
         assert next_state.mana_pool == Mana.from_string("")
 
 
 def test_pass_turn_payable_mana_debt():
     state = GameState(
-        battlefield=tuple(CardWithMetadata(Card("Forest")) for _ in range(4)),
+        battlefield=tuple(Card("Forest").with_metadata() for _ in range(4)),
         mana_debt=Mana.from_string("2GG"),
         # So we don't fail to draw
         library=(Card("Forest"),),
@@ -59,7 +59,7 @@ def test_pass_turn_unpayable_mana_debt():
 def test_pass_turn_sack_saga():
     targets = (Card("Amulet of Vigor"), Card("Expedition Map"))
     state = GameState(
-        battlefield=(CardWithMetadata(Card("Urza's Saga"), 2),),
+        battlefield=(Card("Urza's Saga").with_metadata(n_counters=2),),
         # Need two of each in our library because we draw before we search
         library=targets + targets,
     )
@@ -71,8 +71,8 @@ def test_pass_turn_sack_saga():
 
 
 def test_land_plays_for_new_turn():
-    azusa = CardWithMetadata(Card("Azusa, Lost but Seeking"))
-    dryad = CardWithMetadata(Card("Dryad of the Ilysian Grove"))
+    azusa = Card("Azusa, Lost but Seeking").with_metadata()
+    dryad = Card("Dryad of the Ilysian Grove").with_metadata()
     data_provider = [
         {"battlefield": (), "land_plays": 1},
         {"battlefield": (dryad,), "land_plays": 2},
@@ -94,14 +94,14 @@ def test_sack_duplicate_legendary():
     c = Card("Boseiju, Who Endures")
     state = GameState(
         hand=(c,),
-        battlefield=(CardWithMetadata(c),),
+        battlefield=(c.with_metadata(),),
         mana_pool=Mana.from_string(""),
         land_plays_remaining=1,
     )
     # We should keep the untapped copy
     next_state = state.maybe_play_land(c).pop()
     assert next_state.mana_pool == Mana.from_string("G")
-    assert next_state.battlefield == (CardWithMetadata(c),)
+    assert next_state.battlefield == (c.with_metadata(),)
 
 
 def test_activate_expedition_map():
@@ -109,8 +109,8 @@ def test_activate_expedition_map():
     state = GameState(
         turn=max_turn,
         battlefield=(
-            CardWithMetadata(Card("Expedition Map")),
-            CardWithMetadata(Card("Amulet of Vigor")),
+            Card("Expedition Map").with_metadata(),
+            Card("Amulet of Vigor").with_metadata(),
         ),
         land_plays_remaining=1,
         mana_pool=Mana.from_string("5G"),
