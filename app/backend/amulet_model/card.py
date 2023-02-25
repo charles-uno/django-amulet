@@ -88,11 +88,11 @@ class Card(str):
         return _get_card_data(self)["image_url"]
 
 
-class CardWithCounters(NamedTuple):
+class CardWithMetadata(NamedTuple):
     card: Card
     n_counters: int = 0
 
-    def plus_counter_if_saga(self) -> "CardWithCounters":
+    def plus_counter_if_saga(self) -> "CardWithMetadata":
         if not self.card.is_saga:
             return self
-        return CardWithCounters(card=self.card, n_counters=self.n_counters + 1)
+        return CardWithMetadata(card=self.card, n_counters=self.n_counters + 1)

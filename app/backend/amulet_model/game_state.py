@@ -10,7 +10,7 @@ from typing_extensions import NotRequired, Unpack
 import sys
 
 from .mana import Mana
-from .card import Card, CardWithCounters
+from .card import Card, CardWithMetadata
 from .note import Note
 
 
@@ -33,7 +33,7 @@ class GameSummaryDict(TypedDict):
 
 
 class GameStateUpdate(TypedDict):
-    battlefield: NotRequired[Tuple[CardWithCounters, ...]]
+    battlefield: NotRequired[Tuple[CardWithMetadata, ...]]
     hand: NotRequired[Tuple[Card, ...]]
     is_done: NotRequired[bool]
     is_failed: NotRequired[bool]
@@ -47,7 +47,7 @@ class GameStateUpdate(TypedDict):
 
 
 class GameState(NamedTuple):
-    battlefield: Tuple[CardWithCounters, ...] = ()
+    battlefield: Tuple[CardWithMetadata, ...] = ()
     hand: Tuple[Card, ...] = ()
     is_done: bool = False
     is_failed: bool = False
@@ -187,7 +187,7 @@ class GameState(NamedTuple):
     def handle_sagas(self) -> Set["GameState"]:
         states = set()
         new_battlefield = tuple(cwc.plus_counter_if_saga() for cwc in self.battlefield)
-        saga_going_off = CardWithCounters(Card("Urza's Saga"), 3)
+        saga_going_off = CardWithMetadata(Card("Urza's Saga"), 3)
         targets = [c for c in set(self.library) if c.is_saga_target]
         # Note: we only go out to turn 3 so only one saga can go off at a time
         assert new_battlefield.count(saga_going_off) < 2
@@ -298,7 +298,7 @@ class GameState(NamedTuple):
         )
         return getattr(state, "effect_for_casting_" + c.slug)()
 
-    def maybe_activate(self, cwc: CardWithCounters) -> Set["GameState"]:
+    def maybe_activate(self, cwc: CardWithMetadata) -> Set["GameState"]:
         c = cwc.card
         if not (
             self._battlefield_count(c)
@@ -312,7 +312,7 @@ class GameState(NamedTuple):
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
         return self.remove_from_hand(c).add_to_battlefield(c)
 
-    def move_from_battlefield_to_hand(self, cwc: CardWithCounters) -> "GameState":
+    def move_from_battlefield_to_hand(self, cwc: CardWithMetadata) -> "GameState":
         i = self.battlefield.index(cwc)
         return self.remove_from_battlefield(cwc).add_to_hand(cwc.card)
 
@@ -328,17 +328,17 @@ class GameState(NamedTuple):
     def add_to_battlefield(self, c: Card) -> "GameState":
         return self.copy_with_updates(
             battlefield=self.battlefield
-            + (CardWithCounters(c).plus_counter_if_saga(),),
+            + (CardWithMetadata(c).plus_counter_if_saga(),),
         )
 
-    def remove_from_battlefield(self, cwc: CardWithCounters) -> "GameState":
+    def remove_from_battlefield(self, cwc: CardWithMetadata) -> "GameState":
         i = self.battlefield.index(cwc)
         return self.copy_with_updates(
             battlefield=self.battlefield[:i] + self.battlefield[i + 1 :],
         )
 
     def _battlefield_count(self, card_name: str) -> int:
-        return self.battlefield.count(CardWithCounters(Card(card_name)))
+        return self.battlefield.count(CardWithMetadata(Card(card_name)))
 
     def add_land_plays(self, n: int) -> "GameState":
         return self.copy_with_updates(
@@ -400,7 +400,7 @@ class GameState(NamedTuple):
         states = set()
         for c in [Card("Simic Growth Chamber")]:
             states.add(
-                self.remove_from_battlefield(CardWithCounters(Card("Expedition Map")))
+                self.remove_from_battlefield(CardWithMetadata(Card("Expedition Map")))
                 .add_to_hand(c)
                 .add_notes("grabbing", c)
             )
