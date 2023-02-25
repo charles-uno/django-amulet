@@ -1,23 +1,23 @@
 Abundant Harvest:
-  mana_cost: "G"
+  casting_cost: "G"
   type: sorcery
   never_defer: true
   image_url: "https://cards.scryfall.io/normal/front/1/6/16782095-0b7f-4489-8a97-b74f8efef352.jpg?1662752631"
 Amulet of Vigor:
-  mana_cost: "1"
+  casting_cost: "1"
   type: artifact
   never_defer: true
   image_url: "https://cards.scryfall.io/normal/front/9/9/997bc933-ac30-477b-a4e1-5333b796a99d.jpg?1562292191"
 Ancient Stirrings:
   type: sorcery
-  mana_cost: G
+  casting_cost: G
   image_url: "https://cards.scryfall.io/normal/front/7/2/726039a0-6c0d-48ef-9b42-99de5d4e41d2.jpg?1599706855"
 Arboreal Grazer:
-  mana_cost: G
+  casting_cost: G
   type: creature
   image_url: "https://cards.scryfall.io/normal/front/c/4/c4a5f86f-44a8-4735-909a-770586d33a15.jpg?1586962989"
 Azusa, Lost but Seeking:
-  mana_cost: "2G"
+  casting_cost: "2G"
   type: legendary,creature
   never_defer: true
   image_url: "https://cards.scryfall.io/normal/front/0/b/0b8aff2c-1f7b-4507-b914-53f8c4706b3d.jpg?1596259277"
@@ -46,21 +46,21 @@ Crumbling Vestige:
   image_url: "https://cards.scryfall.io/normal/front/d/4/d491c13c-43e3-4ca3-b888-4edd34dfe14a.jpg?1562937635"
 Cultivator Colossus:
   type: creature
-  mana_cost: "4GGG"
+  casting_cost: "4GGG"
   never_defer: true
   image_url: "https://cards.scryfall.io/normal/front/6/2/62dffe04-c431-440d-a8da-33c74b4bb683.jpg?1643592511"
 Dryad of the Ilysian Grove:
   type: creature
-  mana_cost: "2G"
+  casting_cost: "2G"
   never_defer: true
   image_url: "https://cards.scryfall.io/normal/front/6/d/6d964876-194b-49f1-8e74-cfe9269f2c62.jpg?1584114361"
 Expedition Map:
-  mana_cost: "1"
+  casting_cost: "1"
   activation_cost: "2"
   type: artifact
   image_url: "https://cards.scryfall.io/normal/front/5/5/551c0a45-9515-4e51-84e5-79703832a661.jpg?1646666270"
 Explore:
-  mana_cost: "1G"
+  casting_cost: "1G"
   type: sorcery
   image_url: "https://cards.scryfall.io/normal/front/f/7/f7a70945-8f8b-4dc7-a78b-d285694f9f50.jpg?1674142262"
 Forest:
@@ -75,7 +75,7 @@ Gruul Turf:
   taps_for: "RG"
   image_url: "https://cards.scryfall.io/normal/front/2/9/294b7e06-4758-4590-b1f0-b7f97537218f.jpg?1673149513"
 Primeval Titan:
-  mana_cost: 4GG
+  casting_cost: 4GG
   type: creature
   never_defer: true
   image_url: "https://cards.scryfall.io/normal/front/6/d/6d5537da-112e-4679-a113-b5d7ce32a66b.jpg?1562850064"
@@ -99,7 +99,7 @@ Slayers' Stronghold:
   taps_for: "1"
 Summoner's Pact:
   type: instant
-  mana_cost: "0"
+  casting_cost: "0"
 Sunhome, Fortress of the Legion:
   type: land
   taps_for: "1"
@@ -111,7 +111,7 @@ Tolaria West:
 # Standing in for a blank
 Unyaro Bee Sting:
   type: Sorcery
-  mana_cost: "3G"
+  casting_cost: "3G"
 Urza's Saga:
   type: land,saga
   enters_tapped: false

@@ -93,6 +93,8 @@ class GameState(NamedTuple):
             for c in set(self.hand):
                 states |= self.maybe_play_land(c)
                 states |= self.maybe_cast_spell(c)
+            for cwc in set(self.battlefield):
+                states |= self.maybe_activate(cwc)
             return states
         except Exception as exc:
             if "--debug" in sys.argv:
@@ -295,6 +297,9 @@ class GameState(NamedTuple):
             .pay_mana(c.casting_cost)
         )
         return getattr(state, "effect_for_" + c.slug)()
+
+    def maybe_activate(self, cwc: CardWithCounters) -> Set["GameState"]:
+        return set()
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
         return self.remove_from_hand(c).add_to_battlefield(c)

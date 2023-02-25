@@ -58,13 +58,13 @@ class Card(str):
 
     @property
     def casting_cost(self) -> Mana:
-        m = _get_card_data(self).get("mana_cost")
+        m = _get_card_data(self).get("casting_cost")
         assert m is not None
         return Mana.from_string(m)
 
     @property
     def activation_cost(self) -> Mana:
-        m = _get_card_data(self).get("mana_cost")
+        m = _get_card_data(self).get("activation_cost")
         assert m is not None
         return Mana.from_string(m)
 

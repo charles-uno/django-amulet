@@ -26,7 +26,7 @@ def test_cast_spell():
         state = GameState(
             hand=(c,),
             battlefield=(),
-            mana_pool=c.mana_cost,
+            mana_pool=c.casting_cost,
         )
         next_state = state.maybe_cast_spell(c).pop()
         assert next_state.hand == ()
