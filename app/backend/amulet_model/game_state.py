@@ -93,8 +93,8 @@ class GameState(NamedTuple):
             for c in set(self.hand):
                 states |= self.maybe_play_land(c)
                 states |= self.maybe_cast_spell(c)
-            for cwc in set(self.battlefield):
-                states |= self.maybe_activate(cwc)
+            for cwm in set(self.battlefield):
+                states |= self.maybe_activate(cwm)
             return states
         except Exception as exc:
             if "--debug" in sys.argv:
@@ -179,14 +179,14 @@ class GameState(NamedTuple):
 
     def get_mana_pool_for_new_turn(self) -> Mana:
         mana_pool = Mana.from_string("")
-        for cwc in self.battlefield:
-            if cwc.card.taps_for:
-                mana_pool += cwc.card.taps_for
+        for cwm in self.battlefield:
+            if cwm.card.taps_for:
+                mana_pool += cwm.card.taps_for
         return mana_pool
 
     def handle_sagas(self) -> Set["GameState"]:
         states = set()
-        new_battlefield = tuple(cwc.plus_counter_if_saga() for cwc in self.battlefield)
+        new_battlefield = tuple(cwm.plus_counter_if_saga() for cwm in self.battlefield)
         saga_going_off = CardWithMetadata(Card("Urza's Saga"), 3)
         targets = [c for c in set(self.library) if c.is_saga_target]
         # Note: we only go out to turn 3 so only one saga can go off at a time
@@ -249,12 +249,12 @@ class GameState(NamedTuple):
 
     def sack_duplicate_legendary_land_if_any(self) -> "GameState":
         # Note: this is called after every update, so there can be at most one
-        for cwc in set(self.battlefield):
-            if not cwc.card.is_legendary_land:
+        for cwm in set(self.battlefield):
+            if not cwm.card.is_legendary_land:
                 continue
-            if self.battlefield.count(cwc) > 1:
-                return self.remove_from_battlefield(cwc).add_notes(
-                    ", sack duplicate ", cwc.card
+            if self.battlefield.count(cwm) > 1:
+                return self.remove_from_battlefield(cwm).add_notes(
+                    ", sack duplicate ", cwm.card
                 )
         return self
 
@@ -298,8 +298,8 @@ class GameState(NamedTuple):
         )
         return getattr(state, "effect_for_casting_" + c.slug)()
 
-    def maybe_activate(self, cwc: CardWithMetadata) -> Set["GameState"]:
-        c = cwc.card
+    def maybe_activate(self, cwm: CardWithMetadata) -> Set["GameState"]:
+        c = cwm.card
         if not (
             self._battlefield_count(c)
             and c.activation_cost
@@ -312,9 +312,9 @@ class GameState(NamedTuple):
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
         return self.remove_from_hand(c).add_to_battlefield(c)
 
-    def move_from_battlefield_to_hand(self, cwc: CardWithMetadata) -> "GameState":
-        i = self.battlefield.index(cwc)
-        return self.remove_from_battlefield(cwc).add_to_hand(cwc.card)
+    def move_from_battlefield_to_hand(self, cwm: CardWithMetadata) -> "GameState":
+        i = self.battlefield.index(cwm)
+        return self.remove_from_battlefield(cwm).add_to_hand(cwm.card)
 
     def add_to_hand(self, c: Card) -> "GameState":
         return self.copy_with_updates(hand=self.hand + (c,))
@@ -331,8 +331,8 @@ class GameState(NamedTuple):
             + (CardWithMetadata(c).plus_counter_if_saga(),),
         )
 
-    def remove_from_battlefield(self, cwc: CardWithMetadata) -> "GameState":
-        i = self.battlefield.index(cwc)
+    def remove_from_battlefield(self, cwm: CardWithMetadata) -> "GameState":
+        i = self.battlefield.index(cwm)
         return self.copy_with_updates(
             battlefield=self.battlefield[:i] + self.battlefield[i + 1 :],
         )
@@ -462,11 +462,11 @@ class GameState(NamedTuple):
 
     def bounce_land(self) -> Set["GameState"]:
         states = set()
-        for cwc in set(self.battlefield):
-            if cwc.card.is_land:
+        for cwm in set(self.battlefield):
+            if cwm.card.is_land:
                 states.add(
-                    self.move_from_battlefield_to_hand(cwc).add_notes(
-                        ", bounce ", cwc.card
+                    self.move_from_battlefield_to_hand(cwm).add_notes(
+                        ", bounce ", cwm.card
                     )
                 )
         return states
