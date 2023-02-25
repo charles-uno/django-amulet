@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import NamedTuple, Set
+from typing import NamedTuple, Optional, Set
 import yaml
 
 from .mana import Mana
@@ -63,10 +63,9 @@ class Card(str):
         return Mana.from_string(m)
 
     @property
-    def activation_cost(self) -> Mana:
+    def activation_cost(self) -> Optional[Mana]:
         m = _get_card_data(self).get("activation_cost")
-        assert m is not None
-        return Mana.from_string(m)
+        return None if m is None else Mana.from_string(m)
 
     @property
     def enters_tapped(self) -> bool:

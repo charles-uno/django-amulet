@@ -299,7 +299,15 @@ class GameState(NamedTuple):
         return getattr(state, "effect_for_casting_" + c.slug)()
 
     def maybe_activate(self, cwc: CardWithCounters) -> Set["GameState"]:
-        return set()
+        c = cwc.card
+        if not (
+            self._battlefield_count(c)
+            and c.activation_cost
+            and c.activation_cost <= self.mana_pool
+        ):
+            return set()
+        state = self.add_notes("\n", "Activate", c).pay_mana(c.activation_cost)
+        return getattr(state, "effect_for_activating_" + c.slug)()
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
         return self.remove_from_hand(c).add_to_battlefield(c)
@@ -388,6 +396,16 @@ class GameState(NamedTuple):
             )
         }
 
+    def effect_for_activating_expedition_map(self) -> Set["GameState"]:
+        states = set()
+        for c in [Card("Simic Growth Chamber")]:
+            states.add(
+                self.remove_from_battlefield(CardWithCounters(Card("Expedition Map")))
+                .add_to_hand(c)
+                .add_notes("grabbing", c)
+            )
+        return states
+
     def effect_for_casting_summoners_pact(
         self,
     ) -> Set["GameState"]:
@@ -467,6 +485,7 @@ class GameState(NamedTuple):
 
     def dump(self) -> None:
         lines = [
+            f"turn: {self.turn}",
             f"hand: {self.hand}",
             f"battlefield: {self.battlefield}",
             f"mana pool: {self.mana_pool}",

@@ -2,6 +2,7 @@
 To be run with pytest
 """
 
+from typing import Set
 from ..game_state import GameState
 from ..card import Card, CardWithCounters
 from ..mana import Mana
@@ -55,7 +56,7 @@ def test_pass_turn_unpayable_mana_debt():
     assert not state.pass_turn(99)
 
 
-def pass_turn_sack_saga():
+def test_pass_turn_sack_saga():
     targets = (Card("Amulet of Vigor"), Card("Expedition Map"))
     state = GameState(
         battlefield=(CardWithCounters(Card("Urza's Saga"), 2),),
@@ -101,3 +102,30 @@ def test_sack_duplicate_legendary():
     next_state = state.maybe_play_land(c).pop()
     assert next_state.mana_pool == Mana.from_string("G")
     assert next_state.battlefield == (CardWithCounters(c),)
+
+
+def test_activate_expedition_map():
+    max_turn = 3
+    state = GameState(
+        turn=max_turn,
+        battlefield=(
+            CardWithCounters(Card("Expedition Map")),
+            CardWithCounters(Card("Amulet of Vigor")),
+        ),
+        land_plays_remaining=1,
+        mana_pool=Mana.from_string("5G"),
+        hand=(Card("Primeval Titan"),),
+        library=(Card("Simic Growth Chamber"),),
+    )
+    # Should be three moves from completion: activate map, play SGC, cast Titan
+    states = {state}
+    for _ in range(3):
+        new_states = set()
+        for s in states:
+            for ns in s.get_next_states(max_turn):
+                # Drop anything that gives up by passing the turn
+                if ns.turn > max_turn:
+                    continue
+                new_states.add(ns)
+        states = new_states
+    assert any(s.is_done for s in states)
