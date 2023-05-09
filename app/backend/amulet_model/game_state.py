@@ -306,7 +306,7 @@ class GameState(NamedTuple):
             and c.activation_cost <= self.mana_pool
         ):
             return set()
-        state = self.add_notes("\n", "Activate", c).pay_mana(c.activation_cost)
+        state = self.add_notes("\n", "Activate ", c).pay_mana(c.activation_cost)
         return getattr(state, "effect_for_activating_" + c.slug)()
 
     def move_from_hand_to_battlefield(self, c: Card) -> "GameState":
@@ -401,7 +401,7 @@ class GameState(NamedTuple):
             states.add(
                 self.remove_from_battlefield(Card("Expedition Map").with_metadata())
                 .add_to_hand(c)
-                .add_notes("grabbing", c)
+                .add_notes("grabbing ", c)
             )
         return states
 
