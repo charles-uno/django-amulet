@@ -401,7 +401,7 @@ class GameState(NamedTuple):
             states.add(
                 self.remove_from_battlefield(Card("Expedition Map").with_metadata())
                 .add_to_hand(c)
-                .add_notes("grabbing ", c)
+                .add_notes(" grabbing ", c)
             )
         return states
 
