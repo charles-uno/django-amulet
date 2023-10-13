@@ -21,7 +21,6 @@ The numbers and play patterns are still pretty much the same.
 
 $DECKLIST
 
-
 ## Implementation
 
 This app is written in Python using [Django][django] and [Gunicorn][gunicorn].
