@@ -37,6 +37,6 @@ You can check out the code (game logic, web framework, and deployment) on [GitHu
 [github_actions]: https://docs.github.com/en/actions
 [github_source]: https://github.com/charles-uno/django-amulet
 [gunicorn]: https://gunicorn.org/
-[htmx]: https://htpx.org
+[htmx]: https://htmx.org
 [mtggoldfish]: https://www.mtggoldfish.com/archetype/amulet-titan
 [nginx]: https://www.nginx.com/
