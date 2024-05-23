@@ -39,3 +39,4 @@ Build the app into a Docker container and launch on `localhost:8001`:
 [gunicorn]: https://gunicorn.org/
 [htmx]: https://htpx.org
 [mtggoldfish]: https://www.mtggoldfish.com/archetype/amulet-titan
+
